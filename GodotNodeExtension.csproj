@@ -1,0 +1,30 @@
+<Project Sdk="Godot.NET.Sdk/4.4.1">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>default</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="LibVLCSharp" Version="3.9.3" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.7" />
+    <PackageReference Include="SkiaSharp" Version="3.119.0" />
+    <PackageReference Include="SkiaSharp.Vulkan.SharpVk" Version="3.119.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="COMPONENTS.md" />
+    <Content Include="Component\DynamicNumberLabel\component_info.json" />
+    <Content Include="Component\DynamicNumberLabel\README.md" />
+    <Content Include="Example\DynamicNumberLabel\DynamicNumberLabelDemo.tscn" />
+    <Content Include="GodotNodeExtensionInstaller.ps1" />
+    <Content Include="GodotNodeExtensionInstaller.sh" />
+    <Content Include="organization_icon.svg" />
+    <Content Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Component\VlcGodot\" />
+  </ItemGroup>
+</Project>
