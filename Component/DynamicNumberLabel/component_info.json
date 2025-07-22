@@ -1,0 +1,26 @@
+{
+  "name": "DynamicNumberLabel",
+  "version": "1.0.0",
+  "description": "A custom Godot Label node for animated number display with customizable formatting and transitions",
+  "author": "shitake2333",
+  "license": "MIT",
+  "requirements": {
+    "godot": ">=4.0.0",
+    "dotnet": ">=9.0"
+  },
+  "dependencies": {
+    "nuget": [
+      {
+        "name": "Microsoft.Extensions.Logging",
+        "version": ">=7.0.0"
+      }
+    ],
+    "components": [
+    ]
+  },
+  "compatibility": {
+    "godot_versions": ["4.0", "4.1", "4.2", "4.3"],
+    "dotnet_versions": ["9.0"]
+  }
+}
+
