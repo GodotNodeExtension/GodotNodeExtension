@@ -1,0 +1,354 @@
+name: PR Quality Check
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Install jq for JSON processing
+      run: sudo apt-get update && sudo apt-get install -y jq
+
+    - name: Detect changed components
+      id: detect_components
+      run: |
+        echo "Detecting changed components..."
+        
+        # Get list of changed files
+        CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
+        echo "Changed files:"
+        echo "$CHANGED_FILES"
+        
+        # Extract component names from changed files
+        CHANGED_COMPONENTS=$(echo "$CHANGED_FILES" | grep '^Component/' | cut -d'/' -f2 | sort -u | tr '\n' ' ')
+        
+        if [ -z "$CHANGED_COMPONENTS" ]; then
+          echo "No components changed"
+          echo "has_component_changes=false" >> $GITHUB_OUTPUT
+        else
+          echo "Changed components: $CHANGED_COMPONENTS"
+          echo "has_component_changes=true" >> $GITHUB_OUTPUT
+          echo "changed_components=$CHANGED_COMPONENTS" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Build project
+      id: build_check
+      run: |
+        echo "Building project..."
+        
+        # Restore dependencies
+        dotnet restore
+        
+        # Build the project
+        if dotnet build --configuration Release --no-restore; then
+          echo "✅ Build successful"
+          echo "build_status=success" >> $GITHUB_OUTPUT
+          echo "build_message=Project builds successfully" >> $GITHUB_OUTPUT
+        else
+          echo "❌ Build failed"
+          echo "build_status=failed" >> $GITHUB_OUTPUT
+          echo "build_message=Project build failed - please fix compilation errors" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+
+    - name: Check component completeness
+      if: steps.detect_components.outputs.has_component_changes == 'true'
+      id: completeness_check
+      run: |
+        echo "Checking component completeness..."
+        
+        COMPONENTS="${{ steps.detect_components.outputs.changed_components }}"
+        
+        # Initialize results
+        MISSING_FILES=""
+        INCOMPLETE_COMPONENTS=""
+        ALL_COMPLETE=true
+        
+        for component in $COMPONENTS; do
+          echo "Checking component: $component"
+          component_path="Component/$component"
+          
+          if [ ! -d "$component_path" ]; then
+            echo "⚠️ Component directory not found: $component_path"
+            continue
+          fi
+          
+          missing_files=""
+          
+          # Check for component_info.json
+          if [ ! -f "$component_path/component_info.json" ]; then
+            missing_files="$missing_files component_info.json"
+          else
+            # Validate component_info.json structure
+            if ! jq -e '.name and .version and .author and .description' "$component_path/component_info.json" > /dev/null 2>&1; then
+              missing_files="$missing_files component_info.json(invalid)"
+            fi
+          fi
+          
+          # Check for README.md
+          if [ ! -f "$component_path/README.md" ]; then
+            missing_files="$missing_files README.md"
+          else
+            # Check if README.md has substantial content (more than just title)
+            readme_lines=$(wc -l < "$component_path/README.md")
+            if [ "$readme_lines" -lt 10 ]; then
+              missing_files="$missing_files README.md(insufficient_content)"
+            fi
+          fi
+          
+          # Check for at least one .cs file
+          cs_files=$(find "$component_path" -name "*.cs" -type f | wc -l)
+          if [ "$cs_files" -eq 0 ]; then
+            missing_files="$missing_files *.cs(source_files)"
+          fi
+          
+          # Check for example files
+          example_path="Example/$component"
+          if [ ! -d "$example_path" ]; then
+            missing_files="$missing_files Example/$component/"
+          else
+            # Check for at least one example file (.cs or .tscn)
+            example_files=$(find "$example_path" -name "*.cs" -o -name "*.tscn" | wc -l)
+            if [ "$example_files" -eq 0 ]; then
+              missing_files="$missing_files Example/$component/(example_files)"
+            fi
+          fi
+          
+          if [ -n "$missing_files" ]; then
+            INCOMPLETE_COMPONENTS="$INCOMPLETE_COMPONENTS $component"
+            MISSING_FILES="$MISSING_FILES\n**$component:**$missing_files"
+            ALL_COMPLETE=false
+          else
+            echo "✅ Component $component is complete"
+          fi
+        done
+        
+        if [ "$ALL_COMPLETE" = true ]; then
+          echo "completeness_status=complete" >> $GITHUB_OUTPUT
+          echo "completeness_message=All components are complete with required files" >> $GITHUB_OUTPUT
+        else
+          echo "completeness_status=incomplete" >> $GITHUB_OUTPUT
+          echo "completeness_message=Some components are missing required files" >> $GITHUB_OUTPUT
+          echo "missing_files<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$MISSING_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Run component-specific tests
+      if: steps.detect_components.outputs.has_component_changes == 'true'
+      id: component_tests
+      run: |
+        echo "Running component-specific validations..."
+        
+        COMPONENTS="${{ steps.detect_components.outputs.changed_components }}"
+        TEST_RESULTS=""
+        ALL_TESTS_PASSED=true
+        
+        for component in $COMPONENTS; do
+          echo "Testing component: $component"
+          component_path="Component/$component"
+          
+          if [ ! -d "$component_path" ]; then
+            continue
+          fi
+          
+          # Check if component_info.json has valid JSON syntax
+          if [ -f "$component_path/component_info.json" ]; then
+            if jq empty "$component_path/component_info.json" > /dev/null 2>&1; then
+              echo "✅ $component: component_info.json has valid JSON syntax"
+            else
+              echo "❌ $component: component_info.json has invalid JSON syntax"
+              TEST_RESULTS="$TEST_RESULTS\n❌ $component: Invalid JSON in component_info.json"
+              ALL_TESTS_PASSED=false
+            fi
+          fi
+          
+          # Check for [Tool] and [GlobalClass] attributes in .cs files
+          cs_files=$(find "$component_path" -name "*.cs" -type f)
+          has_tool_attr=false
+          has_global_class_attr=false
+          
+          for cs_file in $cs_files; do
+            if grep -q "\[Tool\]" "$cs_file"; then
+              has_tool_attr=true
+            fi
+            if grep -q "\[GlobalClass\]" "$cs_file"; then
+              has_global_class_attr=true
+            fi
+          done
+          
+          if [ "$has_tool_attr" = true ] && [ "$has_global_class_attr" = true ]; then
+            echo "✅ $component: Has required [Tool] and [GlobalClass] attributes"
+          else
+            missing_attrs=""
+            [ "$has_tool_attr" = false ] && missing_attrs="$missing_attrs [Tool]"
+            [ "$has_global_class_attr" = false ] && missing_attrs="$missing_attrs [GlobalClass]"
+            echo "⚠️ $component: Missing attributes:$missing_attrs"
+            TEST_RESULTS="$TEST_RESULTS\n⚠️ $component: Missing attributes:$missing_attrs"
+          fi
+          
+          # Check if README.md contains usage examples
+          if [ -f "$component_path/README.md" ]; then
+            if grep -qi "usage\|example\|how to" "$component_path/README.md"; then
+              echo "✅ $component: README.md contains usage information"
+            else
+              echo "⚠️ $component: README.md lacks usage examples"
+              TEST_RESULTS="$TEST_RESULTS\n⚠️ $component: README.md should include usage examples"
+            fi
+          fi
+        done
+        
+        if [ "$ALL_TESTS_PASSED" = true ]; then
+          echo "tests_status=passed" >> $GITHUB_OUTPUT
+          echo "tests_message=All component validations passed" >> $GITHUB_OUTPUT
+        else
+          echo "tests_status=failed" >> $GITHUB_OUTPUT
+          echo "tests_message=Some component validations failed" >> $GITHUB_OUTPUT
+          echo "test_results<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$TEST_RESULTS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Create PR comment
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const buildStatus = '${{ steps.build_check.outputs.build_status }}';
+          const hasComponentChanges = '${{ steps.detect_components.outputs.has_component_changes }}';
+          const completenessStatus = '${{ steps.completeness_check.outputs.completeness_status }}';
+          const testsStatus = '${{ steps.component_tests.outputs.tests_status }}';
+          
+          let comment = `## 🔍 PR Quality Check Results\n\n`;
+          
+          // Build status
+          if (buildStatus === 'success') {
+            comment += `### ✅ Build Status\n✅ **Build Successful** - Project compiles without errors\n\n`;
+          } else {
+            comment += `### ❌ Build Status\n❌ **Build Failed** - ${{ steps.build_check.outputs.build_message }}\n\n`;
+          }
+          
+          // Component completeness check
+          if (hasComponentChanges === 'true') {
+            const changedComponents = '${{ steps.detect_components.outputs.changed_components }}';
+            comment += `### 📦 Changed Components\n**Components:** ${changedComponents}\n\n`;
+            
+            if (completenessStatus === 'complete') {
+              comment += `### ✅ Component Completeness\n✅ **All Required Files Present**\n\n`;
+            } else {
+              comment += `### ❌ Component Completeness\n❌ **Missing Required Files:**\n${{ steps.completeness_check.outputs.missing_files }}\n\n`;
+            }
+            
+            // Component tests
+            if (testsStatus === 'passed') {
+              comment += `### ✅ Component Validation\n✅ **All Validations Passed**\n\n`;
+            } else {
+              comment += `### ⚠️ Component Validation\n**Issues Found:**\n${{ steps.component_tests.outputs.test_results }}\n\n`;
+            }
+          } else {
+            comment += `### ℹ️ Component Changes\nNo component files were modified in this PR.\n\n`;
+          }
+          
+          // Summary
+          const allGood = buildStatus === 'success' && 
+                         (hasComponentChanges === 'false' || 
+                          (completenessStatus === 'complete' && testsStatus === 'passed'));
+          
+          if (allGood) {
+            comment += `### 🎉 Summary\n✅ **All checks passed!** This PR is ready for review.\n\n`;
+          } else {
+            comment += `### 📋 Summary\n⚠️ **Some issues found.** Please address the issues above before merging.\n\n`;
+          }
+          
+          comment += `---\n*This comment was generated automatically by the PR Quality Check workflow.*`;
+          
+          // Find existing comment to update
+          const comments = await github.rest.issues.listComments({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          });
+          
+          const existingComment = comments.data.find(c => 
+            c.user.login === 'github-actions[bot]' && 
+            c.body.includes('🔍 PR Quality Check Results')
+          );
+          
+          if (existingComment) {
+            await github.rest.issues.updateComment({
+              comment_id: existingComment.id,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          } else {
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          }
+
+    - name: Set final status
+      run: |
+        BUILD_STATUS="${{ steps.build_check.outputs.build_status }}"
+        HAS_CHANGES="${{ steps.detect_components.outputs.has_component_changes }}"
+        COMPLETENESS="${{ steps.completeness_check.outputs.completeness_status }}"
+        TESTS="${{ steps.component_tests.outputs.tests_status }}"
+        
+        echo "## 📊 Final Status Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "$BUILD_STATUS" = "success" ]; then
+          echo "✅ **Build:** Successful" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ **Build:** Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "$HAS_CHANGES" = "true" ]; then
+          echo "📦 **Components:** ${{ steps.detect_components.outputs.changed_components }}" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "$COMPLETENESS" = "complete" ]; then
+            echo "✅ **Completeness:** All required files present" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Completeness:** Missing required files" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "$TESTS" = "passed" ]; then
+            echo "✅ **Validation:** All tests passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Validation:** Some issues found" >> $GITHUB_STEP_SUMMARY
+          fi
+        else
+          echo "ℹ️ **Components:** No component changes detected" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        # Fail the workflow if critical issues are found
+        if [ "$BUILD_STATUS" != "success" ]; then
+          echo "❌ Build failed - failing the workflow"
+          exit 1
+        elif [ "$HAS_CHANGES" = "true" ] && [ "$COMPLETENESS" != "complete" ]; then
+          echo "⚠️ Component completeness issues found - failing the workflow"
+          exit 1
+        fi
+        
+        echo "✅ All critical checks passed"
