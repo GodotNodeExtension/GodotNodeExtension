@@ -29,6 +29,9 @@ A collection of custom nodes and extensions for Godot 4.x with C# support, provi
 
 **Windows (PowerShell):**
 ```powershell
+# Get Install Script
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/GodotNodeExtension/GodotNodeExtensionInstaller/main/GodotNodeExtensionInstaller.ps1" -OutFile "GodotNodeExtensionInstaller.ps1"
+
 # Install a specific component
 .\GodotNodeExtensionInstaller.ps1 -ComponentName "DynamicNumberLabel"
 
@@ -41,24 +44,27 @@ A collection of custom nodes and extensions for Godot 4.x with C# support, provi
 
 **Linux/macOS (Bash):**
 ```bash
+# Get Install Script
+curl -o GodotNodeExtensionInstaller.sh https://raw.githubusercontent.com/GodotNodeExtension/GodotNodeExtensionInstaller/main/GodotNodeExtensionInstaller.sh
+
 # Make script executable
-chmod +x install-component.sh
+chmod +x GodotNodeExtensionInstaller.sh
 
 # Install a specific component
-./install-component.sh -c DynamicNumberLabel
+./GodotNodeExtensionInstaller.sh -c DynamicNumberLabel
 
 # List all available components
-./install-component.sh --list
+./GodotNodeExtensionInstaller.sh --list
 
 # Install from latest release
-./install-component.sh -c DynamicNumberLabel --from-release
+./GodotNodeExtensionInstaller.sh -c DynamicNumberLabel --from-release
 ```
 
 #### Option 2: Manual Installation
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/shitake2333/GodotNodeExtension.git
+   git clone https://github.com/GodotNodeExtension/GodotNodeExtension.git
    ```
 
 2. Copy the desired component from `Component/[ComponentName]/` to your project's `addons/GodotNodeExtension/[ComponentName]/` directory

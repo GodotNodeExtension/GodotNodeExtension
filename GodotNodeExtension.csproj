@@ -16,15 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="COMPONENTS.md" />
-    <Content Include="Component\DynamicNumberLabel\component_info.json" />
-    <Content Include="Component\DynamicNumberLabel\README.md" />
-    <Content Include="Example\DynamicNumberLabel\DynamicNumberLabelDemo.tscn" />
-    <Content Include="GodotNodeExtensionInstaller.ps1" />
-    <Content Include="GodotNodeExtensionInstaller.sh" />
-    <Content Include="organization_icon.svg" />
     <Content Include="README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Component\VlcGodot\" />
   </ItemGroup>
 </Project>
