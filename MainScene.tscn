@@ -1,0 +1,90 @@
+[gd_scene load_steps=2 format=3 uid="uid://drx7np6coexdj"]
+
+[ext_resource type="Script" uid="uid://cbucudt2ol6rq" path="res://MainScene.cs" id="1_x8r9j"]
+
+[node name="MainScene" type="MarginContainer" node_paths=PackedStringArray("ExampleList", "ExampleTitleLabel", "ExampleAuthorLabel", "ExampleDescriptionLabel", "ExampleViewport")]
+custom_minimum_size = Vector2(1080, 720)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+script = ExtResource("1_x8r9j")
+ExampleList = NodePath("HSplitContainer/LeftPanel/ExampleList")
+ExampleTitleLabel = NodePath("HSplitContainer/RightPanel/InfoPanel/ExampleTitleLabel")
+ExampleAuthorLabel = NodePath("HSplitContainer/RightPanel/InfoPanel/ExampleAuthorLabel")
+ExampleDescriptionLabel = NodePath("HSplitContainer/RightPanel/InfoPanel/ScrollContainer/ExampleDescriptionLabel")
+ExampleViewport = NodePath("HSplitContainer/RightPanel/Panel/ExampleContainer")
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 2
+split_offset = 250
+
+[node name="LeftPanel" type="VBoxContainer" parent="HSplitContainer"]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+
+[node name="Title" type="Label" parent="HSplitContainer/LeftPanel"]
+layout_mode = 2
+text = "Component Examples"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="HSplitContainer/LeftPanel"]
+layout_mode = 2
+
+[node name="ExampleList" type="ItemList" parent="HSplitContainer/LeftPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RightPanel" type="VBoxContainer" parent="HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InfoPanel" type="VBoxContainer" parent="HSplitContainer/RightPanel"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+
+[node name="ExampleTitleLabel" type="Label" parent="HSplitContainer/RightPanel/InfoPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Select an example"
+horizontal_alignment = 1
+
+[node name="ExampleAuthorLabel" type="Label" parent="HSplitContainer/RightPanel/InfoPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Author: Unknown"
+horizontal_alignment = 1
+
+[node name="HSeparator2" type="HSeparator" parent="HSplitContainer/RightPanel/InfoPanel"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HSplitContainer/RightPanel/InfoPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ExampleDescriptionLabel" type="RichTextLabel" parent="HSplitContainer/RightPanel/InfoPanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+text = "Select an example to view its description."
+fit_content = true
+
+[node name="HSeparator3" type="HSeparator" parent="HSplitContainer/RightPanel"]
+layout_mode = 2
+
+[node name="Panel" type="Panel" parent="HSplitContainer/RightPanel"]
+custom_minimum_size = Vector2(798, 564)
+layout_mode = 2
+
+[node name="ExampleContainer" type="CenterContainer" parent="HSplitContainer/RightPanel/Panel"]
+layout_mode = 2
+offset_right = 798.0
+offset_bottom = 564.0
+size_flags_vertical = 3

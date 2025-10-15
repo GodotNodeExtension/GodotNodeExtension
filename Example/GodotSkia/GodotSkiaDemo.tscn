@@ -1,0 +1,153 @@
+[gd_scene load_steps=2 format=3 uid="uid://b13y5jxxo88jg"]
+
+[ext_resource type="Script" uid="uid://wwpseruldt4" path="res://Example/GodotSkia/GodotSkiaDemo.cs" id="1_n8f8v"]
+
+[node name="GodotSkiaDemo" type="MarginContainer" node_paths=PackedStringArray("HueSlider", "SatSlider", "LightSlider", "LineWidthSpinBox", "DrawModeOption", "AnimationCheckBox", "ClearButton", "SaveButton", "TextureRect")]
+custom_minimum_size = Vector2(798, 564)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -282.0
+offset_bottom = -156.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+script = ExtResource("1_n8f8v")
+HueSlider = NodePath("HSplitContainer/ControlPanel/ColorGroup/HueContainer/HueSlider")
+SatSlider = NodePath("HSplitContainer/ControlPanel/ColorGroup/SatContainer/SatSlider")
+LightSlider = NodePath("HSplitContainer/ControlPanel/ColorGroup/LightContainer/LightSlider")
+LineWidthSpinBox = NodePath("HSplitContainer/ControlPanel/OptionsGroup/LineWidthContainer/LineWidthSpinBox")
+DrawModeOption = NodePath("HSplitContainer/ControlPanel/OptionsGroup/DrawModeContainer/DrawModeOption")
+AnimationCheckBox = NodePath("HSplitContainer/ControlPanel/OptionsGroup/AnimationCheckBox")
+ClearButton = NodePath("HSplitContainer/ControlPanel/ButtonsGroup/ClearButton")
+SaveButton = NodePath("HSplitContainer/ControlPanel/ButtonsGroup/SaveButton")
+TextureRect = NodePath("HSplitContainer/CanvasContainer/TextureRect")
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 2
+split_offset = 200
+
+[node name="ControlPanel" type="VBoxContainer" parent="HSplitContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="HSplitContainer/ControlPanel"]
+layout_mode = 2
+text = "Skia Canvas Demo"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="HSplitContainer/ControlPanel"]
+layout_mode = 2
+
+[node name="ColorGroup" type="VBoxContainer" parent="HSplitContainer/ControlPanel"]
+layout_mode = 2
+
+[node name="ColorLabel" type="Label" parent="HSplitContainer/ControlPanel/ColorGroup"]
+layout_mode = 2
+text = "Color Controls"
+
+[node name="HueContainer" type="HBoxContainer" parent="HSplitContainer/ControlPanel/ColorGroup"]
+layout_mode = 2
+
+[node name="HueLabel" type="Label" parent="HSplitContainer/ControlPanel/ColorGroup/HueContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "Hue:"
+
+[node name="HueSlider" type="HSlider" parent="HSplitContainer/ControlPanel/ColorGroup/HueContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 360.0
+
+[node name="SatContainer" type="HBoxContainer" parent="HSplitContainer/ControlPanel/ColorGroup"]
+layout_mode = 2
+
+[node name="SatLabel" type="Label" parent="HSplitContainer/ControlPanel/ColorGroup/SatContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "Sat:"
+
+[node name="SatSlider" type="HSlider" parent="HSplitContainer/ControlPanel/ColorGroup/SatContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 100.0
+
+[node name="LightContainer" type="HBoxContainer" parent="HSplitContainer/ControlPanel/ColorGroup"]
+layout_mode = 2
+
+[node name="LightLabel" type="Label" parent="HSplitContainer/ControlPanel/ColorGroup/LightContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "Light:"
+
+[node name="LightSlider" type="HSlider" parent="HSplitContainer/ControlPanel/ColorGroup/LightContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+value = 50.0
+
+[node name="HSeparator2" type="HSeparator" parent="HSplitContainer/ControlPanel"]
+layout_mode = 2
+
+[node name="OptionsGroup" type="VBoxContainer" parent="HSplitContainer/ControlPanel"]
+layout_mode = 2
+
+[node name="LineWidthContainer" type="HBoxContainer" parent="HSplitContainer/ControlPanel/OptionsGroup"]
+layout_mode = 2
+
+[node name="LineWidthLabel" type="Label" parent="HSplitContainer/ControlPanel/OptionsGroup/LineWidthContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "Brush Size:"
+
+[node name="LineWidthSpinBox" type="SpinBox" parent="HSplitContainer/ControlPanel/OptionsGroup/LineWidthContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 20.0
+value = 2.0
+
+[node name="DrawModeContainer" type="VBoxContainer" parent="HSplitContainer/ControlPanel/OptionsGroup"]
+layout_mode = 2
+
+[node name="DrawModeLabel" type="Label" parent="HSplitContainer/ControlPanel/OptionsGroup/DrawModeContainer"]
+layout_mode = 2
+text = "Draw Mode:"
+
+[node name="DrawModeOption" type="OptionButton" parent="HSplitContainer/ControlPanel/OptionsGroup/DrawModeContainer"]
+layout_mode = 2
+
+[node name="AnimationCheckBox" type="CheckBox" parent="HSplitContainer/ControlPanel/OptionsGroup"]
+layout_mode = 2
+text = "Enable Animation"
+
+[node name="HSeparator3" type="HSeparator" parent="HSplitContainer/ControlPanel"]
+layout_mode = 2
+
+[node name="ButtonsGroup" type="VBoxContainer" parent="HSplitContainer/ControlPanel"]
+layout_mode = 2
+
+[node name="ClearButton" type="Button" parent="HSplitContainer/ControlPanel/ButtonsGroup"]
+layout_mode = 2
+text = "Clear Canvas"
+
+[node name="SaveButton" type="Button" parent="HSplitContainer/ControlPanel/ButtonsGroup"]
+layout_mode = 2
+text = "Save PNG"
+
+[node name="CanvasContainer" type="VBoxContainer" parent="HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CanvasLabel" type="Label" parent="HSplitContainer/CanvasContainer"]
+layout_mode = 2
+text = "Skia Canvas"
+horizontal_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="HSplitContainer/CanvasContainer"]
+custom_minimum_size = Vector2(512, 512)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
