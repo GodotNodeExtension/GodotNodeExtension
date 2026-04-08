@@ -1,40 +1,52 @@
-# GodotNodeExtension Components List
+# Components Registry
 
-This file contains a list of all available components in the GodotNodeExtension project.
+This file contains all available components in the GodotNodeExtension project.
 
-## Component Registry
+## Available Components
 
-| Component Name | Version | Author | Description | Status |
-|---------------|---------|---------|-------------|---------|
+| Component | Version | Author | Description | Status |
+|-----------|---------|--------|-------------|---------|
 | [DynamicNumberLabel](Component/DynamicNumberLabel/README.md) | 1.0.0 | shitake2333 | A custom Godot Label node for animated number display with customizable formatting and transitions | ✅ Complete |
-| [GodotSkia](Component/GodotSkia/README.md) | - | shitake2333 | SkiaSharp integration for Godot with texture rendering support | 🚧 In Development |
-| [MarkDownView](Component/MarkDownView/README.md) | - | shitake2333 | Markdown viewer component for Godot | 🚧 In Development |
-
-## Installation
-
-Use the provided installation scripts to install components:
-
-### PowerShell (Windows)
-```powershell
-.\GodotNodeExtensionInstaller.ps1 -ComponentName "DynamicNumberLabel"
-```
-
-### Bash (Linux/macOS)
-```bash
-./install-component.sh -c DynamicNumberLabel
-```
+| [GodotChart](Component/GodotChart/README.md) | 0.1.0 | shitake2333 | A declarative chart library for Godot with SkiaSharp backend. Supports bar charts, line charts, area charts, and scatter/bubble plots with auto-scaling, color mapping, and gradient fills. | 📋 Planned |
 
 ## Contributing
 
-To add a new component to this list:
-1. Create a new directory under `Component/[ComponentName]/`
-2. Add a `component_info.json` file with component metadata
-3. Add a `README.md` file with component documentation
-4. Update this `COMPONENTS.md` file
-5. Create examples under `Example/[ComponentName]/`
+To add a new component:
 
-## Last Updated
-- Date: 2025-01-21
-- Total Components: 3
-- Complete Components: 1
-- In Development: 2
+1. Create a new directory under `Component/[ComponentName]/`
+2. Add your component files with `[Tool]` and `[GlobalClass]` attributes
+3. Create a `component_info.json` file with the following structure:
+   ```json
+   {
+     "name": "ComponentName",
+     "version": "1.0.0",
+     "author": "YourName",
+     "description": "Brief description of your component",
+     "license": "MIT",
+     "requirements": {
+       "godot": ">=4.0.0",
+       "dotnet": ">=6.0"
+     },
+     "dependencies": {
+       "nuget": [
+         {
+           "name": "PackageName",
+           "version": ">=1.0.0",
+           "required": true
+         }
+       ],
+       "components": [
+         "DependentComponentName"
+       ]
+     }
+   }
+   ```
+4. Add a `README.md` file with usage documentation
+5. Create examples under `Example/[ComponentName]/`
+6. Submit a pull request
+
+This file is automatically updated when component_info.json files are modified.
+
+---
+
+*Last updated: $(date -u '+%Y-%m-%d %H:%M:%S UTC')*
