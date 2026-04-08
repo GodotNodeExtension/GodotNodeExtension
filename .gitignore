@@ -360,3 +360,4 @@ install_*.log
 
 # Component backup files
 *.component.bak
+.github/copilot-instructions.md

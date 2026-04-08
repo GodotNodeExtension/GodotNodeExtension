@@ -80,11 +80,13 @@ fit_content = true
 layout_mode = 2
 
 [node name="Panel" type="Panel" parent="HSplitContainer/RightPanel"]
-custom_minimum_size = Vector2(798, 564)
 layout_mode = 2
-
-[node name="ExampleContainer" type="CenterContainer" parent="HSplitContainer/RightPanel/Panel"]
-layout_mode = 2
-offset_right = 798.0
-offset_bottom = 564.0
 size_flags_vertical = 3
+
+[node name="ExampleContainer" type="MarginContainer" parent="HSplitContainer/RightPanel/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

@@ -20,12 +20,35 @@ public partial class MainScene : Control
 
     private struct ExampleInfo
     {
-        public string Name { get; set; }
-        public string Title { get; set; }
-        public string Author { get; set; }
-        public string Description { get; set; }
-        public string ScenePath { get; set; }
-        public PackedScene Scene { get; set; }
+        public string Title
+        {
+            readonly get => field;
+            set => field = value;
+        }
+
+        public string Author
+        {
+            readonly get => field;
+            set => field = value;
+        }
+
+        public string Description
+        {
+            readonly get => field;
+            set => field = value;
+        }
+
+        public string ScenePath
+        {
+            readonly get => field;
+            set => field = value;
+        }
+
+        public PackedScene Scene
+        {
+            readonly get => field;
+            set => field = value;
+        }
     }
 
     public override void _Ready()
@@ -132,7 +155,6 @@ public partial class MainScene : Control
         
         _examples.Add(new ExampleInfo
         {
-            Name = dirName,
             Title = title,
             Author = author,
             Description = description,
@@ -166,6 +188,10 @@ public partial class MainScene : Control
         // Clear current example
         if (_currentExample != null)
         {
+            // RemoveChild triggers _ExitTree immediately, which cancels background
+            // build tasks. QueueFree alone defers deletion to frame end, leaving
+            // background tasks running after the scene is logically removed.
+            ExampleViewport.RemoveChild(_currentExample);
             _currentExample.QueueFree();
             _currentExample = null;
         }
@@ -183,8 +209,6 @@ public partial class MainScene : Control
             
             // Add to viewport
             ExampleViewport.AddChild(_currentExample);
-            
-            GD.Print($"Loaded example: {example.Title}");
         }
         catch (Exception ex)
         {

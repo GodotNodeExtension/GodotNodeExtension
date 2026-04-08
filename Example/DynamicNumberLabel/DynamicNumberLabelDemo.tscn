@@ -1,12 +1,187 @@
-[gd_scene load_steps=2 format=3 uid="uid://bvasd2cjppqb6"]
+[gd_scene load_steps=3 format=3 uid="uid://c5xv8jgn8qpch"]
 
-[ext_resource type="Script" uid="uid://bo6o0xif1evjm" path="res://Example/DynamicNumberLabel/DynamicNumberLabelDemo.cs" id="1_8x5y3"]
+[ext_resource type="Script" uid="uid://bo6o0xif1evjm" path="res://Example/DynamicNumberLabel/DynamicNumberLabelDemo.cs" id="1_h4k2f"]
+[ext_resource type="Script" uid="uid://d3dk2cilxawlw" path="res://Component/DynamicNumberLabel/DynamicNumberLabel.cs" id="2_onpkg"]
 
-[node name="DynamicNumberLabelDemo" type="Control"]
-layout_mode = 3
+[node name="DynamicNumberLabelDemo" type="MarginContainer" node_paths=PackedStringArray("ValueSpinBox", "DurationSpinBox", "EasingOption", "RandomModeCheckBox", "StartButton", "ResetButton", "ScoreNumber", "HealthNumber", "MoneyNumber")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_8x5y3")
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+script = ExtResource("1_h4k2f")
+ValueSpinBox = NodePath("VBoxContainer/ControlPanel/LeftControls/ValueContainer/ValueSpinBox")
+DurationSpinBox = NodePath("VBoxContainer/ControlPanel/LeftControls/DurationContainer/DurationSpinBox")
+EasingOption = NodePath("VBoxContainer/ControlPanel/RightControls/EasingContainer/EasingOption")
+RandomModeCheckBox = NodePath("VBoxContainer/ControlPanel/RightControls/RandomModeCheckBox")
+StartButton = NodePath("VBoxContainer/ButtonContainer/StartButton")
+ResetButton = NodePath("VBoxContainer/ButtonContainer/ResetButton")
+ScoreNumber = NodePath("VBoxContainer/DemoArea/NumbersContainer/ScoreNumber")
+HealthNumber = NodePath("VBoxContainer/DemoArea/NumbersContainer/HealthNumber")
+MoneyNumber = NodePath("VBoxContainer/DemoArea/NumbersContainer/MoneyNumber")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Dynamic Number Label Demo"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ControlPanel" type="HBoxContainer" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+
+[node name="LeftControls" type="VBoxContainer" parent="VBoxContainer/ControlPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ValueContainer" type="HBoxContainer" parent="VBoxContainer/ControlPanel/LeftControls"]
+layout_mode = 2
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer/ControlPanel/LeftControls/ValueContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Target Value:"
+
+[node name="ValueSpinBox" type="SpinBox" parent="VBoxContainer/ControlPanel/LeftControls/ValueContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = -9999.0
+max_value = 9999.0
+value = 100.0
+
+[node name="DurationContainer" type="HBoxContainer" parent="VBoxContainer/ControlPanel/LeftControls"]
+layout_mode = 2
+
+[node name="DurationLabel" type="Label" parent="VBoxContainer/ControlPanel/LeftControls/DurationContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Duration (s):"
+
+[node name="DurationSpinBox" type="SpinBox" parent="VBoxContainer/ControlPanel/LeftControls/DurationContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.1
+max_value = 10.0
+step = 0.1
+value = 2.0
+
+[node name="RightControls" type="VBoxContainer" parent="VBoxContainer/ControlPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EasingContainer" type="VBoxContainer" parent="VBoxContainer/ControlPanel/RightControls"]
+layout_mode = 2
+
+[node name="EasingLabel" type="Label" parent="VBoxContainer/ControlPanel/RightControls/EasingContainer"]
+layout_mode = 2
+text = "Easing Type:"
+
+[node name="EasingOption" type="OptionButton" parent="VBoxContainer/ControlPanel/RightControls/EasingContainer"]
+layout_mode = 2
+
+[node name="RandomModeCheckBox" type="CheckBox" parent="VBoxContainer/ControlPanel/RightControls"]
+layout_mode = 2
+text = "Random Mode"
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ButtonContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="StartButton" type="Button" parent="VBoxContainer/ButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Start Animation"
+
+[node name="ResetButton" type="Button" parent="VBoxContainer/ButtonContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Reset"
+
+[node name="HSeparator3" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="DemoArea" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DemoTitle" type="Label" parent="VBoxContainer/DemoArea"]
+layout_mode = 2
+text = "Dynamic Number Labels"
+horizontal_alignment = 1
+
+[node name="NumbersContainer" type="GridContainer" parent="VBoxContainer/DemoArea"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+columns = 3
+
+[node name="ScoreLabel" type="Label" parent="VBoxContainer/DemoArea/NumbersContainer"]
+layout_mode = 2
+text = "Score:"
+horizontal_alignment = 2
+
+[node name="ScoreNumber" type="Label" parent="VBoxContainer/DemoArea/NumbersContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "0"
+horizontal_alignment = 1
+script = ExtResource("2_onpkg")
+metadata/_custom_type_script = "uid://d3dk2cilxawlw"
+
+[node name="ScoreInfo" type="Label" parent="VBoxContainer/DemoArea/NumbersContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Normal mode"
+
+[node name="HealthLabel" type="Label" parent="VBoxContainer/DemoArea/NumbersContainer"]
+layout_mode = 2
+text = "Health:"
+horizontal_alignment = 2
+
+[node name="HealthNumber" type="Label" parent="VBoxContainer/DemoArea/NumbersContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "000"
+horizontal_alignment = 1
+script = ExtResource("2_onpkg")
+MaxDigits = 3
+metadata/_custom_type_script = "uid://d3dk2cilxawlw"
+
+[node name="HealthInfo" type="Label" parent="VBoxContainer/DemoArea/NumbersContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "With max digits"
+
+[node name="MoneyLabel" type="Label" parent="VBoxContainer/DemoArea/NumbersContainer"]
+layout_mode = 2
+text = "Money:"
+horizontal_alignment = 2
+
+[node name="MoneyNumber" type="Label" parent="VBoxContainer/DemoArea/NumbersContainer"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "0$"
+horizontal_alignment = 1
+script = ExtResource("2_onpkg")
+Suffix = "$"
+metadata/_custom_type_script = "uid://d3dk2cilxawlw"
+
+[node name="MoneyInfo" type="Label" parent="VBoxContainer/DemoArea/NumbersContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Random mode"
