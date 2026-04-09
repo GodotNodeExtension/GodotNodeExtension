@@ -1,14 +1,16 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+#pragma warning disable CS0649 // 从未对字段赋值，字段将一直保持其默认值
 
-namespace GodotGuiExtension.GodotSkia;
-
-#pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
+namespace GodotNodeExtension.Component.GodotSkia;
 
 // source: https://github.com/MrJul/Estragonia/blob/main/src/JLeb.Estragonia/VkInterop.cs
 // author: MrJul
 // License: MIT
-/// <summary>Contains some used Vulkan constants.</summary>
+/// <summary>
+/// Vulkan constants, enums and interop structs required for GPU-accelerated
+/// Skia rendering in Godot. Thin wrappers around the Vulkan 1.0+ C API.
+/// </summary>
 [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Matches the official Vulkan names")]
 [SuppressMessage("ReSharper", "NotAccessedField.Global", Justification = "Used in interop")]
 internal static class VkInterop {
@@ -628,4 +630,21 @@ internal static class VkInterop {
 		public VkFenceCreateFlags flags;
 	}
 
+}
+
+/// <summary>
+/// Extension methods for VkResult to simplify error checking.
+/// </summary>
+internal static class VkResultExtensions
+{
+	/// <summary>
+	/// Throws an InvalidOperationException if the VkResult indicates a failure.
+	/// </summary>
+	/// <param name="result">The Vulkan result code.</param>
+	/// <param name="operationName">The name of the operation for the error message.</param>
+	public static void VerifySuccess(this VkInterop.VkResult result, string operationName)
+	{
+		if (result < 0)
+			throw new InvalidOperationException($"Vulkan operation {operationName} failed with {result}");
+	}
 }

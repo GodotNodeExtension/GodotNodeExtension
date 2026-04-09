@@ -1,11 +1,9 @@
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Godot;
 using SkiaSharp;
-using GodotGuiExtension.GodotSkia;
+using GodotNodeExtension.Component.GodotSkia;
 
-namespace GodotNodeExtension.Example;
+namespace GodotNodeExtension.Example.GodotSkia;
 
 public partial class GodotSkiaDemo : Control
 {
@@ -24,29 +22,26 @@ public partial class GodotSkiaDemo : Control
     SkiaCanvasTexture2D _skiaCanvasTex = null!;
 
     // Animation variables
-    private float _time = 0.0f;
-    private bool _isAnimating = false;
+    private float _time;
+    private bool _isAnimating;
 
     // Drawing state
     private SKColor _currentColor = SKColors.Red;
     private float _lineWidth = 2.0f;
-    private int _drawMode = 0; // 0: Shapes, 1: Lines, 2: Text, 3: Animated
+    private int _drawMode; // 0: Shapes, 1: Lines, 2: Text, 3: Animated
 
     // Paint objects
     private SKPaint _strokePaint = null!;
     private SKPaint _fillPaint = null!;
     private SKPaint _textPaint = null!;
 
-    public async override void _Ready()
+    public override void _Ready()
     {
         SetupSkiaCanvas();
         SetupPaints();
-        SetupDrawModes();
         ConnectSignals();
         UpdateColor();
-        await Task.Delay(new TimeSpan(0, 0, 0, 0, 10));
         RedrawCanvas();
-        GD.Print("GodotSkia Demo Ready!");
     }
 
     private void SetupSkiaCanvas()
@@ -78,14 +73,6 @@ public partial class GodotSkiaDemo : Control
         };
     }
 
-    private void SetupDrawModes()
-    {
-        DrawModeOption.AddItem("Geometric Shapes");
-        DrawModeOption.AddItem("Free Drawing");
-        DrawModeOption.AddItem("Text Effects");
-        DrawModeOption.AddItem("Animated Graphics");
-    }
-
     private void ConnectSignals()
     {
         // Color sliders
@@ -104,6 +91,23 @@ public partial class GodotSkiaDemo : Control
 
         // Mouse input for drawing
         TextureRect.GuiInput += OnTextureRectInput;
+    }
+
+    public override void _ExitTree()
+    {
+        HueSlider.ValueChanged -= OnColorChanged;
+        SatSlider.ValueChanged -= OnColorChanged;
+        LightSlider.ValueChanged -= OnColorChanged;
+        LineWidthSpinBox.ValueChanged -= OnLineWidthChanged;
+        DrawModeOption.ItemSelected -= OnDrawModeChanged;
+        AnimationCheckBox.Toggled -= OnAnimationToggled;
+        ClearButton.Pressed -= OnClearPressed;
+        SaveButton.Pressed -= OnSavePressed;
+        TextureRect.GuiInput -= OnTextureRectInput;
+
+        _strokePaint.Dispose();
+        _fillPaint.Dispose();
+        _textPaint.Dispose();
     }
 
     private void OnColorChanged(double value)
@@ -170,7 +174,7 @@ public partial class GodotSkiaDemo : Control
 
     private void OnTextureRectInput(InputEvent @event)
     {
-        if (@event is InputEventMouseButton mouseButton && mouseButton.Pressed)
+        if (@event is InputEventMouseButton { Pressed: true })
         {
             if (_drawMode == 1) // Free drawing mode
             {
@@ -178,7 +182,7 @@ public partial class GodotSkiaDemo : Control
                 DrawAtPosition(localPos);
             }
         }
-        else if (@event is InputEventMouseMotion mouseMotion && Input.IsMouseButtonPressed(MouseButton.Left))
+        else if (@event is InputEventMouseMotion && Input.IsMouseButtonPressed(MouseButton.Left))
         {
             if (_drawMode == 1) // Free drawing mode
             {
@@ -198,12 +202,11 @@ public partial class GodotSkiaDemo : Control
 
         // Draw a small circle at the position
         _skiaCanvasTex.Canvas?.DrawCircle(canvasX, canvasY, _lineWidth * 2, _fillPaint);
-        // _skiaCanvasTex.UpdateTexture();
+        _skiaCanvasTex.UpdateTexture();
     }
 
     private void RedrawCanvas()
     {
-        GD.Print(_skiaCanvasTex.Canvas);
         _skiaCanvasTex.Canvas?.Clear(SKColors.White);
 
         switch (_drawMode)
@@ -259,14 +262,11 @@ public partial class GodotSkiaDemo : Control
         canvas.Canvas?.DrawText("Hello Skia!", 50, 100, SKTextAlign.Left, skFont, _textPaint);
 
         // Text with different sizes
-        _textPaint.TextSize = 32;
-        canvas.Canvas?.DrawText("Large Text", 50, 150, SKTextAlign.Left, skFont, _textPaint);
+        var largeFont = new SKFont(SKTypeface.Default, 32);
+        canvas.Canvas?.DrawText("Large Text", 50, 150, SKTextAlign.Left, largeFont, _textPaint);
 
-        _textPaint.TextSize = 16;
-        canvas.Canvas?.DrawText("Small text here", 50, 180, SKTextAlign.Left, skFont, _textPaint);
-
-        // Reset text size
-        _textPaint.TextSize = 24;
+        var smallFont = new SKFont(SKTypeface.Default, 16);
+        canvas.Canvas?.DrawText("Small text here", 50, 180, SKTextAlign.Left, smallFont, _textPaint);
 
         // Text on path
         var textPath = new SKPath();
@@ -348,10 +348,10 @@ public partial class GodotSkiaDemo : Control
     {
         if (disposing)
         {
-            _strokePaint?.Dispose();
-            _fillPaint?.Dispose();
-            _textPaint?.Dispose();
-            _skiaCanvasTex?.Dispose();
+            _strokePaint.Dispose();
+            _fillPaint.Dispose();
+            _textPaint.Dispose();
+            _skiaCanvasTex.Dispose();
         }
         base.Dispose(disposing);
     }

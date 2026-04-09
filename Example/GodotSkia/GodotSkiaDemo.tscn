@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b13y5jxxo88jg"]
 
-[ext_resource type="Script" uid="uid://wwpseruldt4" path="res://Example/GodotSkia/GodotSkiaDemo.cs" id="1_n8f8v"]
+[ext_resource type="Script" uid="uid://defb5nlna0oca" path="res://Example/GodotSkia/GodotSkiaDemo.cs" id="1_n8f8v"]
 
 [node name="GodotSkiaDemo" type="MarginContainer" node_paths=PackedStringArray("HueSlider", "SatSlider", "LightSlider", "LineWidthSpinBox", "DrawModeOption", "AnimationCheckBox", "ClearButton", "SaveButton", "TextureRect")]
 custom_minimum_size = Vector2(798, 564)
@@ -118,6 +118,14 @@ text = "Draw Mode:"
 
 [node name="DrawModeOption" type="OptionButton" parent="HSplitContainer/ControlPanel/OptionsGroup/DrawModeContainer"]
 layout_mode = 2
+item_count = 4
+popup/item_0/text = "Geometric Shapes"
+popup/item_1/text = "Free Drawing"
+popup/item_1/id = 1
+popup/item_2/text = "Text Effects"
+popup/item_2/id = 2
+popup/item_3/text = "Animated Graphics"
+popup/item_3/id = 3
 
 [node name="AnimationCheckBox" type="CheckBox" parent="HSplitContainer/ControlPanel/OptionsGroup"]
 layout_mode = 2
