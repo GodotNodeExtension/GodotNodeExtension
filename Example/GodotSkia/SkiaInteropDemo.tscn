@@ -1,0 +1,112 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8n4v2xq7m3tk"]
+
+[ext_resource type="Script" path="res://Example/GodotSkia/SkiaInteropDemo.cs" id="1_demo"]
+
+[node name="SkiaInteropDemo" type="Control" node_paths=PackedStringArray("ConverterSurface", "PoolA", "PoolB", "PoolC", "PoolD", "Status", "Readout")]
+custom_minimum_size = Vector2(820, 580)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_demo")
+ConverterSurface = NodePath("Margin/Column/Row/LeftCard/ConverterSurface")
+PoolA = NodePath("Margin/Column/Row/RightCard/PoolGrid/PoolA")
+PoolB = NodePath("Margin/Column/Row/RightCard/PoolGrid/PoolB")
+PoolC = NodePath("Margin/Column/Row/RightCard/PoolGrid/PoolC")
+PoolD = NodePath("Margin/Column/Row/RightCard/PoolGrid/PoolD")
+Status = NodePath("Margin/Column/Status")
+Readout = NodePath("Margin/Column/Row/RightCard/Readout")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="Column" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="Label" parent="Margin/Column"]
+layout_mode = 2
+text = "GodotSkia - type convertors, image interop and one GPU context shared by five surfaces"
+autowrap_mode = 3
+
+[node name="Row" type="HBoxContainer" parent="Margin/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="LeftCard" type="VBoxContainer" parent="Margin/Column/Row"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+
+[node name="LeftTitle" type="Label" parent="Margin/Column/Row/LeftCard"]
+layout_mode = 2
+text = "SkiaGodotConverter: a round trip per type"
+
+[node name="ConverterSurface" type="TextureRect" parent="Margin/Column/Row/LeftCard"]
+custom_minimum_size = Vector2(430, 430)
+layout_mode = 2
+size_flags_horizontal = 0
+expand_mode = 1
+stretch_mode = 0
+
+[node name="RightCard" type="VBoxContainer" parent="Margin/Column/Row"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+
+[node name="RightTitle" type="Label" parent="Margin/Column/Row/RightCard"]
+layout_mode = 2
+text = "Four surfaces, one GRContext"
+
+[node name="PoolGrid" type="GridContainer" parent="Margin/Column/Row/RightCard"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+
+[node name="PoolA" type="TextureRect" parent="Margin/Column/Row/RightCard/PoolGrid"]
+custom_minimum_size = Vector2(150, 110)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 0
+
+[node name="PoolB" type="TextureRect" parent="Margin/Column/Row/RightCard/PoolGrid"]
+custom_minimum_size = Vector2(150, 110)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 0
+
+[node name="PoolC" type="TextureRect" parent="Margin/Column/Row/RightCard/PoolGrid"]
+custom_minimum_size = Vector2(150, 110)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 0
+
+[node name="PoolD" type="TextureRect" parent="Margin/Column/Row/RightCard/PoolGrid"]
+custom_minimum_size = Vector2(150, 110)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 0
+
+[node name="Readout" type="Label" parent="Margin/Column/Row/RightCard"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "counters appear here"
+autowrap_mode = 3
+
+[node name="Status" type="Label" parent="Margin/Column"]
+layout_mode = 2
+text = "starting"
+autowrap_mode = 3

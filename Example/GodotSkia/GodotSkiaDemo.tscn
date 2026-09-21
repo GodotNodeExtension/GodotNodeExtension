@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://defb5nlna0oca" path="res://Example/GodotSkia/GodotSkiaDemo.cs" id="1_n8f8v"]
 
-[node name="GodotSkiaDemo" type="MarginContainer" node_paths=PackedStringArray("HueSlider", "SatSlider", "LightSlider", "LineWidthSpinBox", "DrawModeOption", "AnimationCheckBox", "ClearButton", "SaveButton", "TextureRect")]
+[node name="GodotSkiaDemo" type="MarginContainer" node_paths=PackedStringArray("HueSlider", "SatSlider", "LightSlider", "LineWidthSpinBox", "DrawModeOption", "AnimationCheckBox", "ClearButton", "SaveButton", "TextureRect", "CanvasLabel", "SaveCanvasDialog")]
 custom_minimum_size = Vector2(798, 564)
 anchors_preset = 15
 anchor_right = 1.0
@@ -25,6 +25,8 @@ AnimationCheckBox = NodePath("HSplitContainer/ControlPanel/OptionsGroup/Animatio
 ClearButton = NodePath("HSplitContainer/ControlPanel/ButtonsGroup/ClearButton")
 SaveButton = NodePath("HSplitContainer/ControlPanel/ButtonsGroup/SaveButton")
 TextureRect = NodePath("HSplitContainer/CanvasContainer/TextureRect")
+CanvasLabel = NodePath("HSplitContainer/CanvasContainer/CanvasLabel")
+SaveCanvasDialog = NodePath("SaveCanvasDialog")
 
 [node name="HSplitContainer" type="HSplitContainer" parent="."]
 layout_mode = 2
@@ -159,3 +161,11 @@ custom_minimum_size = Vector2(512, 512)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
+
+[node name="SaveCanvasDialog" type="FileDialog" parent="."]
+title = "Save the Skia canvas as PNG"
+initial_position = 2
+size = Vector2i(600, 400)
+ok_button_text = "Save"
+file_mode = 4
+access = 2

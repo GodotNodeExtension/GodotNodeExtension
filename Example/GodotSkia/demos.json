@@ -1,0 +1,14 @@
+{
+  "demos": [
+    {
+      "scene": "GodotSkiaDemo.tscn",
+      "title": "Skia canvas (code)",
+      "description": "A [b]SkiaCanvasTexture2D[/b] drawn into with the SkiaSharp API and presented by a plain [b]TextureRect[/b]: [code]Canvas[/code], [code]Resize[/code] (the surface follows the rect) and [code]UpdateTexture[/code], uploaded once per frame from the host's own loop. Four draw modes - shapes, free drawing that keeps the pixels already there, text and animation - colour sliders feeding three shared [b]SKPaint[/b] objects, a save dialog declared by the scene, and a headless run that reports itself in the caption instead of failing."
+    },
+    {
+      "scene": "SkiaInteropDemo.tscn",
+      "title": "Converters and interop (code)",
+      "description": "A live tour of [b]SkiaGodotConverter[/b]: one line per round trip ([code]Color[/code], [code]Vector2[/code], [code]Rect2[/code], [code]Transform2D[/code], [code]Image[/code], [code]Font[/code], and the reverse direction [code]Texture2D[/code] -> [code]SKImage[/code], whose result is drawn below the rows as well) with the measured result next to it, plus the [code]SKMatrix[/code] of a [code]Transform2D[/code] actually placing the shape that is drawn. Beside it four small surfaces draw different patterns while sharing [b]one[/b] [code]GRContext[/code] - the counters of [code]SharedGrContextRefCount[/code] and [code]GrContextCreateCount[/code] are shown, so the cost model is measured rather than claimed."
+    }
+  ]
+}

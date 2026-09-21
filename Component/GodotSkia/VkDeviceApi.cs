@@ -1,6 +1,4 @@
 using System;
-using System.Buffers;
-using System.Text.Unicode;
 using static GodotNodeExtension.Component.GodotSkia.VkInterop;
 
 namespace GodotNodeExtension.Component.GodotSkia;
@@ -29,7 +27,6 @@ internal sealed unsafe class VkDeviceApi
     private readonly delegate* unmanaged[Stdcall]<VkDevice, uint, VkFence*, uint, ulong, VkResult> _vkWaitForFences;
     private readonly delegate* unmanaged[Stdcall]<VkDevice, VkFence, VkResult> _vkGetFenceStatus;
     private readonly delegate* unmanaged[Stdcall]<VkDevice, VkFence, IntPtr, void> _vkDestroyFence;
-    private readonly delegate* unmanaged[Stdcall]<VkQueue, VkResult> _vkQueueWaitIdle;
 
     public VkDeviceApi(VkDevice vkDevice, delegate* unmanaged[Stdcall]<VkDevice, byte*, IntPtr> vkGetDeviceProcAddr)
     {
@@ -85,18 +82,10 @@ internal sealed unsafe class VkDeviceApi
             (delegate* unmanaged[Stdcall]<VkDevice, VkFence, IntPtr, void>)
             GetVkProcAddress("vkDestroyFence");
 
-        _vkQueueWaitIdle =
-            (delegate* unmanaged[Stdcall]<VkQueue, VkResult>)
-            GetVkProcAddress("vkQueueWaitIdle");
-
         IntPtr GetVkProcAddress(string name)
         {
             Span<byte> utf8Name = stackalloc byte[128];
-
-            if (Utf8.FromUtf16(name, utf8Name[..^1], out _, out var bytesWritten) != OperationStatus.Done)
-                throw new InvalidOperationException($"Vulkan proc name '{name}' exceeds 127-byte UTF-8 buffer");
-
-            utf8Name[bytesWritten] = 0;
+            VkProcName.Encode(name, utf8Name);
 
             IntPtr result;
             fixed (byte* utf8NamePtr = utf8Name)
@@ -166,16 +155,22 @@ internal sealed unsafe class VkDeviceApi
         => _vkResetFences(device, fenceCount, pFences)
             .VerifySuccess(nameof(ResetFences));
 
-    public void WaitForFences(VkDevice device, uint fenceCount, VkFence* pFences, uint waitAll, ulong timeout)
-        => _vkWaitForFences(device, fenceCount, pFences, waitAll, timeout)
-            .VerifySuccess(nameof(WaitForFences));
+    /// <summary>
+    /// Wait for a fence to become signalled, bounded by <paramref name="timeout"/> nanoseconds.
+    /// <para>
+    /// Returns the raw result instead of going through <c>VerifySuccess</c>: this is the one Vulkan call
+    /// where a <b>positive</b> code (<c>VK_TIMEOUT</c>) is a normal outcome of a bounded wait, and the
+    /// caller has to decide what a device that never signals means (see
+    /// <c>VkBarrierHelper.WaitForPendingBarrier</c>). Treating it as success - which is what the shared
+    /// helper used to do - meant a barrier that had not completed was recorded as completed.
+    /// </para>
+    /// </summary>
+    public VkResult WaitForFences(VkDevice device, uint fenceCount, VkFence* pFences, uint waitAll, ulong timeout)
+        => _vkWaitForFences(device, fenceCount, pFences, waitAll, timeout);
 
     public VkResult GetFenceStatus(VkDevice device, VkFence fence)
         => _vkGetFenceStatus(device, fence);
 
     public void DestroyFence(VkDevice device, VkFence fence, IntPtr pAllocator)
         => _vkDestroyFence(device, fence, pAllocator);
-
-    public void QueueWaitIdle(VkQueue queue)
-        => _vkQueueWaitIdle(queue).VerifySuccess(nameof(QueueWaitIdle));
 }

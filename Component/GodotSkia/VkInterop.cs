@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-#pragma warning disable CS0649 // 从未对字段赋值，字段将一直保持其默认值
+#pragma warning disable CS0649 // Fields are assigned by the native interop layer.
 
 namespace GodotNodeExtension.Component.GodotSkia;
 
@@ -521,6 +521,8 @@ internal static class VkInterop {
 	}
 
 	// Provided by VK_VERSION_1_0
+	// Reached through VkSubmitInfo's pWaitSemaphores/pSignalSemaphores pointers; no submission in this
+	// repository signals a semaphore today, so nothing constructs one directly.
 	internal struct VkSemaphore {
 
 		public ulong Handle;
@@ -638,13 +640,19 @@ internal static class VkInterop {
 internal static class VkResultExtensions
 {
 	/// <summary>
-	/// Throws an InvalidOperationException if the VkResult indicates a failure.
+	/// Throws an InvalidOperationException unless the result is exactly <c>VK_SUCCESS</c>.
+	/// <para>
+	/// The check is "is success", not "is an error": Vulkan reports several <b>positive</b> codes that are
+	/// not successes (<c>VK_TIMEOUT</c> = 2, <c>VK_NOT_READY</c> = 1, <c>VK_INCOMPLETE</c> = 5), so
+	/// <c>result &lt; 0</c> silently accepted them. Every op that goes through here (command pool, command
+	/// buffers, submit, fence create/reset) can only succeed with <c>VK_SUCCESS</c>.
+	/// </para>
 	/// </summary>
 	/// <param name="result">The Vulkan result code.</param>
 	/// <param name="operationName">The name of the operation for the error message.</param>
 	public static void VerifySuccess(this VkInterop.VkResult result, string operationName)
 	{
-		if (result < 0)
+		if (result != VkInterop.VkResult.VK_SUCCESS)
 			throw new InvalidOperationException($"Vulkan operation {operationName} failed with {result}");
 	}
 }
