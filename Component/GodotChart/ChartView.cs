@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Godot;
 using GodotNodeExtension.Component.GodotChart.Canvas;
@@ -80,6 +81,9 @@ public enum ChartKind
 
     /// <summary>Events on a time (or numeric) axis, one marker plus label each.</summary>
     Milestone = 22,
+
+    /// <summary>Geographic areas shaded by a value: one region (or one grid cell) per row.</summary>
+    GeoArea = 23,
 }
 
 /// <summary>
@@ -905,8 +909,8 @@ public partial class ChartView : Control
             {
                 var field = i < header.Length ? header[i] : $"column{i}";
                 var text = cells[i].Trim();
-                row.Set(field, double.TryParse(text, System.Globalization.NumberStyles.Float,
-                                               System.Globalization.CultureInfo.InvariantCulture, out var number)
+                row.Set(field, double.TryParse(text, NumberStyles.Float,
+                                               CultureInfo.InvariantCulture, out var number)
                     ? number
                     : text);
             }
@@ -1321,6 +1325,7 @@ public partial class ChartView : Control
         chart.Theme(_theme);
         chart.Data(_rowsData);
         var mark = BuildMark(kind);
+        ApplyRowGeometry(chart, mark);
         chart.Mark(mark);
         ApplyEncodes(chart, kind);
         ApplyChannelRanges(chart, mark);
@@ -1520,6 +1525,7 @@ public partial class ChartView : Control
             ChartKind.Timeline => new TimelineMark(),
             ChartKind.Lollipop => new LollipopMark(),
             ChartKind.Milestone => new MilestoneMark(),
+            ChartKind.GeoArea => new GeoAreaMark(),
             _ => new IntervalMark(),
         };
         if (mark is LineMark decimated) decimated.Decimate = _decimate;
@@ -1574,6 +1580,57 @@ public partial class ChartView : Control
             // Every other kind builds a mark without either knob (points, slices, bands, flows, ...):
             // there is nothing to copy, and inventing a value would be a knob the renderer never reads.
         }
+    }
+
+    /// <summary>
+    /// Give a mark that needs geometry of its own something to draw when the page only has a table.
+    /// </summary>
+    /// <remarks>
+    /// A geographic area chart shades regions. With geometry handed to it, that geometry is what is drawn;
+    /// without any, the rows themselves <i>are</i> the regions: the categories of the X field become the cells
+    /// of a square-ish grid, in the order they first appear, the value column shades them, and the view is
+    /// framed on the grid - in the frame's own units, so a table with no coordinates at all still draws a map.
+    /// Real map data (see <see cref="GeoJsonReader"/>) goes in on the mark itself, through
+    /// <see cref="ConfigureMark"/> or a hand-built <see cref="Chart"/>, which also owns the frame and the view.
+    /// </remarks>
+    private void ApplyRowGeometry(Chart chart, Mark mark)
+    {
+        if (mark is not GeoAreaMark area) return;
+        if (area.Features.Count > 0) return; // the caller brought geometry: it wins
+
+        string field = XFieldName();
+        var ids = new List<string>();
+        foreach (var row in _rowsData)
+        {
+            if (!row.Has(field)) continue;
+            string? id = Convert.ToString(row.Get(field), CultureInfo.InvariantCulture);
+            if (!string.IsNullOrEmpty(id) && !ids.Contains(id)) ids.Add(id);
+        }
+        if (ids.Count == 0) return;
+
+        int columns = (int)Math.Ceiling(Math.Sqrt(ids.Count));
+        int rows = (int)Math.Ceiling(ids.Count / (double)columns);
+        var builder = new GeoGeometryBuilder();
+        var features = new List<GeoFeature>(ids.Count);
+        for (int index = 0; index < ids.Count; index++)
+        {
+            double x = index % columns;
+            double y = index / (double)columns;
+            features.Add(builder
+                .Polygon((x, y), (x + 1, y), (x + 1, y + 1), (x, y + 1))
+                .Feature(ids[index], ids[index]));
+        }
+
+        area.Features = features;
+        area.RowField = field;
+
+        // Frame and view: a cell is one unit, and the grid should fill the surface it is drawn on. The plot is
+        // approximated by the surface here (this runs while the chart is being built, before a layout exists),
+        // which is close enough for a default view a page can override.
+        chart.SetGeoFrame(GeoFrames.CustomPlane(0.0, 0.0, columns, rows));
+        double surfaceWidth = Math.Max(1f, Size.X);
+        double worldPixels = surfaceWidth / columns;
+        chart.SetGeoViewport(columns / 2.0, rows / 2.0, Math.Log2(worldPixels / GeoMath.WorldSizeAtZoomZero));
     }
 
     /// <summary>Wire the channels. Explicit field names win; otherwise the kind's convention is used.</summary>
@@ -1956,6 +2013,11 @@ public partial class ChartView : Control
         if (RowsCarry("series"))
         {
             return "series";
+        }
+        // A geographic area chart shades each region by the value it carries: the colour *is* the data.
+        if (kind == ChartKind.GeoArea)
+        {
+            return YFieldName();
         }
         // A pie/donut/funnel/waffle names its own slices by the category field.
         return kind is ChartKind.Pie or ChartKind.Donut or ChartKind.Funnel or ChartKind.Waffle

@@ -379,6 +379,7 @@ public class ChartViewRenderIntegrationTest
                     ChartKind.Timeline    => CheckTimeline(probe, c),
                     ChartKind.Lollipop    => CheckLollipop(probe, c),
                     ChartKind.Milestone   => CheckMilestone(probe, c),
+                    ChartKind.GeoArea     => CheckGeoArea(probe),
                     _ => Unprobed(probe),
                 };
                 report.Add($"{c.Label,-12} {summary}");
@@ -1219,6 +1220,34 @@ public class ChartViewRenderIntegrationTest
     /// Milestone: every lane carries at least one marker, and the markers are small symbols - probed four
     /// pixels above the lane's axis line, where only a marker reaches and the line itself does not.
     /// </summary>
+    /// <summary>
+    /// A geographic area chart: the rows became a grid of regions shaded by their value, so across the
+    /// middle of the plot there are at least two distinctly shaded regions.
+    /// </summary>
+    private static string CheckGeoArea(KindProbe p)
+    {
+        // The grid has more than one row of cells, and a scan line through a border row would see nothing
+        // but borders: three lines across the plot, so at least one of them runs through cell bodies.
+        var shades = new List<Color>();
+        foreach (float fraction in new[] { 0.3f, 0.5f, 0.7f })
+        {
+            float y = p.Plot.Y + (p.Plot.Height * fraction);
+            for (float x = p.Plot.X + 2f; x < p.Plot.X + p.Plot.Width - 2f; x += 2f)
+            {
+                if (!p.IsStrongAt(x, y)) continue;
+                var colour = p.At(x, y);
+                if (!shades.Contains(colour)) shades.Add(colour);
+            }
+        }
+
+        if (shades.Count < 2)
+        {
+            p.Fail("shaded regions", $"the plot shows {shades.Count} distinct region colour(s)");
+            return "no region shading";
+        }
+        return $"{shades.Count} region shade(s) across the plot";
+    }
+
     private static string CheckMilestone(KindProbe p, ChartRenderCase c)
     {
         int lanes = DistinctField(c, c.YField);

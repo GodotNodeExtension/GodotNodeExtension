@@ -239,7 +239,32 @@ public static class MarkCases
         // has to give the scales something to fit. The levels sit inside that fitted range - a level outside
         // the visible window is skipped by design (SectionMark.TryMap), and the case would draw nothing.
         new("SectionMark",     () => new SectionMark { Levels = [12d, 18d] }, Simple(), "cat", "value"),
+        // A geographic mark draws the geometry it was handed, not the rows: the rows are joined to the
+        // features by the value of their category field (the three lettered areas below), and the value
+        // column shades them. "value" therefore feeds the colour channel, not a position.
+        new("GeoAreaMark",     () => new GeoAreaMark { Features = LetteredAreas() },
+            Simple(), "cat", "value", "value",
+            DirtyFields:
+            [
+                new("cat",   Numeric: false),
+                new("value", Numeric: true),
+            ]),
     };
+
+    /// <summary>
+    /// Three lettered square regions in the frame's own units, sized so they are visible in the default
+    /// (whole world) view: the categories of <see cref="Simple"/> are what joins the table to them.
+    /// </summary>
+    public static List<GeoFeature> LetteredAreas()
+    {
+        var builder = new GeoGeometryBuilder();
+        return
+        [
+            builder.Polygon((0, 0), (40, 0), (40, 40), (0, 40)).Feature("A", "A"),
+            builder.Polygon((60, 0), (100, 0), (100, 40), (60, 40)).Feature("B", "B"),
+            builder.Polygon((0, 60), (40, 60), (40, 100), (0, 100)).Feature("C", "C"),
+        ];
+    }
 
     /// <summary>Build a chart around one case, using the shared fake canvas.</summary>
     public static Chart Build(FakeCanvas2D canvas, MarkCase c, List<DataRow>? data = null,

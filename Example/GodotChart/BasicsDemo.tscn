@@ -1414,6 +1414,49 @@ YAxisTitle = "Lane"
 YAxisMinLimit = nan
 YAxisMaxLimit = nan
 
+[node name="Geo area" type="VBoxContainer" parent="Layout/Grid" unique_id=1650427813]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Geo area" unique_id=1650427814]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Geo area[/b] · GeoAreaMark · one grid cell per row, shaded by the value"
+fit_content = true
+scroll_active = false
+
+[node name="GeoAreaChart" type="Control" parent="Layout/Grid/Geo area" unique_id=1650427815]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("1_chart")
+Kind = 23
+Title = "Regions by value"
+Rows = Array[Dictionary]([{
+"zone": "North",
+"value": 42
+}, {
+"zone": "East",
+"value": 18
+}, {
+"zone": "South",
+"value": 63
+}, {
+"zone": "West",
+"value": 27
+}, {
+"zone": "Centre",
+"value": 35
+}])
+XField = "zone"
+YField = "value"
+ColorField = "value"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
+
 [node name="Reference lines" type="VBoxContainer" parent="Layout/Grid" unique_id=1326034234]
 layout_mode = 2
 size_flags_horizontal = 3

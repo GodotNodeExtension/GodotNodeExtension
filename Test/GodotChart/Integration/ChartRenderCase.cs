@@ -208,5 +208,15 @@ public sealed record ChartRenderCase(
             Row(("week", 9.0), ("lane", "Docs"), ("label", "api ref")),
             Row(("week", 3.0), ("lane", "Infra"), ("label", "CI")),
         }),
+        // Geographic areas: the rows are the regions (one grid cell each, named by the category field) and
+        // the value column shades them, so this case needs no map file to be a map.
+        new ChartRenderCase(ChartKind.GeoArea, "zone", "value", "value", new[]
+        {
+            Row(("zone", "North"), ("value", 42.0)),
+            Row(("zone", "East"), ("value", 18.0)),
+            Row(("zone", "South"), ("value", 63.0)),
+            Row(("zone", "West"), ("value", 27.0)),
+            Row(("zone", "Centre"), ("value", 35.0)),
+        }),
     };
 }
