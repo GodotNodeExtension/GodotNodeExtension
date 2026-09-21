@@ -152,7 +152,7 @@ panning move the lines with the data.
 | `DashLength` / `DashGap` | `float` | `6` / `4` | Dash geometry in pixels |
 | `Color` | `Color?` | `null` | `null` uses the theme's grid colour |
 | `BandOpacity` | `float` | `0.12` | Opacity of the band fill |
-| `LabelFormat` | `string` | `"{0}"` | Inherited from `Mark`: the level value, or no label when empty |
+| `LabelFormat` | `string` | `"{0}"` | Inherited from `Mark`: the level value, or no label when empty. `{1}` comes out empty - a section spans the other axis and has no single value there |
 | `LabelInset` | `float` | `6` | Label distance from the plot edge |
 
 ### AxisConfig
@@ -666,14 +666,16 @@ and the mark warns once. See [Chart Types](chart-types.md#heatmap--heatmapmark).
 | `EndAngleDeg` | float | 30 |
 | `ShowCenterLabel` | bool | true |
 | `ShowMinMaxLabels` | bool | true |
-| `ValueColor` | Color? | — (the theme's `DefaultMarkColor`) |
+| `ValueColor` | Color? | — |
 | `TrackColor` | Color? | — |
 | `InnerRadiusRatio` | float | 0 |
 | `RadiusFactor` | float | 0.85 |
 
 **Data:** the whole chart is drawn from the **first row only** - extra rows are ignored. `Y` is the needle
 value on a linear scale and `X` is unused; set the scale range explicitly, otherwise the auto-fitted
-domain makes almost any value look full. See [Chart Types](chart-types.md#gauge--gaugemark).
+domain makes almost any value look full. `ValueColor` and `TrackColor` are optional: leaving either at
+`null` (the default) takes the theme's `DefaultMarkColor` / `GaugeTrackColor`, like every other mark.
+See [Chart Types](chart-types.md#gauge--gaugemark).
 
 ### FunnelMark
 
@@ -1448,10 +1450,6 @@ public interface ICanvas2D : IDisposable
     void BeginFrame();
     void EndFrame();
     void Clear(Color color);
-
-    // Report the rectangle this frame changed, so a backend may upload only that part (the built-in one
-    // uploads the whole surface and does not read this back).
-    void InvalidateRegion(float x, float y, float w, float h);
 
     IPath2D CreatePath();
     IPaint2D CreatePaint();

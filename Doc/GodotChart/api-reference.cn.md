@@ -148,7 +148,7 @@ public partial class ChartView : Control
 | `DashLength` / `DashGap` | `float` | `6` / `4` | 虚线段长/间隔（像素） |
 | `Color` | `Color?` | `null` | `null` 表示用主题的网格色 |
 | `BandOpacity` | `float` | `0.12` | 参考带填充不透明度 |
-| `LabelFormat` | `string` | `"{0}"` | 继承自 `Mark`：线值本身，空串则不标 |
+| `LabelFormat` | `string` | `"{0}"` | 继承自 `Mark`：线值本身，空串则不标；`{1}` 为空——参考线横跨另一条轴，那里没有单一线值 |
 | `LabelInset` | `float` | `6` | 标签离绘图区边缘的距离 |
 
 ### AxisConfig
@@ -648,7 +648,9 @@ new IntervalMark
 | `RadiusFactor` | float | 0.85 | 弧半径占可用尺寸的比例 |
 
 **数据：** 整张图只取**第一行**——多余的行被忽略。`Y` 是线性刻度上的指针值，`X` 不使用；请显式设置刻度
-范围，否则自动推断的域会让几乎任何值都看起来接近满格。见 [图表类型](chart-types.cn.md#仪表盘--gaugemark)。
+范围，否则自动推断的域会让几乎任何值都看起来接近满格。`ValueColor` 与 `TrackColor` 都可选：留 `null`
+（默认）时取主题的 `DefaultMarkColor` / `GaugeTrackColor`，与其它 mark 一致。
+见 [图表类型](chart-types.cn.md#仪表盘--gaugemark)。
 
 ### FunnelMark
 
@@ -1376,9 +1378,6 @@ public interface ICanvas2D : IDisposable
     void BeginFrame();
     void EndFrame();
     void Clear(Color color);
-
-    // 报告本帧改动的矩形，后端可以只上传这一块（内置后端整表上传、不回读它）。
-    void InvalidateRegion(float x, float y, float w, float h);
 
     IPath2D CreatePath();
     IPaint2D CreatePaint();

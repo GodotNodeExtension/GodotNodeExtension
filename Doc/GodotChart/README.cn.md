@@ -4,6 +4,46 @@
 
 GodotChart 是一个基于 **Grammar of Graphics** 设计理念的 Godot 声明式图表库，使用 C# 和 SkiaSharp 构建。它提供流畅的 API 来创建丰富的交互式图表：22 个 `ChartKind`（由 20 个 `Mark` 类实现，另有注解 mark `SectionMark`）、动画系统、主题定制及完整的用户交互体验。
 
+## 图表一览
+
+下面每张图都是组件自带基础示例（示例浏览器里的 `BasicsDemo`）中的一个 cell：每个 cell 就是一个
+`ChartView` 节点，它的 `Kind`、`Rows` 与各通道字段都直接写在场景里，所以可以把某个 cell 复制进自己的
+场景再改。直角坐标系的图表按横向展示，极坐标、层次与关系流按正方形展示——那正是它们的 mark 要求的形状。
+
+### 直角坐标系
+
+| | |
+|---|---|
+| ![柱状图](assets/bar.png) | ![分组柱状图](assets/grouped-bar.png) |
+| ![堆叠柱状图](assets/stacked-bar.png) | ![折线图](assets/line.png) |
+| ![面积图](assets/area.png) | ![堆叠面积图](assets/stacked-area.png) |
+| ![气泡图](assets/bubble.png) | ![区间面积图](assets/range-area.png) |
+| ![小提琴图](assets/violin.png) | ![箱线图](assets/box.png) |
+| ![K 线图](assets/candlestick.png) | ![热力图](assets/heatmap.png) |
+| ![华夫图](assets/waffle.png) | ![时间线](assets/timeline.png) |
+| ![棒棒糖图](assets/lollipop.png) | ![里程碑图](assets/milestone.png) |
+| ![参考线](assets/reference-lines.png) | |
+
+### 极坐标
+
+| | |
+|---|---|
+| ![饼图](assets/pie.png) | ![圆环图](assets/donut.png) |
+| ![雷达图](assets/radar.png) | ![仪表盘](assets/gauge.png) |
+| ![漏斗图](assets/funnel.png) | |
+
+### 层次结构
+
+| | |
+|---|---|
+| ![矩形树图](assets/treemap.png) | ![旭日图](assets/sunburst.png) |
+
+### 关系流
+
+| | |
+|---|---|
+| ![桑基图](assets/sankey.png) | ![和弦图](assets/chord.png) |
+
 ## 核心架构
 
 GodotChart 采用四层架构设计：

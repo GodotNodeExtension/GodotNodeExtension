@@ -4,6 +4,47 @@
 
 GodotChart is a declarative chart library for Godot built on **Grammar of Graphics** principles, using C# and SkiaSharp. It provides a fluent API for creating rich, interactive charts: 22 `ChartKind` values backed by 20 `Mark` classes (the annotation mark `SectionMark` is the 21st subclass), an animation system, theme customization, and full user interaction support.
 
+## Chart gallery
+
+Every picture below is one cell of the component's basics example (`BasicsDemo` in the example
+browser): each cell is a `ChartView` node whose `Kind`, `Rows` and channel fields are set right in the
+scene, so you can copy a cell into your own scene and edit it. Cartesian charts are shown landscape and
+the polar, hierarchical and flow ones square - that is the shape their marks ask for.
+
+### Cartesian
+
+| | |
+|---|---|
+| ![Bar](assets/bar.png) | ![Grouped bar](assets/grouped-bar.png) |
+| ![Stacked bar](assets/stacked-bar.png) | ![Line](assets/line.png) |
+| ![Area](assets/area.png) | ![Stacked area](assets/stacked-area.png) |
+| ![Bubble](assets/bubble.png) | ![Range area](assets/range-area.png) |
+| ![Violin](assets/violin.png) | ![Box](assets/box.png) |
+| ![Candlestick](assets/candlestick.png) | ![Heatmap](assets/heatmap.png) |
+| ![Waffle](assets/waffle.png) | ![Timeline](assets/timeline.png) |
+| ![Lollipop](assets/lollipop.png) | ![Milestone](assets/milestone.png) |
+| ![Reference lines](assets/reference-lines.png) | |
+
+### Polar
+
+| | |
+|---|---|
+| ![Pie](assets/pie.png) | ![Donut](assets/donut.png) |
+| ![Radar](assets/radar.png) | ![Gauge](assets/gauge.png) |
+| ![Funnel](assets/funnel.png) | |
+
+### Hierarchical
+
+| | |
+|---|---|
+| ![Treemap](assets/treemap.png) | ![Sunburst](assets/sunburst.png) |
+
+### Flow
+
+| | |
+|---|---|
+| ![Sankey](assets/sankey.png) | ![Chord](assets/chord.png) |
+
 ## Architecture
 
 GodotChart employs a four-layer architecture:
