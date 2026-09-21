@@ -1,0 +1,61 @@
+name: Godot Render Tests
+
+# The device-dependent cases (the real Skia/Vulkan backend, `Test/<Component>/Integration`) need a
+# rendering device, which a plain CI container does not have - so the PR job runs headless and lists
+# them as skipped. This job installs a software Vulkan device (Mesa lavapipe) plus a virtual display
+# (Xvfb) and runs the same suites with `--render`; the runner turns a device-less skip into a failure
+# there, so a green run really means the render path executed.
+#
+# Run it on demand with `workflow_dispatch`, or locally with:
+#   python Tools/run_tests.py --mode all --render
+
+on:
+  schedule:
+    # Nightly, so a renderer regression shows up without blocking every PR on a GPU-less runner.
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        # global.json pins SDK 10.0.0 with rollForward: latestMajor.
+        dotnet-version: '10.0.x'
+
+    - name: Cache Godot
+      id: godot_cache
+      uses: actions/cache@v4
+      with:
+        path: ~/godot
+        key: godot-4.7.2-mono-linux-x86_64
+
+    - name: Install Godot (mono build, so C# scripts run)
+      if: steps.godot_cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p "$HOME/godot"
+        curl -sSL -o /tmp/godot.zip \
+          https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_linux_x86_64.zip
+        unzip -q /tmp/godot.zip -d /tmp/godot-extract
+        cp -r /tmp/godot-extract/Godot_v4.7.2-stable_mono_linux_x86_64/. "$HOME/godot/"
+
+    - name: Install a virtual display and a software Vulkan device
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y xvfb libvulkan1 mesa-vulkan-drivers
+
+    - name: Run the gdUnit4 suites against a real rendering device
+      env:
+        GODOT_BIN: /home/runner/godot/Godot_v4.7.2-stable_mono_linux.x86_64
+      run: |
+        chmod +x "$GODOT_BIN"
+        xvfb-run -a python3 Tools/run_tests.py --mode all --render

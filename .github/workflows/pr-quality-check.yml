@@ -23,32 +23,21 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
-
-    - name: Install jq for JSON processing
-      run: sudo apt-get update && sudo apt-get install -y jq
+        # global.json pins SDK 10.0.0 with rollForward: latestMajor, so anything below 10 cannot build.
+        dotnet-version: '10.0.x'
 
     - name: Detect changed components
       id: detect_components
       run: |
-        echo "Detecting changed components..."
-        
-        # Get list of changed files
-        CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
-        echo "Changed files:"
-        echo "$CHANGED_FILES"
-        
-        # Extract component names from changed files
-        CHANGED_COMPONENTS=$(echo "$CHANGED_FILES" | grep '^Component/' | cut -d'/' -f2 | sort -u | tr '\n' ' ')
-        
-        if [ -z "$CHANGED_COMPONENTS" ]; then
-          echo "No components changed"
-          echo "has_component_changes=false" >> $GITHUB_OUTPUT
-        else
-          echo "Changed components: $CHANGED_COMPONENTS"
-          echo "has_component_changes=true" >> $GITHUB_OUTPUT
-          echo "changed_components=$CHANGED_COMPONENTS" >> $GITHUB_OUTPUT
-        fi
+        # Tools/components.py maps the changed paths onto components, lists the shared files no
+        # component owns, and adds the components that depend on a changed one; --format github
+        # emits key=value lines for $GITHUB_OUTPUT.
+        python3 Tools/components.py changed \
+          --base "${{ github.event.pull_request.base.sha }}" \
+          --format github >> "$GITHUB_OUTPUT"
+        echo "changed:  ${{ steps.detect_components.outputs.changed_components }}"
+        echo "affected: ${{ steps.detect_components.outputs.affected_components }}"
+        echo "shared files: ${{ steps.detect_components.outputs.shared_files_count }}"
 
     - name: Build project
       id: build_check
@@ -70,163 +59,60 @@ jobs:
           exit 1
         fi
 
+    - name: Check code style (ReSharper)
+      id: style_check
+      continue-on-error: true
+      run: |
+        # The repository's gate is "no warning": Tools/check_style.py runs jb (the ReSharper command line),
+        # turns its SARIF into a plain text report and fails on anything at WARNING or above.
+        # It runs against Tools/style-baseline.txt - the findings that existed when the gate went in - so a
+        # PR is blocked by what it adds, not by the debt another component already carries. Shrink the
+        # baseline (python3 Tools/check_style.py --all --write-baseline Tools/style-baseline.txt) as the
+        # debt is paid down; delete the flag to gate on everything at once.
+        dotnet tool install --global jetbrains.resharper.globaltools
+        export PATH="$PATH:$HOME/.dotnet/tools"
+        python3 Tools/check_style.py --all --baseline Tools/style-baseline.txt \
+          --out tmp/logs/code-style.txt --format github >> "$GITHUB_OUTPUT"
+
+    - name: Upload the code style report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: code-style-report
+        path: tmp/logs/code-style.txt
+        if-no-files-found: ignore
+
     - name: Check component completeness
       if: steps.detect_components.outputs.has_component_changes == 'true'
       id: completeness_check
+      continue-on-error: true
       run: |
-        echo "Checking component completeness..."
-        
-        COMPONENTS="${{ steps.detect_components.outputs.changed_components }}"
-        
-        # Initialize results
-        MISSING_FILES=""
-        INCOMPLETE_COMPONENTS=""
-        ALL_COMPLETE=true
-        
-        for component in $COMPONENTS; do
-          echo "Checking component: $component"
-          component_path="Component/$component"
-          
-          if [ ! -d "$component_path" ]; then
-            echo "⚠️ Component directory not found: $component_path"
-            continue
-          fi
-          
-          missing_files=""
-          
-          # Check for component_info.json
-          if [ ! -f "$component_path/component_info.json" ]; then
-            missing_files="$missing_files component_info.json"
-          else
-            # Validate component_info.json structure
-            if ! jq -e '.name and .version and .author and .description' "$component_path/component_info.json" > /dev/null 2>&1; then
-              missing_files="$missing_files component_info.json(invalid)"
-            fi
-          fi
-          
-          # Check for README.md
-          if [ ! -f "$component_path/README.md" ]; then
-            missing_files="$missing_files README.md"
-          else
-            # Check if README.md has substantial content (more than just title)
-            readme_lines=$(wc -l < "$component_path/README.md")
-            if [ "$readme_lines" -lt 10 ]; then
-              missing_files="$missing_files README.md(insufficient_content)"
-            fi
-          fi
-          
-          # Check for at least one .cs file
-          cs_files=$(find "$component_path" -name "*.cs" -type f | wc -l)
-          if [ "$cs_files" -eq 0 ]; then
-            missing_files="$missing_files *.cs(source_files)"
-          fi
-          
-          # Check for example files
-          example_path="Example/$component"
-          if [ ! -d "$example_path" ]; then
-            missing_files="$missing_files Example/$component/"
-          else
-            # Check for at least one example file (.cs or .tscn)
-            example_files=$(find "$example_path" -name "*.cs" -o -name "*.tscn" | wc -l)
-            if [ "$example_files" -eq 0 ]; then
-              missing_files="$missing_files Example/$component/(example_files)"
-            fi
-          fi
-          
-          if [ -n "$missing_files" ]; then
-            INCOMPLETE_COMPONENTS="$INCOMPLETE_COMPONENTS $component"
-            MISSING_FILES="$MISSING_FILES\n**$component:**$missing_files"
-            ALL_COMPLETE=false
-          else
-            echo "✅ Component $component is complete"
-          fi
-        done
-        
-        if [ "$ALL_COMPLETE" = true ]; then
-          echo "completeness_status=complete" >> $GITHUB_OUTPUT
-          echo "completeness_message=All components are complete with required files" >> $GITHUB_OUTPUT
-        else
-          echo "completeness_status=incomplete" >> $GITHUB_OUTPUT
-          echo "completeness_message=Some components are missing required files" >> $GITHUB_OUTPUT
-          echo "missing_files<<EOF" >> $GITHUB_OUTPUT
-          echo -e "$MISSING_FILES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-        fi
+        # The rules the PR bot used to apply inline (metadata fields, README with a usage section,
+        # sources, example scene, dependency sanity) now live in a component-agnostic tool.
+        python3 Tools/components.py verify \
+          --component ${{ steps.detect_components.outputs.affected_components }} \
+          --format github >> "$GITHUB_OUTPUT"
 
-    - name: Run component-specific tests
-      if: steps.detect_components.outputs.has_component_changes == 'true'
+    - name: Check documentation
       id: component_tests
+      continue-on-error: true
       run: |
-        echo "Running component-specific validations..."
-        
-        COMPONENTS="${{ steps.detect_components.outputs.changed_components }}"
-        TEST_RESULTS=""
-        ALL_TESTS_PASSED=true
-        
-        for component in $COMPONENTS; do
-          echo "Testing component: $component"
-          component_path="Component/$component"
-          
-          if [ ! -d "$component_path" ]; then
-            continue
-          fi
-          
-          # Check if component_info.json has valid JSON syntax
-          if [ -f "$component_path/component_info.json" ]; then
-            if jq empty "$component_path/component_info.json" > /dev/null 2>&1; then
-              echo "✅ $component: component_info.json has valid JSON syntax"
-            else
-              echo "❌ $component: component_info.json has invalid JSON syntax"
-              TEST_RESULTS="$TEST_RESULTS\n❌ $component: Invalid JSON in component_info.json"
-              ALL_TESTS_PASSED=false
-            fi
-          fi
-          
-          # Check for [Tool] and [GlobalClass] attributes in .cs files
-          cs_files=$(find "$component_path" -name "*.cs" -type f)
-          has_tool_attr=false
-          has_global_class_attr=false
-          
-          for cs_file in $cs_files; do
-            if grep -q "\[Tool\]" "$cs_file"; then
-              has_tool_attr=true
-            fi
-            if grep -q "\[GlobalClass\]" "$cs_file"; then
-              has_global_class_attr=true
-            fi
-          done
-          
-          if [ "$has_tool_attr" = true ] && [ "$has_global_class_attr" = true ]; then
-            echo "✅ $component: Has required [Tool] and [GlobalClass] attributes"
-          else
-            missing_attrs=""
-            [ "$has_tool_attr" = false ] && missing_attrs="$missing_attrs [Tool]"
-            [ "$has_global_class_attr" = false ] && missing_attrs="$missing_attrs [GlobalClass]"
-            echo "⚠️ $component: Missing attributes:$missing_attrs"
-            TEST_RESULTS="$TEST_RESULTS\n⚠️ $component: Missing attributes:$missing_attrs"
-          fi
-          
-          # Check if README.md contains usage examples
-          if [ -f "$component_path/README.md" ]; then
-            if grep -qi "usage\|example\|how to" "$component_path/README.md"; then
-              echo "✅ $component: README.md contains usage information"
-            else
-              echo "⚠️ $component: README.md lacks usage examples"
-              TEST_RESULTS="$TEST_RESULTS\n⚠️ $component: README.md should include usage examples"
-            fi
+        # The documentation tools are component-agnostic and baseline based, so they only fail on new
+        # findings. Tools/check_doc_coverage.py also works but rebuilds the project, so it stays local.
+        STATUS="passed"
+        RESULTS=""
+        for tool in check_doc_parity.py check_doc_examples.py check_doc_links.py; do
+          echo "==> Tools/$tool"
+          if ! python3 "Tools/$tool"; then
+            STATUS="failed"
+            RESULTS="$RESULTS\n- Tools/$tool reported problems (see the job log)"
           fi
         done
-        
-        if [ "$ALL_TESTS_PASSED" = true ]; then
-          echo "tests_status=passed" >> $GITHUB_OUTPUT
-          echo "tests_message=All component validations passed" >> $GITHUB_OUTPUT
-        else
-          echo "tests_status=failed" >> $GITHUB_OUTPUT
-          echo "tests_message=Some component validations failed" >> $GITHUB_OUTPUT
-          echo "test_results<<EOF" >> $GITHUB_OUTPUT
-          echo -e "$TEST_RESULTS" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-        fi
+        echo "tests_status=$STATUS" >> "$GITHUB_OUTPUT"
+        echo "tests_message=Documentation checks: $STATUS" >> "$GITHUB_OUTPUT"
+        echo "test_results<<EOF" >> "$GITHUB_OUTPUT"
+        echo -e "$RESULTS" >> "$GITHUB_OUTPUT"
+        echo "EOF" >> "$GITHUB_OUTPUT"
 
     - name: Create PR comment
       uses: actions/github-script@v7
@@ -236,6 +122,9 @@ jobs:
           const hasComponentChanges = '${{ steps.detect_components.outputs.has_component_changes }}';
           const completenessStatus = '${{ steps.completeness_check.outputs.completeness_status }}';
           const testsStatus = '${{ steps.component_tests.outputs.tests_status }}';
+          const styleStatus = '${{ steps.style_check.outputs.style_status }}';
+          const styleNew = '${{ steps.style_check.outputs.style_new }}';
+          const styleAccepted = '${{ steps.style_check.outputs.style_accepted }}';
           
           let comment = `## 🔍 PR Quality Check Results\n\n`;
           
@@ -244,6 +133,13 @@ jobs:
             comment += `### ✅ Build Status\n✅ **Build Successful** - Project compiles without errors\n\n`;
           } else {
             comment += `### ❌ Build Status\n❌ **Build Failed** - ${{ steps.build_check.outputs.build_message }}\n\n`;
+          }
+          
+          // Code style: the gate is "no *new* warning", measured against the recorded baseline.
+          if (styleStatus === 'passed') {
+            comment += `### ✅ Code Style\n✅ **No new ReSharper warnings** (${styleAccepted} accepted by the baseline)\n\n`;
+          } else {
+            comment += `### ❌ Code Style\n❌ **${styleNew} new ReSharper warning(s)** - see the \`code-style-report\` artifact or run \`python Tools/check_style.py --all\`\n\n`;
           }
           
           // Component completeness check
@@ -257,11 +153,16 @@ jobs:
               comment += `### ❌ Component Completeness\n❌ **Missing Required Files:**\n${{ steps.completeness_check.outputs.missing_files }}\n\n`;
             }
             
-            // Component tests
+            const affected = '${{ steps.detect_components.outputs.affected_components }}';
+            if (affected.trim() !== '') {
+              comment += `### 🔗 Retest Scope\nComponents a change here can affect: \`${affected.trim()}\`\n\n`;
+            }
+
+            // Documentation checks
             if (testsStatus === 'passed') {
-              comment += `### ✅ Component Validation\n✅ **All Validations Passed**\n\n`;
+              comment += `### ✅ Documentation\n✅ **Parity and doc examples check out**\n\n`;
             } else {
-              comment += `### ⚠️ Component Validation\n**Issues Found:**\n${{ steps.component_tests.outputs.test_results }}\n\n`;
+              comment += `### ⚠️ Documentation\n**Issues Found:**\n${{ steps.component_tests.outputs.test_results }}\n\n`;
             }
           } else {
             comment += `### ℹ️ Component Changes\nNo component files were modified in this PR.\n\n`;
@@ -269,6 +170,7 @@ jobs:
           
           // Summary
           const allGood = buildStatus === 'success' && 
+                         styleStatus === 'passed' &&
                          (hasComponentChanges === 'false' || 
                           (completenessStatus === 'complete' && testsStatus === 'passed'));
           
@@ -314,6 +216,7 @@ jobs:
         HAS_CHANGES="${{ steps.detect_components.outputs.has_component_changes }}"
         COMPLETENESS="${{ steps.completeness_check.outputs.completeness_status }}"
         TESTS="${{ steps.component_tests.outputs.tests_status }}"
+        STYLE="${{ steps.style_check.outputs.style_status }}"
         
         echo "## 📊 Final Status Summary" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
@@ -322,6 +225,12 @@ jobs:
           echo "✅ **Build:** Successful" >> $GITHUB_STEP_SUMMARY
         else
           echo "❌ **Build:** Failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "$STYLE" = "passed" ]; then
+          echo "✅ **Code style:** no new ReSharper warnings (${{ steps.style_check.outputs.style_accepted }} accepted by the baseline)" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ **Code style:** ${{ steps.style_check.outputs.style_new }} new ReSharper warning(s) (see the code-style-report artifact)" >> $GITHUB_STEP_SUMMARY
         fi
         
         if [ "$HAS_CHANGES" = "true" ]; then
@@ -334,9 +243,9 @@ jobs:
           fi
           
           if [ "$TESTS" = "passed" ]; then
-            echo "✅ **Validation:** All tests passed" >> $GITHUB_STEP_SUMMARY
+            echo "✅ **Documentation:** parity and examples passed" >> $GITHUB_STEP_SUMMARY
           else
-            echo "⚠️ **Validation:** Some issues found" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ **Documentation:** some issues found" >> $GITHUB_STEP_SUMMARY
           fi
         else
           echo "ℹ️ **Components:** No component changes detected" >> $GITHUB_STEP_SUMMARY
@@ -346,9 +255,98 @@ jobs:
         if [ "$BUILD_STATUS" != "success" ]; then
           echo "❌ Build failed - failing the workflow"
           exit 1
+        elif [ "$STYLE" != "passed" ]; then
+          echo "⚠️ New code style warnings found - failing the workflow"
+          exit 1
         elif [ "$HAS_CHANGES" = "true" ] && [ "$COMPLETENESS" != "complete" ]; then
           echo "⚠️ Component completeness issues found - failing the workflow"
           exit 1
         fi
         
         echo "✅ All critical checks passed"
+
+  gdunit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Cache Godot
+      id: godot_cache
+      uses: actions/cache@v4
+      with:
+        path: ~/godot
+        key: godot-4.7.2-mono-linux-x86_64
+
+    - name: Install Godot (mono build, so C# scripts run)
+      if: steps.godot_cache.outputs.cache-hit != 'true'
+      run: |
+        mkdir -p "$HOME/godot"
+        curl -sSL -o /tmp/godot.zip           https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_mono_linux_x86_64.zip
+        unzip -q /tmp/godot.zip -d /tmp/godot-extract
+        cp -r /tmp/godot-extract/Godot_v4.7.2-stable_mono_linux_x86_64/. "$HOME/godot/"
+
+    - name: Run the gdUnit4 suites
+      env:
+        GODOT_BIN: /home/runner/godot/Godot_v4.7.2-stable_mono_linux.x86_64
+      run: |
+        set -o pipefail
+        chmod +x "$GODOT_BIN"
+        # Headless run: the cases that need a rendering device skip themselves and print a "[skip]" line.
+        # The runner's "Overall Summary" cannot see those (it reports "0 skipped") and the job used to stay
+        # green while the device-dependent cases did nothing, so this step reads the log itself.
+        # The strict variant (a device skip is a failure) is the nightly godot-render-tests workflow.
+        LOG=/tmp/gdunit.log
+        SUMMARY="${GITHUB_STEP_SUMMARY:-/dev/null}"
+        STATUS=0
+        # -e would abort the step below before the summary is written; the exit code is carried in STATUS.
+        if ! python3 Tools/run_tests.py --mode all 2>&1 | tee "$LOG"; then
+          STATUS=1
+        fi
+
+        # One "[skip] <case>: <reason>" line per case that skipped itself. The leading whitespace is
+        # stripped and the lines are de-duplicated because the runner echoes the engine's own line.
+        SKIPS=/tmp/gdunit-skips.txt
+        grep -E '^[[:space:]]*\[skip\]' "$LOG" | sed -E 's/^[[:space:]]+//' | sort -u > "$SKIPS" || true
+        SKIP_COUNT=$(wc -l < "$SKIPS" | tr -d '[:space:]')
+        DEVICE_COUNT=$(grep -c -i 'rendering device' "$SKIPS" || true)
+        {
+          echo "### Cases that skipped themselves: $SKIP_COUNT"
+          echo ""
+          echo "Environment-dependent cases skipped: $SKIP_COUNT (without a rendering device: $DEVICE_COUNT)"
+          echo ""
+          if [ "$SKIP_COUNT" -gt 0 ]; then
+            echo '```'
+            cat "$SKIPS"
+            echo '```'
+            echo ""
+          fi
+          echo "The strict variant is the nightly \`Godot Render Tests\` workflow (\`.github/workflows/godot-render-tests.yml\`): it runs with \`--render\` and turns a device skip into a failure."
+        } >> "$SUMMARY"
+
+        # A skip is only acceptable when it names a missing *environment* facility, so the run really is a
+        # reduced one. The reasons the suites emit today are:
+        #   "no rendering device in this run"        (this headless job; the nightly runs with --render)
+        #   "... need(s) a SceneTree; none in this run"
+        #   "no system font covers CJK here" / "no Latin-only font to fall back from"
+        #   "no Arial on this machine"
+        # Any OTHER skip is a hole in the coverage on any machine, so the step fails instead of reporting
+        # green (that is the "--fail-on-skip" behaviour we can have without a device).
+        ALLOWED_ENVIRONMENT_SKIPS='no rendering device|SceneTree|font|Arial'
+        UNEXPECTED=$(grep -v -E "$ALLOWED_ENVIRONMENT_SKIPS" "$SKIPS" || true)
+        if [ -n "$UNEXPECTED" ]; then
+          echo "::error::case(s) skipped themselves without naming a missing environment facility:"
+          echo "$UNEXPECTED"
+          STATUS=1
+        fi
+
+        if [ "$STATUS" -ne 0 ]; then
+          echo "the gdUnit4 run did not pass (see $LOG)"
+          exit 1
+        fi

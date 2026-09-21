@@ -25,182 +25,35 @@ jobs:
         fetch-depth: 0
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-
-    - name: Install jq for JSON processing
-      run: sudo apt-get update && sudo apt-get install -y jq
-
-    - name: Detect component changes
-      id: detect_changes
+    - name: Regenerate COMPONENTS.md
+      id: registry
       run: |
-        echo "Detecting component changes..."
-        
-        # Get list of changed component_info.json files
-        if [ "${{ github.event_name }}" = "pull_request" ]; then
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | grep 'Component/.*/component_info.json' || true)
-        else
-          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep 'Component/.*/component_info.json' || true)
-        fi
-        
-        echo "Changed component files:"
-        echo "$CHANGED_FILES"
-        
-        if [ -z "$CHANGED_FILES" ]; then
-          echo "No component_info.json files changed"
-          echo "has_changes=false" >> $GITHUB_OUTPUT
-        else
-          echo "has_changes=true" >> $GITHUB_OUTPUT
-          echo "changed_files<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-        fi
-
-    - name: Update COMPONENTS.md
-      if: steps.detect_changes.outputs.has_changes == 'true'
-      run: |
-        echo "Updating COMPONENTS.md..."
-        
-        # Create backup of current COMPONENTS.md
-        cp COMPONENTS.md COMPONENTS.md.backup
-        
-        # Function to extract component name from path
-        get_component_name() {
-          echo "$1" | sed 's|Component/\([^/]*\)/.*|\1|'
-        }
-        
-        # Function to get component info from JSON
-        get_component_info() {
-          local json_file="$1"
-          local name=$(jq -r '.name // "Unknown"' "$json_file")
-          local version=$(jq -r '.version // "1.0.0"' "$json_file")
-          local author=$(jq -r '.author // "Unknown"' "$json_file")
-          local description=$(jq -r '.description // "No description"' "$json_file")
-          
-          # Determine status based on version
-          local status
-          if [[ "$version" == *"dev"* ]] || [[ "$version" == *"alpha"* ]] || [[ "$version" == *"beta"* ]]; then
-            status="🚧 In Progress"
-          elif [[ "$version" == "1.0.0" ]] || [[ "$version" > "1.0.0" ]]; then
-            status="✅ Complete"
-          else
-            status="📋 Planned"
-          fi
-          
-          echo "$name|$version|$author|$description|$status"
-        }
-        
-        # Create new COMPONENTS.md content
-        cat > COMPONENTS.md.new << 'EOF'
-        # Components Registry
-        
-        This file contains all available components in the GodotNodeExtension project.
-        
-        ## Available Components
-        
-        | Component | Version | Author | Description | Status |
-        |-----------|---------|--------|-------------|---------|
-        EOF
-        
-        # Process all component_info.json files
-        for json_file in Component/*/component_info.json; do
-          if [ -f "$json_file" ]; then
-            component_name=$(get_component_name "$json_file")
-            component_info=$(get_component_info "$json_file")
-            
-            IFS='|' read -r name version author description status <<< "$component_info"
-            
-            # Create component link
-            component_link="[$name](Component/$component_name/README.md)"
-            
-            # Add row to table
-            echo "| $component_link | $version | $author | $description | $status |" >> COMPONENTS.md.new
-          fi
-        done
-        
-        # Add footer
-        cat >> COMPONENTS.md.new << 'EOF'
-        
-        ## Contributing
-        
-        To add a new component:
-        
-        1. Create a new directory under `Component/[ComponentName]/`
-        2. Add your component files with `[Tool]` and `[GlobalClass]` attributes
-        3. Create a `component_info.json` file with the following structure:
-           ```json
-           {
-             "name": "ComponentName",
-             "version": "1.0.0",
-             "author": "YourName",
-             "description": "Brief description of your component",
-             "license": "MIT",
-             "requirements": {
-               "godot": ">=4.0.0",
-               "dotnet": ">=6.0"
-             },
-             "dependencies": {
-               "nuget": [
-                 {
-                   "name": "PackageName",
-                   "version": ">=1.0.0",
-                   "required": true
-                 }
-               ],
-               "components": [
-                 "DependentComponentName"
-               ]
-             }
-           }
-           ```
-        4. Add a `README.md` file with usage documentation
-        5. Create examples under `Example/[ComponentName]/`
-        6. Submit a pull request
-        
-        This file is automatically updated when component_info.json files are modified.
-        
-        ---
-        
-        *Last updated: $(date -u '+%Y-%m-%d %H:%M:%S UTC')*
-        EOF
-        
-        # Replace old file with new content
-        mv COMPONENTS.md.new COMPONENTS.md
-        
-        echo "COMPONENTS.md updated successfully!"
-
-    - name: Check for changes in COMPONENTS.md
-      if: steps.detect_changes.outputs.has_changes == 'true'
-      id: check_changes
-      run: |
+        # Tools/components.py owns the registry format, so local runs and CI cannot drift apart.
+        python3 Tools/components.py registry --write
         if git diff --quiet COMPONENTS.md; then
-          echo "No changes in COMPONENTS.md"
-          echo "components_changed=false" >> $GITHUB_OUTPUT
+          echo "components_changed=false" >> "$GITHUB_OUTPUT"
         else
-          echo "COMPONENTS.md has been updated"
-          echo "components_changed=true" >> $GITHUB_OUTPUT
+          echo "components_changed=true" >> "$GITHUB_OUTPUT"
+          git diff --stat COMPONENTS.md
         fi
 
     - name: Commit and push changes
-      if: steps.check_changes.outputs.components_changed == 'true' && github.event_name == 'push'
+      if: steps.registry.outputs.components_changed == 'true' && github.event_name == 'push'
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         
         git add COMPONENTS.md
         git commit -m "🤖 Auto-update COMPONENTS.md registry
-        
-        Updated component registry based on changes to:
-        ${{ steps.detect_changes.outputs.changed_files }}
-        
+
+        Regenerated by Tools/components.py from the component_info.json files.
+
         Co-authored-by: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
         
         git push
 
     - name: Create pull request comment
-      if: steps.check_changes.outputs.components_changed == 'true' && github.event_name == 'pull_request'
+      if: steps.registry.outputs.components_changed == 'true' && github.event_name == 'pull_request'
       uses: actions/github-script@v7
       with:
         script: |
@@ -220,8 +73,8 @@ jobs:
           |-----------|---------|--------|-------------|---------|
           ${tableRows}
           
-          ### Changed Files:
-          ${{ steps.detect_changes.outputs.changed_files }}
+          ### How it was generated
+          `python Tools/components.py registry --write` (the same command you can run locally).
           
           The COMPONENTS.md file will be automatically updated when this PR is merged.
           
@@ -236,7 +89,7 @@ jobs:
           });
 
     - name: Upload COMPONENTS.md as artifact
-      if: steps.check_changes.outputs.components_changed == 'true'
+      if: steps.registry.outputs.components_changed == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: updated-components-md
@@ -246,31 +99,16 @@ jobs:
     - name: Summary
       if: always()
       run: |
-        echo "## 📋 Components Registry Update Summary" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        
-        if [ "${{ steps.detect_changes.outputs.has_changes }}" = "true" ]; then
-          echo "✅ **Component changes detected**" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Changed files:**" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.detect_changes.outputs.changed_files }}" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          if [ "${{ steps.check_changes.outputs.components_changed }}" = "true" ]; then
-            echo "📝 **COMPONENTS.md updated successfully**" >> $GITHUB_STEP_SUMMARY
-            
-            if [ "${{ github.event_name }}" = "push" ]; then
-              echo "🚀 **Changes committed and pushed to main branch**" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "💡 **Preview available in PR comments**" >> $GITHUB_STEP_SUMMARY
-            fi
+        echo "## 📋 Components Registry Update Summary" >> "$GITHUB_STEP_SUMMARY"
+        echo "" >> "$GITHUB_STEP_SUMMARY"
+
+        if [ "${{ steps.registry.outputs.components_changed }}" = "true" ]; then
+          echo "📝 **COMPONENTS.md regenerated**" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "🚀 **Committed and pushed to the main branch**" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "ℹ️ **No changes needed in COMPONENTS.md**" >> $GITHUB_STEP_SUMMARY
+            echo "💡 **Preview available in the PR comment**" >> "$GITHUB_STEP_SUMMARY"
           fi
         else
-          echo "ℹ️ **No component changes detected**" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "No component_info.json files were modified in this commit." >> $GITHUB_STEP_SUMMARY
+          echo "ℹ️ **COMPONENTS.md already matches the component metadata**" >> "$GITHUB_STEP_SUMMARY"
         fi

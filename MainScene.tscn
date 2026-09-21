@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://drx7np6coexdj"]
+[gd_scene format=3 uid="uid://drx7np6coexdj"]
 
 [ext_resource type="Script" uid="uid://cbucudt2ol6rq" path="res://MainScene.cs" id="1_x8r9j"]
 
-[node name="MainScene" type="MarginContainer" node_paths=PackedStringArray("ExampleList", "ExampleTitleLabel", "ExampleAuthorLabel", "ExampleDescriptionLabel", "ExampleViewport")]
+[node name="MainScene" type="MarginContainer" unique_id=1869873916 node_paths=PackedStringArray("ExampleTree", "ExampleTitleLabel", "ExampleAuthorLabel", "ExampleDescriptionLabel", "ExampleViewport")]
 custom_minimum_size = Vector2(1080, 720)
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,79 +14,86 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 script = ExtResource("1_x8r9j")
-ExampleList = NodePath("HSplitContainer/LeftPanel/ExampleList")
+ExampleTree = NodePath("HSplitContainer/LeftPanel/ExampleTree")
 ExampleTitleLabel = NodePath("HSplitContainer/RightPanel/InfoPanel/ExampleTitleLabel")
 ExampleAuthorLabel = NodePath("HSplitContainer/RightPanel/InfoPanel/ExampleAuthorLabel")
 ExampleDescriptionLabel = NodePath("HSplitContainer/RightPanel/InfoPanel/ScrollContainer/ExampleDescriptionLabel")
 ExampleViewport = NodePath("HSplitContainer/RightPanel/Panel/ExampleContainer")
 
-[node name="HSplitContainer" type="HSplitContainer" parent="."]
+[node name="HSplitContainer" type="HSplitContainer" parent="." unique_id=160951513]
 layout_mode = 2
+split_offsets = PackedInt32Array(250)
 split_offset = 250
 
-[node name="LeftPanel" type="VBoxContainer" parent="HSplitContainer"]
+[node name="LeftPanel" type="VBoxContainer" parent="HSplitContainer" unique_id=592707965]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 
-[node name="Title" type="Label" parent="HSplitContainer/LeftPanel"]
+[node name="Title" type="Label" parent="HSplitContainer/LeftPanel" unique_id=1849071134]
 layout_mode = 2
 text = "Component Examples"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="HSeparator" type="HSeparator" parent="HSplitContainer/LeftPanel"]
+[node name="HSeparator" type="HSeparator" parent="HSplitContainer/LeftPanel" unique_id=1590163784]
 layout_mode = 2
 
-[node name="ExampleList" type="ItemList" parent="HSplitContainer/LeftPanel"]
+[node name="ExampleTree" type="Tree" parent="HSplitContainer/LeftPanel" unique_id=519354708]
+focus_mode = 0
 layout_mode = 2
 size_flags_vertical = 3
+allow_reselect = true
+hide_root = true
 
-[node name="RightPanel" type="VBoxContainer" parent="HSplitContainer"]
+[node name="RightPanel" type="VBoxContainer" parent="HSplitContainer" unique_id=924607751]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="InfoPanel" type="VBoxContainer" parent="HSplitContainer/RightPanel"]
-custom_minimum_size = Vector2(0, 120)
+[node name="InfoPanel" type="VBoxContainer" parent="HSplitContainer/RightPanel" unique_id=1047621931]
+custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 
-[node name="ExampleTitleLabel" type="Label" parent="HSplitContainer/RightPanel/InfoPanel"]
+[node name="ExampleTitleLabel" type="Label" parent="HSplitContainer/RightPanel/InfoPanel" unique_id=2006950167]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Select an example"
 horizontal_alignment = 1
 
-[node name="ExampleAuthorLabel" type="Label" parent="HSplitContainer/RightPanel/InfoPanel"]
+[node name="ExampleAuthorLabel" type="Label" parent="HSplitContainer/RightPanel/InfoPanel" unique_id=1188097437]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Author: Unknown"
 horizontal_alignment = 1
 
-[node name="HSeparator2" type="HSeparator" parent="HSplitContainer/RightPanel/InfoPanel"]
+[node name="HSeparator2" type="HSeparator" parent="HSplitContainer/RightPanel/InfoPanel" unique_id=1402615291]
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="HSplitContainer/RightPanel/InfoPanel"]
+[node name="ScrollContainer" type="ScrollContainer" parent="HSplitContainer/RightPanel/InfoPanel" unique_id=1200477209]
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
 
-[node name="ExampleDescriptionLabel" type="RichTextLabel" parent="HSplitContainer/RightPanel/InfoPanel/ScrollContainer"]
+[node name="ExampleDescriptionLabel" type="RichTextLabel" parent="HSplitContainer/RightPanel/InfoPanel/ScrollContainer" unique_id=1477437621]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true
 text = "Select an example to view its description."
 fit_content = true
+scroll_active = false
 
-[node name="HSeparator3" type="HSeparator" parent="HSplitContainer/RightPanel"]
+[node name="HSeparator3" type="HSeparator" parent="HSplitContainer/RightPanel" unique_id=1874501497]
 layout_mode = 2
 
-[node name="Panel" type="Panel" parent="HSplitContainer/RightPanel"]
+[node name="Panel" type="Panel" parent="HSplitContainer/RightPanel" unique_id=475666327]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ExampleContainer" type="MarginContainer" parent="HSplitContainer/RightPanel/Panel"]
+[node name="ExampleContainer" type="ScrollContainer" parent="HSplitContainer/RightPanel/Panel" unique_id=1609781974]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+horizontal_scroll_mode = 0
