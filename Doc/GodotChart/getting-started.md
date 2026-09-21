@@ -187,9 +187,9 @@ view.YField = "revenue";     // ... and this one is read for every row
 A row that does not carry the named field just contributes no value for that channel (no error), which is
 why rows of one chart may carry different field sets.
 
-`ChartKind` covers all 22 built-in kinds (`Bar`, `Line`, `Area`, `Scatter`, `RangeArea`, `Pie`, `Donut`,
+`ChartKind` covers all 23 built-in kinds (`Bar`, `Line`, `Area`, `Scatter`, `RangeArea`, `Pie`, `Donut`,
 `Radar`, `Violin`, `Box`, `Candlestick`, `Heatmap`, `Treemap`, `Sunburst`, `Sankey`, `Chord`,
-`Gauge`, `Funnel`, `Waffle`, `Timeline`, `Lollipop`, `Milestone`) - 22 kinds backed by 20 `Mark`
+`Gauge`, `Funnel`, `Waffle`, `Timeline`, `Lollipop`, `Milestone`, `GeoArea`) - 23 kinds backed by 21 `Mark`
 classes (`Line` and `Area` share `LineMark`, `Pie` and `Donut` share `PieMark`; the annotation mark
 `SectionMark` is the 21st subclass and backs no kind). The kind is always
 explicit - there is no auto-detection. Field names default to the library conventions (`category`, `value`,
@@ -391,6 +391,6 @@ fields to channels, **Axis** styles the axes, and a frame is committed inside th
 ## Next Steps
 
 - [Need more control](#need-more-control) (above) — drop to the canvas when `ChartView` is not enough
-- [Chart Types](chart-types.md) — Learn how to build all 22 chart kinds
+- [Chart Types](chart-types.md) — Learn how to build all 23 chart kinds
 - [Customization & Theming](customization.md) — Deep dive into themes, scales, axes
 - [Advanced Features](advanced.md) — Animation, interaction, real-time streaming

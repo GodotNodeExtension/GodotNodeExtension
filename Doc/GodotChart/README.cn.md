@@ -2,7 +2,7 @@
 
 # GodotChart 文档
 
-GodotChart 是一个基于 **Grammar of Graphics** 设计理念的 Godot 声明式图表库，使用 C# 和 SkiaSharp 构建。它提供流畅的 API 来创建丰富的交互式图表：22 个 `ChartKind`（由 20 个 `Mark` 类实现，另有注解 mark `SectionMark`）、动画系统、主题定制及完整的用户交互体验。
+GodotChart 是一个基于 **Grammar of Graphics** 设计理念的 Godot 声明式图表库，使用 C# 和 SkiaSharp 构建。它提供流畅的 API 来创建丰富的交互式图表：23 个 `ChartKind`（由 21 个 `Mark` 类实现，另有注解 mark `SectionMark`）、动画系统、主题定制及完整的用户交互体验。
 
 ## 图表一览
 
@@ -75,7 +75,7 @@ new Chart(canvas)
 | 文档 | 内容 |
 |------|------|
 | [快速入门](getting-started.cn.md) | 环境准备、第一个图表、基本概念 |
-| [图表类型](chart-types.cn.md) | 22 种图表类型的详细说明与示例代码 |
+| [图表类型](chart-types.cn.md) | 23 种图表类型的详细说明与示例代码 |
 | [定制与主题](customization.cn.md) | 主题系统、标度（Scale）、坐标轴、图例、自定义渲染器 |
 | [高级功能](advanced.cn.md) | 动画系统、交互事件、工具提示、实时数据流、数据变换、复合图表 |
 | [API 参考](api-reference.cn.md) | 所有公共类、方法、属性的完整列表 |
@@ -203,7 +203,7 @@ view.CustomTheme = new ChartTheme
 
 | 场景 | 展示内容 |
 |---|---|
-| `BasicsDemo.tscn` | 库里的全部图表类型（22 种；柱状与面积另有分组/堆叠变体格），以及 `SectionMark` 参考线 |
+| `BasicsDemo.tscn` | 库里的全部图表类型（23 种；柱状与面积另有分组/堆叠变体格），以及 `SectionMark` 参考线 |
 | `ChartViewFieldsDemo.tscn` | 用代码配置 `ChartView`：六个通道及其区间、五种 `ColorMapping` 里的四种（第五种 `Auto` 是默认值，该页不动它）、锁定轴域、`ThemeKind` 与主题资源、轴标题/单位/图例、全部数据入口（`SetValues` / `SetData` / `SetCsv` + `ParseCsv` / `AddRow` + `WindowSize` / `Clear`），以及 `Refresh` 与 `Repaint` 的差别 |
 | `ChartViewHooksDemo.tscn` | `ConfigureMark`、`Tooltip.Options` 的两种内容构建器、让两个视图共享一张画布的 `CanvasFactory`、`Surface` / `Canvas` / `Texture` 三件套，以及编辑器专用的 `EditorPreview`（`ConfigureChart` 本身在 `ChartViewFieldsDemo` 与 `ChartCallbacksDemo` 上） |
 | `ChartCallbacksDemo.tscn` | `OnHover` / `OnClick` / `OnSelectionChanged` / `OnFocusChanged` / `OnLegendClick`（含 `Handled` 拦截）、`Select` / `FocusSeries` / `HideSeries` / `ShowAllSeries`、用 `GetSeriesInfo()` 自建外部图例，以及宿主自己用 `HitTest` + `Interaction` + `Hover` + `NotifyHoverChanged` 处理指针 |

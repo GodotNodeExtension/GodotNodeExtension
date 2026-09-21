@@ -2,7 +2,7 @@
 
 # Chart Types
 
-GodotChart supports 22 chart kinds (`ChartKind`) backed by 20 `Mark` classes (the annotation mark
+GodotChart supports 23 chart kinds (`ChartKind`) backed by 21 `Mark` classes (the annotation mark
 `SectionMark` is the 21st subclass and backs no kind), grouped below by
 coordinate system. The last group holds the waffle, which is a **Cartesian** mark that only turns the axes
 off (`UsesAxes => false`) - it is listed separately because it draws a grid instead of a scale. This guide
