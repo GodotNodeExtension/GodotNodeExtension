@@ -2,3 +2,71 @@ root = true
 
 [*]
 charset = utf-8
+
+[*.cs]
+indent_style = space
+indent_size = 4
+
+# ── Static analysis baseline ────────────────────────────────────────────────────
+# The build runs the same rule set ReSharper reports as warnings (see AnalysisLevel in
+# GodotNodeExtension.csproj). Everything here is a documented exception; the rest of the recommended
+# set has to stay clean, so `dotnet build` is expected to end with 0 warnings.
+
+# ReSharper reports "member can be made static" as a hint. As a build warning it drowns the real
+# findings (1468 sites in this repository, most of them in tests).
+dotnet_diagnostic.CA1822.severity = warning
+
+# Unused usings are noise in every diff and ReSharper always warns about them.
+dotnet_diagnostic.IDE0005.severity = warning
+
+# ── Code style the repository does not share with ReSharper's defaults ──────────
+# "Use 'var'" / "use explicit type": this repository mixes the two on purpose (`var chart = new Chart(...)`
+# where the type is on the right, `List<DataRow> rows = new()` where the type is the useful information).
+# A single ReSharper preference cannot express that choice - pinning `csharp_style_var_*` only flipped the
+# hints from "use var" to "use the explicit type" and added ~500 of them - so the three inspections are
+# switched off. Roslyn's IDE0007/IDE0008 stay at their default severities, so nothing changes for the
+# build or for an IDE that prefers a fixed style.
+resharper_suggest_var_or_type_built_in_types_highlighting = none
+resharper_suggest_var_or_type_simple_types_highlighting = none
+resharper_suggest_var_or_type_elsewhere_highlighting = none
+
+# Trailing commas in multiline lists: the repository does not write them, and the "arrange" style rule
+# reported ~660 hints about it. Modelled as a hint rather than a warning, so a formatter run may still
+# add them if that ever becomes the house style.
+resharper_arrange_trailing_comma_in_multiline_lists_highlighting = none
+
+# ── ReSharper-only inspections ──────────────────────────────────────────────────
+# ReSharper's UnusedAutoPropertyAccessor.Global reads one solution, but this repository ships component
+# libraries: a public accessor that nothing *here* reads or writes is still the API a host application,
+# a subclass in another assembly, or the Godot inspector uses (setting an `[Export]` property, reading a
+# `TooltipSpan` field, writing a `TypographySettings` knob). As a warning it drowns the real findings, so
+# it is a hint here - the same reasoning that puts CA1822 at suggestion level above. Genuinely dead
+# private/internal members are still reported by the build's analyzer set.
+resharper_unused_auto_property_accessor_global_highlighting = suggestion
+
+# ── Test/** and addons/** are not reviewed ──────────────────────────────────────
+# The reliable way to keep both paths out of a ReSharper run is the CLI flag
+#   jb inspectcode … --exclude="Test/**;addons/**"
+# (inspectcode ignores a per-path `dotnet_diagnostic.*` override, so the section below does not replace it).
+# The sections only help an IDE that reads .editorconfig - Rider's own "Excluded files/folders" masks are
+# the IDE-side equivalent. Why these paths: the suites are driven by gdUnit4 through reflection ([TestCase]
+# methods and properties the runner reads by name) and the addons are third-party code installed as-is, so
+# their members look "unused" here and their style hints can never be acted upon. The rules below account
+# for ~98% of what was reported in those folders; the build keeps analysing both paths as before.
+[Test/**]
+dotnet_diagnostic.CA1822.severity = none
+resharper_unused_member_global_highlighting = none
+resharper_unused_type_global_highlighting = none
+resharper_member_can_be_made_static_global_highlighting = none
+resharper_member_can_be_made_static_local_highlighting = none
+resharper_use_collection_expression_highlighting = none
+resharper_move_local_function_after_jump_statement_highlighting = none
+resharper_redundant_explicit_params_array_creation_highlighting = none
+resharper_arrange_object_creation_when_type_not_evident_highlighting = none
+resharper_arrange_redundant_parentheses_highlighting = none
+resharper_convert_to_constant_local_highlighting = none
+resharper_use_object_or_collection_initializer_highlighting = none
+resharper_invert_if_highlighting = none
+resharper_loop_can_be_converted_to_query_highlighting = none
+resharper_foreach_can_be_converted_to_query_using_another_get_enumerator_highlighting = none
+resharper_foreach_can_be_partly_converted_to_query_using_another_get_enumerator_highlighting = none

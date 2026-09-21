@@ -1,0 +1,5 @@
+{
+  "note": "Number of public members missing an XML comment (CS1591) per file. Keys are repository paths relative to Component/, i.e. '<Component>/<file>': the same key space the single-component tool used, so a baseline written for one component keeps working for every component.",
+  "total": 0,
+  "perFile": {}
+}

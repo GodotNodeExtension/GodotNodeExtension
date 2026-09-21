@@ -1,0 +1,63 @@
+{
+  "note": "Ambient context of the documentation examples, per component. `statements` are prepended to the body of a ```csharp compile snippet, `members` to a ```csharp compile-members snippet, so a snippet may use locals, fields and helper objects that the surrounding documentation page implies instead of declaring them again. Components without an entry get no ambient context.",
+  "components": {
+    "GodotChart": {
+      "statements": [
+        "ICanvas2D canvas = null!;",
+        "Chart chart = new Chart(canvas);",
+        "TooltipRenderer _tooltip = new();",
+        "ChartView view = new ChartView();",
+        "List<DataRow> monthlySales = new();",
+        "Node host = null!;",
+        "AnimationController _animController = new();",
+        "List<DataRow> boxPlotData = new();",
+        "List<DataRow> bubbleData = new();",
+        "List<DataRow> diskUsage = new();",
+        "List<DataRow> heatmapData = new();",
+        "List<DataRow> multiSeriesData = new();",
+        "List<DataRow> radarData = new();",
+        "List<DataRow> rangeData = new();",
+        "List<DataRow> releases = new();",
+        "List<DataRow> stockData = new();",
+        "List<DataRow> sunburstData = new();",
+        "List<DataRow> timelineData = new();",
+        "List<DataRow> treemapData = new();",
+        "List<DataRow> violinData = new();",
+        "AnimationController _anim = new();",
+        "int elementCount = 0;",
+        "IPaint2D fillPaint = null!;",
+        "Vector2 mousePosition = default;",
+        "List<DataRow> newData = new();",
+        "List<DataRow> newRow = new();",
+        "List<DataRow> rawData = new();",
+        "IPaint2D strokePaint = null!;",
+        "float t = 0f;",
+        "double delta = 0;",
+        "Vector2 mousePos = default;",
+        "int canvasWidth = 1;",
+        "int canvasHeight = 1;",
+        "DateTime now = default;",
+        "double reading = 0;",
+        "List<DataRow> newBatch = new();",
+        "Font myGodotFont = null!;",
+        "ChartTheme _theme = ChartTheme.Dark();"
+      ],
+      "members": [
+        "private ICanvas2D? _canvas;",
+        "private Chart? _chart;",
+        "private int width = 1, height = 1;"
+      ]
+    },
+    "GodotSkia": {
+      "usings": [
+        "SkiaSharp"
+      ],
+      "statements": [
+        "Image godotImage = Image.CreateEmpty(2, 2, false, Image.Format.Rgba8);",
+        "SKBitmap skBitmap = new SKBitmap(2, 2);",
+        "Texture2D texture2D = ImageTexture.CreateFromImage(godotImage);"
+      ],
+      "members": []
+    }
+  }
+}

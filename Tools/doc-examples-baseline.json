@@ -1,0 +1,4 @@
+{
+  "note": "Documentation examples that are known to not compile, keyed by '<Component>/<file>:<line>:<kind>:<hash>'. The check only reports new failures.",
+  "expectedFailures": []
+}

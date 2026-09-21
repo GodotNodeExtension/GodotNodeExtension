@@ -1,30 +1,80 @@
-<Project Sdk="Godot.NET.Sdk/4.4.1">
+<Project Sdk="Godot.NET.Sdk/4.7.2">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>default</LangVersion>
     <Nullable>enable</Nullable>
+    <!-- Static analysis: the build runs the *recommended* rule set with code style enforced, so a
+         local `dotnet build` reports what ReSharper reports in the IDE. The documented exceptions
+         live in .editorconfig (CA1822 is a ReSharper hint, not a warning) and the whole set must be
+         warning-free - see the project conventions. -->
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <!-- gdUnit4 test support: keep dependency assemblies in the output directory so the
+         Godot runtime can resolve them when the test runner loads the assembly. -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <!-- GodotSharp version mismatches between the SDK and the running editor are expected
+         when testing against a newer engine; NU1605 is only a downgrade warning. -->
+    <NoWarn>$(NoWarn);NU1605</NoWarn>
+    <!-- Emit XML documentation so IDEs surface the public API docs.
+         CS1591 stays suppressed because GenerateDocumentationFile turns it on for *every* public
+         member including tests and example code, which drowns out real warnings. Coverage of the
+         shipped components is enforced instead by Tools/check-doc-coverage.js: it counts the
+         missing-comment warnings per file, keeps a baseline in Tools/doc-coverage-baseline.json
+         (Component/ is at 0) and fails when a new undocumented public member appears. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugType>full</DebugType>
+    <!-- Portable PDB is required by the gdUnit4 test discovery (Mono.Cecil cannot read
+         Windows-format PDBs, which `full` produces). -->
+    <DebugType>portable</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CSharpMath.SkiaSharp" Version="1.0.0-pre.1" />
+    <PackageReference Include="Mapsui" Version="5.0.2" />
+    <PackageReference Include="Mapsui.Rendering.Skia" Version="5.0.2" />
+    <PackageReference Include="Mapsui.Tiling" Version="5.0.2" />
     <PackageReference Include="Markdig" Version="0.41.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.7" />
     <PackageReference Include="SkiaSharp" Version="3.119.3-preview.1.1" />
+    <PackageReference Include="SkiaSharp.HarfBuzz" Version="3.119.1" />
+    <!-- Glyph indices for shape-once rendering: Skia's shaper reports points and clusters but not the
+         glyphs it drew, and drawing a laid-out run needs the glyphs themselves. -->
+    <PackageReference Include="HarfBuzzSharp" Version="8.3.1.2" />
     <PackageReference Include="TextMateSharp" Version="1.0.70" />
     <PackageReference Include="TextMateSharp.Grammars" Version="1.0.70" />
+    <PackageReference Include="Unicode.Bidi" Version="0.3.18" />
   </ItemGroup>
     
+  <!-- Tools/ contains the review/CI helpers (e.g. the generated doc-example project) and must not
+       be compiled into the game assembly. tmp/ is gitignored scratch (probes, logs, reference
+       dumps) and must never be compiled either: without this the build outcome depends on whatever
+       happens to be lying there, so a stale probe breaks `Tools/run_tests.py` while an IDE build
+       still passes. -->
+  <ItemGroup>
+    <Compile Remove="Tools/**" />
+    <Compile Remove="tmp/**" />
+  </ItemGroup>
+
   <ItemGroup>
     <Content Include="AUTHORS.md" />
-    <Content Include="candlestick_mark_plan.md" />
-    <Content Include="chart_animation_interaction_plan.md" />
-    <Content Include="chart_demo_tabs_plan.md" />
     <Content Include="COMPONENTS.md" />
     <Content Include="Component\GodotChart\component_info.json" />
     <Content Include="README.md" />
+  </ItemGroup>
+
+  <!-- gdUnit4 test framework (see addons/gdUnit4 and Test/).
+       The API package auto-defines GDUNIT4NET_API_V5, which activates the addon's C# bridge. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageReference Include="gdUnit4.api" Version="5.1.0-rc5" />
+    <PackageReference Include="gdUnit4.test.adapter" Version="3.1.1" />
+    <PackageReference Include="gdUnit4.analyzers" Version="1.0.0">
+      <PrivateAssets>none</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>
