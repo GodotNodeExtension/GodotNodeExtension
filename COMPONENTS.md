@@ -6,7 +6,7 @@ This file contains all available components in the GodotNodeExtension project.
 
 | Component | Version | Author | Description | Status |
 |-----------|---------|--------|-------------|---------|
-| [DynamicNumberLabel](Component/DynamicNumberLabel/README.md) | 1.0.0 | shitake2333 | A custom Godot Label node for animated number display with customizable formatting and transitions | ✅ Complete |
+| [DynamicNumberLabel](Doc/DynamicNumberLabel/README.md) | 1.0.1 | shitake2333 | A custom Godot Label node for animated number display with customizable formatting and transitions | ✅ Complete |
 | [GodotChart](Component/GodotChart/README.md) | 0.1.0 | shitake2333 | A declarative chart library for Godot with SkiaSharp backend. Supports bar charts, line charts, area charts, and scatter/bubble plots with auto-scaling, color mapping, and gradient fills. | 📋 Planned |
 | [GodotSkia](Doc/GodotSkia/README.md) | 0.9.0 | shitake2333 | A 2D rendering bridge between SkiaSharp and Godot. Shares the engine's Vulkan surface with Skia's GRContext (with a CPU fallback for every other renderer, including the OpenGL compatibility renderer), and provides bidirectional Godot/Skia type converters, an image interop layer and diagnostics for the shared GPU context. | ✅ Complete |
 

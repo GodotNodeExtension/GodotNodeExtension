@@ -88,6 +88,19 @@ text = "Easing Type:"
 
 [node name="EasingOption" type="OptionButton" parent="VBoxContainer/ControlPanel/RightControls/EasingContainer"]
 layout_mode = 2
+item_count = 6
+selected = 2
+popup/item_0/text = "Linear"
+popup/item_1/text = "Ease In"
+popup/item_1/id = 1
+popup/item_2/text = "Ease Out"
+popup/item_2/id = 2
+popup/item_3/text = "Ease In Out"
+popup/item_3/id = 3
+popup/item_4/text = "Bounce"
+popup/item_4/id = 4
+popup/item_5/text = "Elastic"
+popup/item_5/id = 5
 
 [node name="RandomModeCheckBox" type="CheckBox" parent="VBoxContainer/ControlPanel/RightControls"]
 layout_mode = 2
@@ -175,10 +188,10 @@ horizontal_alignment = 2
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
-text = "0$"
+text = "0 $"
 horizontal_alignment = 1
 script = ExtResource("2_onpkg")
-Suffix = "$"
+Suffix = " $"
 metadata/_custom_type_script = "uid://d3dk2cilxawlw"
 
 [node name="MoneyInfo" type="Label" parent="VBoxContainer/DemoArea/NumbersContainer"]

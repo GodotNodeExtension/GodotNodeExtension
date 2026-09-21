@@ -18,27 +18,21 @@ public partial class DynamicNumberLabelDemo : Control
 
     public override void _Ready()
     {
-        SetupEasingOptions();
         ConnectSignals();
-        GD.Print("DynamicNumberLabel Demo Ready!");
     }
 
-    private void SetupEasingOptions()
-    {
-        EasingOption.AddItem("Linear");
-        EasingOption.AddItem("Ease In");
-        EasingOption.AddItem("Ease Out");
-        EasingOption.AddItem("Ease In Out");
-        EasingOption.AddItem("Bounce");
-        EasingOption.AddItem("Elastic");
-        EasingOption.Selected = 2; // Default to Ease Out
-    }
-    
     private void ConnectSignals()
     {
         StartButton.Pressed += OnStartPressed;
         ResetButton.Pressed += OnResetPressed;
         RandomModeCheckBox.Toggled += OnRandomModeToggled;
+    }
+
+    public override void _ExitTree()
+    {
+        StartButton.Pressed -= OnStartPressed;
+        ResetButton.Pressed -= OnResetPressed;
+        RandomModeCheckBox.Toggled -= OnRandomModeToggled;
     }
 
     private void OnStartPressed()
