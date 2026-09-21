@@ -1,0 +1,1 @@
+highlight.js 11.12.0 (vendored from cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.12.0/highlight.min.js - the common language bundle, BSD-3-Clause)

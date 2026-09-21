@@ -23,6 +23,15 @@ This file lists the contributors to the GodotNodeExtension project.
 ### GodotSkia
 - **[shitake2333](mailto:z1522716486@hotmail.com)**
 
+### MarkdownView
+- **[shitake2333](mailto:z1522716486@hotmail.com)**
+
+### PaperDoll
+- **[shitake2333](mailto:z1522716486@hotmail.com)**
+
+### RichTextCanvas
+- **[shitake2333](mailto:z1522716486@hotmail.com)**
+
 ### Typography
 - **[shitake2333](mailto:z1522716486@hotmail.com)**
 

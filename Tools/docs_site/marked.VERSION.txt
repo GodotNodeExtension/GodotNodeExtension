@@ -1,0 +1,1 @@
+marked 18.0.13 (vendored from cdn.jsdelivr.net/npm/marked@18.0.13/lib/marked.umd.js, MIT)

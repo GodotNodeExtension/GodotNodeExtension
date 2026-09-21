@@ -1,0 +1,76 @@
+name: Documentation site
+
+# Builds the static documentation site out of `Doc/` (Tools/docs_site.py) and publishes it to GitHub
+# Pages. One-time setup in the repository: Settings > Pages > Build and deployment > Source =
+# "GitHub Actions". The site is also buildable locally:
+#
+#   python Tools/docs_site.py build        # writes tmp/site
+#   python Tools/docs_site.py serve        # preview on http://127.0.0.1:8000
+#   python Tools/docs_site.py check        # verify links, anchors, images and language switches
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Doc/**'
+      - 'Component/**/component_info.json'
+      - 'README.md'
+      - 'README.cn.md'
+      - 'COMPONENTS.md'
+      - 'Tools/docs_site.py'
+      - 'Tools/docs_site/**'
+      - 'Tools/lib/**'
+      - 'Tools/check_doc_links.py'
+      - '.github/workflows/docs-site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a newer push supersedes the one still building.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Build the site
+        run: |
+          # The repository URL makes the out-of-docs links and "edit this page" work on the published site.
+          python Tools/docs_site.py build --out _site \
+            --repo-url "${{ github.server_url }}/${{ github.repository }}" \
+            --branch "${{ github.ref_name }}"
+
+      - name: Check the built site
+        run: python Tools/docs_site.py check --out _site
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

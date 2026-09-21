@@ -1,0 +1,262 @@
+/* Documentation site for the GodotNodeExtension components - single stylesheet, no framework. */
+
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f6f7f9;
+  --bg-code: #f2f3f5;
+  --fg: #1b1f24;
+  --fg-muted: #5b6572;
+  --border: #e2e5ea;
+  --accent: #2f6fed;
+  --accent-soft: #eaf1fe;
+  --shadow: 0 1px 3px rgb(16 24 40 / 8%);
+  --sidebar: 15rem;
+  /* The gutter on both sides of the page: never hugging the window edge, never a cavern on a wide screen. */
+  --gutter: clamp(2rem, 4vw, 5rem);
+  /* Syntax highlighting palette (the token classes highlight.js emits), light theme. */
+  --hl-comment: #6e7781;
+  --hl-keyword: #cf222e;
+  --hl-string: #0a3069;
+  --hl-number: #0550ae;
+  --hl-title: #8250df;
+  --hl-attr: #953800
+}
+
+html[data-theme="dark"] {
+  --bg: #14171c;
+  --bg-soft: #1b1f26;
+  --bg-code: #1f242c;
+  --fg: #e6e9ee;
+  --fg-muted: #9aa4b2;
+  --border: #2a3038;
+  --accent: #7aa5ff;
+  --accent-soft: #1e2735;
+  --shadow: 0 1px 3px rgb(0 0 0 / 40%);
+  --hl-comment: #8b949e;
+  --hl-keyword: #ff7b72;
+  --hl-string: #a5d6ff;
+  --hl-number: #79c0ff;
+  --hl-title: #d2a8ff;
+  --hl-attr: #ffa657;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    --bg: #14171c;
+    --bg-soft: #1b1f26;
+    --bg-code: #1f242c;
+    --fg: #e6e9ee;
+    --fg-muted: #9aa4b2;
+    --border: #2a3038;
+    --accent: #7aa5ff;
+    --accent-soft: #1e2735;
+    --shadow: 0 1px 3px rgb(0 0 0 / 40%);
+    --hl-comment: #8b949e;
+    --hl-keyword: #ff7b72;
+    --hl-string: #a5d6ff;
+    --hl-number: #79c0ff;
+    --hl-title: #d2a8ff;
+    --hl-attr: #ffa657;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.65 system-ui, -apple-system, "Segoe UI", "Noto Sans", "Microsoft YaHei", sans-serif;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+header.top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem var(--gutter);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+header.top .brand { font-weight: 600; color: var(--fg); white-space: nowrap; }
+header.top .spacer { flex: 1; }
+
+header.top .lang a, header.top .lang strong { padding: 0 0.35rem; }
+header.top .lang strong { color: var(--fg-muted); font-weight: 600; }
+header.top .lang select {
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--fg);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  font: inherit;
+  cursor: pointer;
+}
+header.top .lang .hint { color: var(--fg-muted); font-size: 0.82rem; margin-left: 0.35rem; }
+
+button.icon, a.icon {
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--fg);
+  border-radius: 6px;
+  padding: 0.25rem 0.55rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.search { position: relative; }
+.search input {
+  width: 16rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-soft);
+  color: var(--fg);
+  font: inherit;
+}
+.search .results {
+  position: absolute;
+  right: 0;
+  top: 2.4rem;
+  width: 32rem;
+  max-height: 24rem;
+  overflow: auto;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  display: none;
+}
+.search .results.open { display: block; }
+.search .results a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--fg);
+}
+.search .results a:last-child { border-bottom: 0; }
+.search .results a:hover { background: var(--accent-soft); text-decoration: none; }
+.search .results .where { display: block; color: var(--fg-muted); font-size: 0.85em; }
+
+div.layout {
+  display: grid;
+  /* Navigation, text, on-this-page list. The text column takes everything that is left over, and the
+     page has the same gutter on both sides, so the width is used instead of being left empty. */
+  grid-template-columns: var(--sidebar) minmax(0, 1fr) 13rem;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 1.75rem var(--gutter) 4rem;
+}
+
+nav.side { position: sticky; top: 4rem; align-self: start; max-height: calc(100vh - 5rem); overflow: auto; }
+nav.side h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--fg-muted); margin: 1.2rem 0 0.4rem; }
+nav.side a { display: block; padding: 0.2rem 0.5rem; border-radius: 5px; color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+nav.side a:hover { background: var(--bg-soft); text-decoration: none; }
+nav.side a.current { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+
+nav.side details.group { margin: 0.15rem 0; }
+nav.side details.group > summary {
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 5px;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-muted);
+  list-style: none;
+}
+nav.side details.group > summary::-webkit-details-marker { display: none; }
+nav.side details.group > summary::before { content: "▸ "; }
+nav.side details.group[open] > summary::before { content: "▾ "; }
+nav.side details.group > summary:hover { background: var(--bg-soft); color: var(--fg); }
+nav.side details.group a { margin-left: 0.6rem; }
+
+nav.toc { position: sticky; top: 4rem; align-self: start; font-size: 0.9rem; }
+nav.toc a { display: block; padding: 0.15rem 0; color: var(--fg-muted); }
+nav.toc a.lvl-3 { padding-left: 0.8rem; }
+nav.toc a.lvl-4, nav.toc a.lvl-5, nav.toc a.lvl-6 { padding-left: 1.6rem; }
+nav.toc a.active { color: var(--accent); }
+
+main { min-width: 0; }
+main .crumbs { color: var(--fg-muted); font-size: 0.9rem; margin-bottom: 0.5rem; }
+
+article h1 { font-size: 2rem; margin-top: 0.2rem; line-height: 1.25; }
+article h1, article h2, article h3, article h4, article h5, article h6 { scroll-margin-top: 4.5rem; }
+article h2 { font-size: 1.45rem; margin-top: 2.2rem; padding-bottom: 0.25rem; border-bottom: 1px solid var(--border); }
+article h3 { font-size: 1.18rem; margin-top: 1.8rem; }
+article h4 { font-size: 1.02rem; margin-top: 1.4rem; }
+article h1:hover .anchor, article h2:hover .anchor, article h3:hover .anchor,
+article h4:hover .anchor, article h5:hover .anchor, article h6:hover .anchor { opacity: 0.6; }
+article .anchor { opacity: 0; margin-left: 0.35rem; font-weight: 400; }
+
+article img { max-width: 100%; height: auto; border: 1px solid var(--border); border-radius: 6px; }
+article table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: 0.94rem; display: block; overflow-x: auto; }
+article th, article td { border: 1px solid var(--border); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+article th { background: var(--bg-soft); }
+article code { background: var(--bg-code); border-radius: 4px; padding: 0.1rem 0.3rem; font-size: 0.9em; font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+article pre { background: var(--bg-code); border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem 1rem; overflow-x: auto; }
+article pre code { background: none; padding: 0; font-size: 0.88em; }
+article blockquote { margin: 1rem 0; padding: 0.2rem 1rem; border-left: 3px solid var(--accent); background: var(--bg-soft); color: var(--fg-muted); }
+article hr { border: 0; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+footer.page-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+
+footer.site {
+  border-top: 1px solid var(--border);
+  padding: 1rem var(--gutter) 2rem;
+  color: var(--fg-muted);
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+/* ── syntax highlighting ─────────────────────────────────────────────────────
+   Own theme instead of a vendored stylesheet: the token classes highlight.js emits, coloured from the
+   palette variables above, so light and dark mode stay in one place (and no second theme file has to be
+   switched in and out). Unknown languages are never highlighted, they keep the plain code style. */
+
+article pre code.hljs { background: none; padding: 0; color: inherit; }
+.hljs-comment, .hljs-quote { color: var(--hl-comment); font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-doctag, .hljs-name { color: var(--hl-keyword); }
+.hljs-string, .hljs-regexp, .hljs-addition, .hljs-attribute, .hljs-meta .hljs-string { color: var(--hl-string); }
+.hljs-number, .hljs-symbol, .hljs-bullet, .hljs-link, .hljs-meta, .hljs-selector-id, .hljs-built_in { color: var(--hl-number); }
+.hljs-title, .hljs-section, .hljs-title.function_, .hljs-title.class_, .hljs-selector-class { color: var(--hl-title); }
+.hljs-attr, .hljs-variable, .hljs-template-variable, .hljs-type, .hljs-params, .hljs-property { color: var(--hl-attr); }
+.hljs-deletion { color: #82071e; }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 600; }
+
+.edit { float: right; font-size: 0.88rem; color: var(--fg-muted); }
+noscript p { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem 1rem; }
+
+/* Component gallery */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.card { border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; background: var(--bg-soft); }
+.card h2 { margin: 0 0 0.35rem; font-size: 1.1rem; border: 0; padding: 0; }
+.card .meta { color: var(--fg-muted); font-size: 0.85rem; margin-bottom: 0.5rem; }
+.card p { margin: 0 0 0.6rem; }
+
+@media (max-width: 68rem) {
+  div.layout { grid-template-columns: var(--sidebar) minmax(0, 1fr); }
+  nav.toc { display: none; }
+}
+
+@media (max-width: 48rem) {
+  div.layout { grid-template-columns: minmax(0, 1fr); }
+  nav.side { position: static; max-height: none; }
+  .search input { width: 9rem; }
+  .search .results { width: 88vw; }
+}
