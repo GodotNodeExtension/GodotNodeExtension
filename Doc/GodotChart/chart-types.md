@@ -42,6 +42,7 @@ they can be renamed through the matching property, not through a channel.
 | Sankey | one flow | `source` `target` + `Y` weight |
 | Chord | one chord | `source` `target` + `Y` weight |
 | Waffle | one category's share of the grid | `Y` weight, `Color` |
+| Geographic areas (`GeoAreaMark`) | one region (or one grid cell) | the region's key field + `Color` value |
 
 ---
 
@@ -1034,6 +1035,42 @@ new Chart(canvas)
     .Encode(Channel.Color, "source")
     .Render();
 ```
+
+---
+
+## Geographic Charts
+
+A geographic chart does not lay its rows out on a pair of axes: each row is **joined to a region of a map**, and
+the value colours that region. The geometry is data of its own - read from a file, or built in code - and
+`GeoAreaMark` fills it:
+
+```csharp compile
+// A map from a file, shaded by a table: the region name is the join key on both sides.
+IReadOnlyList<GeoFeature> regions = GeoJsonReader.ParseFile("res://maps/regions.geojson");
+var area = new GeoAreaMark { Features = regions, RowField = "region" };
+
+chart.Mark(area)
+     .Encode(Channel.X, "region")
+     .Encode(Channel.Y, "value")
+     .Encode(Channel.Color, "value");
+chart.SetGeoFrame(GeoFrames.Wgs84());
+chart.Scale(Channel.Color, new SequentialColorScale(0.0, 100.0));   // a ramp, not a colour per category
+```
+
+**One row is one region.** The join reads a field of the row (the X field by default, or the mark's `RowField`)
+and matches it against the feature's `name`, its `id`, or any property its source carries - see
+`GeoDataJoiner` for the comparers that make real place names meet ("Zhejiang" against "Zhejiang Province") and
+for the three missing strategies. A region whose row is missing is still drawn, in the no-data colour: a map
+that half loaded says so instead of going blank.
+
+**The geometry can come from anywhere.** `GeoJsonReader.ParseFile` reads a `FeatureCollection` (points, lines,
+polygons with holes); `GeoGeometryBuilder` writes the same features in code, including a tile grid; and a
+`ChartView` of kind `GeoArea` with no geometry at all turns the categories of its X field into a grid of cells,
+so a table with no coordinates still draws a map.
+
+**Two layers, one mark.** With a colour channel bound the mark is the data layer. With `Shade = false` it draws
+outlines only - no fill, no legend entry - which is the base map a bubble or flow layer is laid on. The geographic demo page (`Example/GodotChart/ChartGeoDemo.tscn`) draws exactly that: one GeoJSON file,
+read at runtime, rendered once shaded and once as outlines.
 
 ---
 

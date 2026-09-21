@@ -35,6 +35,7 @@ GodotChart 支持 23 种图表类型（`ChartKind`，由 21 个 `Mark` 类实现
 | 桑基图 | 一条流 | `source` `target` + `Y` 权重 |
 | 弦图 | 一条弦 | `source` `target` + `Y` 权重 |
 | 华夫饼图 | 某个类目在网格中占的份额 | `Y` 权重、`Color` |
+| 地理区域（`GeoAreaMark`） | 一个区域（或一个网格单元） | 区域的关键字段 + `Color` 数值 |
 
 ---
 
@@ -959,6 +960,38 @@ new Chart(canvas)
     .Encode(Channel.Color, "source")
     .Render();
 ```
+
+---
+
+## 地理图表
+
+地理图表不把行铺到一对坐标轴上：每一行**关联到地图上的一个区域**，由数值给该区域着色。几何本身也是一份数据
+—— 从文件读，或在代码里造 —— 由 `GeoAreaMark` 填充：
+
+```csharp compile
+// 从文件来的一张地图，用一张表给它着色：区域名就是两侧的关联键。
+IReadOnlyList<GeoFeature> regions = GeoJsonReader.ParseFile("res://maps/regions.geojson");
+var area = new GeoAreaMark { Features = regions, RowField = "region" };
+
+chart.Mark(area)
+     .Encode(Channel.X, "region")
+     .Encode(Channel.Y, "value")
+     .Encode(Channel.Color, "value");
+chart.SetGeoFrame(GeoFrames.Wgs84());
+chart.Scale(Channel.Color, new SequentialColorScale(0.0, 100.0));   // 色阶，而不是一档一色
+```
+
+**一行就是一个区域。** 关联读取数据行的某个字段（默认是 X 字段，也可以指定 mark 的 `RowField`），与要素的
+`name`、`id` 或数据源携带的任何属性比对 —— 真实的"浙江"对"浙江省"这类差异由 `GeoDataJoiner` 的比较器解决，
+三种未匹配策略也在那里。没有对应行的区域照样会画出来，填上"无数据"色：只加载到一半的地图会说出来，而不是变空白。
+
+**几何可以来自任何地方。** `GeoJsonReader.ParseFile` 读 `FeatureCollection`（点、线、带洞的多边形）；
+`GeoGeometryBuilder` 用代码造同样的要素（含瓦片网格）；而 `ChartView` 的 `GeoArea` 类型在完全没有几何时，会把
+X 字段的各个类目排成一张网格 —— 所以只有表格、没有任何坐标也能画出地图。
+
+**两层，一个 mark。** 绑了颜色通道时它是表达层；`Shade = false` 时它只画轮廓（不填色、不进图例），那就是气泡层
+或飞线层要铺在其上的底图。地理示例页（`Example/GodotChart/ChartGeoDemo.tscn`）画的正是这件事：一份 GeoJSON
+文件在运行时读取，一次着色绘制、一次只画轮廓。
 
 ---
 
