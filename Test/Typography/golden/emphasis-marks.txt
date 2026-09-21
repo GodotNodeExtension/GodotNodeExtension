@@ -1,0 +1,32 @@
+# typography golden dump (P0 contract)
+# fonts: ThemeDB.FallbackFont (baselines depend on the engine font + system fallback)
+contentSize=(240.000 used) (176.000,52.641)
+settings maxWidth=240.000 lineSpacing=0.000 paragraphSpacing=0.000 firstLineIndent=0 alignment=Left prohibition=Basic profile=zh-Hans cjkLatinGapEm=0.250 mode=HorizontalTb
+source=3 lines=2 elements=20
+line[0] y=0.000 h=26.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=0 first=True frozen=False elems=9
+line[1] y=26.320 h=26.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=1 first=True frozen=False elems=11
+boundaries total=20 Plain=16 Punctuation=2 HardBreak=2
+  b[7|8] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+  b[8|9] kind=HardBreak Punctuation->Neutral owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=HardBreak
+  b[9|10] kind=HardBreak Neutral->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=HardBreak
+  b[19|20] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+elem[0] Text pos=(0.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[0,1) cluster=[0,1) line=0 dir=LeftToRight text="这" emph="●"@(8.000,24.320) size=4.000 side=Below why=Emphasis:Below
+elem[1] Text pos=(16.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[1,2) cluster=[1,2) line=0 dir=LeftToRight text="段" emph="●"@(24.000,24.320) size=4.000 side=Below why=Emphasis:Below
+elem[2] Text pos=(32.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[2,3) cluster=[2,3) line=0 dir=LeftToRight text="文" emph="●"@(40.000,24.320) size=4.000 side=Below why=Emphasis:Below
+elem[3] Text pos=(48.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[3,4) cluster=[3,4) line=0 dir=LeftToRight text="字" emph="●"@(56.000,24.320) size=4.000 side=Below why=Emphasis:Below
+elem[4] Text pos=(64.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[4,5) cluster=[4,5) line=0 dir=LeftToRight text="带" emph="●"@(72.000,24.320) size=4.000 side=Below why=Emphasis:Below
+elem[5] Text pos=(80.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[5,6) cluster=[5,6) line=0 dir=LeftToRight text="着" emph="●"@(88.000,24.320) size=4.000 side=Below why=Emphasis:Below
+elem[6] Text pos=(96.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[6,7) cluster=[6,7) line=0 dir=LeftToRight text="重" emph="●"@(104.000,24.320) size=4.000 side=Below why=Emphasis:Below
+elem[7] Text pos=(112.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[7,8) cluster=[7,8) line=0 dir=LeftToRight text="号" emph="●"@(120.000,24.320) size=4.000 side=Below why=Emphasis:Below
+elem[8] Text pos=(128.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[8,9) cluster=[8,9) line=0 dir=LeftToRight text="。" emph="●"@(136.000,24.320) size=4.000 side=Below why=Emphasis:Below
+elem[9] Text pos=(0.000,32.320) base=48.570 size=(16.000,20.320) src=2 range=[0,1) cluster=[10,11) line=1 dir=LeftToRight text="こ" emph="•"@(8.000,28.320) size=4.000 side=Above why=Emphasis:Above
+elem[10] Text pos=(16.000,32.320) base=48.570 size=(16.000,20.320) src=2 range=[1,2) cluster=[11,12) line=1 dir=LeftToRight text="の" emph="•"@(24.000,28.320) size=4.000 side=Above why=Emphasis:Above
+elem[11] Text pos=(32.000,32.320) base=48.570 size=(16.000,20.320) src=2 range=[2,3) cluster=[12,13) line=1 dir=LeftToRight text="文" emph="•"@(40.000,28.320) size=4.000 side=Above why=Emphasis:Above
+elem[12] Text pos=(48.000,32.320) base=48.570 size=(16.000,20.320) src=2 range=[3,4) cluster=[13,14) line=1 dir=LeftToRight text="に" emph="•"@(56.000,28.320) size=4.000 side=Above why=Emphasis:Above
+elem[13] Text pos=(64.000,32.320) base=48.570 size=(16.000,20.320) src=2 range=[4,5) cluster=[14,15) line=1 dir=LeftToRight text="は" emph="•"@(72.000,28.320) size=4.000 side=Above why=Emphasis:Above
+elem[14] Text pos=(80.000,32.320) base=48.570 size=(16.000,20.320) src=2 range=[5,6) cluster=[15,16) line=1 dir=LeftToRight text="圏" emph="•"@(88.000,28.320) size=4.000 side=Above why=Emphasis:Above
+elem[15] Text pos=(96.000,32.320) base=48.570 size=(16.000,20.320) src=2 range=[6,7) cluster=[16,17) line=1 dir=LeftToRight text="点" emph="•"@(104.000,28.320) size=4.000 side=Above why=Emphasis:Above
+elem[16] Text pos=(112.000,32.320) base=48.570 size=(16.000,20.320) src=2 range=[7,8) cluster=[17,18) line=1 dir=LeftToRight text="が" emph="•"@(120.000,28.320) size=4.000 side=Above why=Emphasis:Above
+elem[17] Text pos=(128.000,32.320) base=48.570 size=(16.000,20.320) src=2 range=[8,9) cluster=[18,19) line=1 dir=LeftToRight text="あ" emph="•"@(136.000,28.320) size=4.000 side=Above why=Emphasis:Above
+elem[18] Text pos=(144.000,32.320) base=48.570 size=(16.000,20.320) src=2 range=[9,10) cluster=[19,20) line=1 dir=LeftToRight text="る" emph="•"@(152.000,28.320) size=4.000 side=Above why=Emphasis:Above
+elem[19] Text pos=(160.000,32.320) base=48.570 size=(16.000,20.320) src=2 range=[10,11) cluster=[20,21) line=1 dir=LeftToRight text="。" emph="•"@(168.000,28.320) size=4.000 side=Above why=Emphasis:Above

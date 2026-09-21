@@ -1,0 +1,113 @@
+# typography golden dump (P0 contract)
+# fonts: ThemeDB.FallbackFont (baselines depend on the engine font + system fallback)
+# note: the demo's annotated samples: a column with an annotation and a mark, then the same in horizontal writing
+contentSize=(160.000 used) (199.043,196.000)
+settings maxWidth=160.000 lineSpacing=0.000 paragraphSpacing=0.000 firstLineIndent=0 alignment=Left prohibition=Basic profile=ja cjkLatinGapEm=0.250 mode=VerticalRl
+source=15 lines=8 elements=76
+line[0] y=0.000 h=30.480 asc=16.250 desc=4.070 span=[0.000,200.000) para=0 first=True frozen=False elems=12
+line[1] y=30.480 h=20.320 asc=16.250 desc=4.070 span=[0.000,200.000) para=0 first=False frozen=False elems=12
+line[2] y=50.801 h=26.320 asc=16.250 desc=4.070 span=[0.000,200.000) para=0 first=False frozen=False elems=12
+line[3] y=77.121 h=20.320 asc=16.250 desc=4.070 span=[0.000,200.000) para=0 first=False frozen=False elems=12
+line[4] y=97.441 h=20.320 asc=16.250 desc=4.070 span=[0.000,200.000) para=0 first=False frozen=False elems=5
+line[5] y=117.762 h=30.480 asc=16.250 desc=4.070 span=[0.000,200.000) para=1 first=True frozen=False elems=9
+line[6] y=148.242 h=30.480 asc=16.250 desc=4.070 span=[0.000,200.000) para=2 first=True frozen=False elems=12
+line[7] y=178.723 h=20.320 asc=16.250 desc=4.070 span=[0.000,200.000) para=2 first=False frozen=False elems=2
+boundaries total=77 Plain=59 SpaceRun=6 Punctuation=8 HardBreak=4
+  b[12|13] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+  b[13|14] kind=Punctuation Punctuation->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=Punctuation
+  b[24|25] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+  b[25|26] kind=Punctuation Punctuation->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=Punctuation
+  b[34|35] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+  b[35|36] kind=Punctuation Punctuation->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=Punctuation
+  b[51|52] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+  b[52|53] kind=HardBreak Punctuation->Neutral owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=HardBreak
+  b[53|54] kind=HardBreak Neutral->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=HardBreak
+  b[54|55] kind=Plain Han->Han owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=RubyGroup
+  b[55|56] kind=Plain Han->Han owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=RubyGroup
+  b[56|57] kind=Plain Han->Han owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=RubyGroup
+  b[57|58] kind=SpaceRun Han->Space owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun
+  b[58|59] kind=SpaceRun Space->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun
+  b[59|60] kind=SpaceRun Han->Space owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun
+  b[60|61] kind=SpaceRun Space->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun
+  b[61|62] kind=Plain Han->Han owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=RubyGroup
+  b[62|63] kind=HardBreak Han->Neutral owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=HardBreak
+  b[63|64] kind=HardBreak Neutral->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=HardBreak
+  b[67|68] kind=SpaceRun Han->Space owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun
+  b[68|69] kind=SpaceRun Space->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun
+  b[76|77] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+elem[0] Text pos=(149.840,0.000) base=26.410 size=(20.320,16.000) src=0 range=[0,1) cluster=[0,1) line=0 dir=LeftToRight text="縦"
+elem[1] Text pos=(149.840,16.000) base=26.410 size=(20.320,16.000) src=0 range=[1,2) cluster=[1,2) line=0 dir=LeftToRight text="書"
+elem[2] Text pos=(149.840,32.000) base=26.410 size=(20.320,16.000) src=0 range=[2,3) cluster=[2,3) line=0 dir=LeftToRight text="き"
+elem[3] Text pos=(149.840,48.000) base=26.410 size=(20.320,16.000) src=0 range=[3,4) cluster=[3,4) line=0 dir=LeftToRight text="の"
+elem[4] Text pos=(149.840,64.000) base=26.410 size=(20.320,16.000) src=1 range=[0,1) cluster=[4,5) line=0 dir=LeftToRight text="行" ruby="ぎょう"@(154.920,60.000) size=8.000 w=24.000 band=10.160 glyphs=3 why=Ruby:Mono
+elem[5] Text pos=(149.840,80.000) base=26.410 size=(20.320,16.000) src=2 range=[0,1) cluster=[5,6) line=0 dir=LeftToRight text="は"
+elem[6] Text pos=(149.840,96.000) base=26.410 size=(20.320,16.000) src=2 range=[1,2) cluster=[6,7) line=0 dir=LeftToRight text="右"
+elem[7] Text pos=(149.840,112.000) base=26.410 size=(20.320,16.000) src=2 range=[2,3) cluster=[7,8) line=0 dir=LeftToRight text="か"
+elem[8] Text pos=(149.840,128.000) base=26.410 size=(20.320,16.000) src=2 range=[3,4) cluster=[8,9) line=0 dir=LeftToRight text="ら"
+elem[9] Text pos=(149.840,144.000) base=26.410 size=(20.320,16.000) src=2 range=[4,5) cluster=[9,10) line=0 dir=LeftToRight text="左"
+elem[10] Text pos=(149.840,160.000) base=26.410 size=(20.320,16.000) src=2 range=[5,6) cluster=[10,11) line=0 dir=LeftToRight text="へ"
+elem[11] Text pos=(149.840,176.000) base=26.410 size=(20.320,16.000) src=2 range=[6,7) cluster=[11,12) line=0 dir=LeftToRight text="進"
+elem[12] Text pos=(129.520,0.000) base=46.730 size=(20.320,16.000) src=2 range=[7,8) cluster=[12,13) line=1 dir=LeftToRight text="み"
+elem[13] Text pos=(129.520,16.000) base=46.730 size=(20.320,16.000) src=2 range=[8,9) cluster=[13,14) line=1 dir=LeftToRight text="、"
+elem[14] Text pos=(129.520,32.000) base=46.730 size=(20.320,16.000) src=2 range=[9,10) cluster=[14,15) line=1 dir=LeftToRight text="注"
+elem[15] Text pos=(129.520,48.000) base=46.730 size=(20.320,16.000) src=2 range=[10,11) cluster=[15,16) line=1 dir=LeftToRight text="釈"
+elem[16] Text pos=(129.520,64.000) base=46.730 size=(20.320,16.000) src=2 range=[11,12) cluster=[16,17) line=1 dir=LeftToRight text="は"
+elem[17] Text pos=(129.520,80.000) base=46.730 size=(20.320,16.000) src=2 range=[12,13) cluster=[17,18) line=1 dir=LeftToRight text="列"
+elem[18] Text pos=(129.520,96.000) base=46.730 size=(20.320,16.000) src=2 range=[13,14) cluster=[18,19) line=1 dir=LeftToRight text="の"
+elem[19] Text pos=(129.520,112.000) base=46.730 size=(20.320,16.000) src=2 range=[14,15) cluster=[19,20) line=1 dir=LeftToRight text="右"
+elem[20] Text pos=(129.520,128.000) base=46.730 size=(20.320,16.000) src=2 range=[15,16) cluster=[20,21) line=1 dir=LeftToRight text="に"
+elem[21] Text pos=(129.520,144.000) base=46.730 size=(20.320,16.000) src=2 range=[16,17) cluster=[21,22) line=1 dir=LeftToRight text="付"
+elem[22] Text pos=(129.520,160.000) base=46.730 size=(20.320,16.000) src=2 range=[17,18) cluster=[22,23) line=1 dir=LeftToRight text="き"
+elem[23] Text pos=(129.520,176.000) base=46.730 size=(20.320,16.000) src=2 range=[18,19) cluster=[23,24) line=1 dir=LeftToRight text="ま"
+elem[24] Text pos=(103.199,0.000) base=73.051 size=(20.320,16.000) src=2 range=[19,20) cluster=[24,25) line=2 dir=LeftToRight text="す"
+elem[25] Text pos=(103.199,16.000) base=73.051 size=(20.320,16.000) src=2 range=[20,21) cluster=[25,26) line=2 dir=LeftToRight text="。"
+elem[26] Text pos=(103.199,32.000) base=73.051 size=(20.320,16.000) src=3 range=[0,1) cluster=[26,27) line=2 dir=LeftToRight text="圏" emph="﹅"@(107.199,40.000) size=4.000 side=Right why=Emphasis:Right
+elem[27] Text pos=(103.199,48.000) base=73.051 size=(20.320,16.000) src=3 range=[1,2) cluster=[27,28) line=2 dir=LeftToRight text="点" emph="﹅"@(107.199,56.000) size=4.000 side=Right why=Emphasis:Right
+elem[28] Text pos=(103.199,64.000) base=73.051 size=(20.320,16.000) src=4 range=[0,1) cluster=[28,29) line=2 dir=LeftToRight text="も"
+elem[29] Text pos=(103.199,80.000) base=73.051 size=(20.320,16.000) src=4 range=[1,2) cluster=[29,30) line=2 dir=LeftToRight text="同"
+elem[30] Text pos=(103.199,96.000) base=73.051 size=(20.320,16.000) src=4 range=[2,3) cluster=[30,31) line=2 dir=LeftToRight text="じ"
+elem[31] Text pos=(103.199,112.000) base=73.051 size=(20.320,16.000) src=4 range=[3,4) cluster=[31,32) line=2 dir=LeftToRight text="側"
+elem[32] Text pos=(103.199,128.000) base=73.051 size=(20.320,16.000) src=4 range=[4,5) cluster=[32,33) line=2 dir=LeftToRight text="に"
+elem[33] Text pos=(103.199,144.000) base=73.051 size=(20.320,16.000) src=4 range=[5,6) cluster=[33,34) line=2 dir=LeftToRight text="付"
+elem[34] Text pos=(103.199,160.000) base=73.051 size=(20.320,16.000) src=4 range=[6,7) cluster=[34,35) line=2 dir=LeftToRight text="き"
+elem[35] Text pos=(103.199,176.000) base=73.051 size=(20.320,16.000) src=4 range=[7,8) cluster=[35,36) line=2 dir=LeftToRight text="、"
+elem[36] Text pos=(82.879,0.000) base=93.371 size=(20.320,16.000) src=4 range=[8,9) cluster=[36,37) line=3 dir=LeftToRight text="行"
+elem[37] Text pos=(82.879,16.000) base=93.371 size=(20.320,16.000) src=4 range=[9,10) cluster=[37,38) line=3 dir=LeftToRight text="の"
+elem[38] Text pos=(82.879,32.000) base=93.371 size=(20.320,16.000) src=4 range=[10,11) cluster=[38,39) line=3 dir=LeftToRight text="高"
+elem[39] Text pos=(82.879,48.000) base=93.371 size=(20.320,16.000) src=4 range=[11,12) cluster=[39,40) line=3 dir=LeftToRight text="さ"
+elem[40] Text pos=(82.879,64.000) base=93.371 size=(20.320,16.000) src=4 range=[12,13) cluster=[40,41) line=3 dir=LeftToRight text="は"
+elem[41] Text pos=(82.879,80.000) base=93.371 size=(20.320,16.000) src=4 range=[13,14) cluster=[41,42) line=3 dir=LeftToRight text="ど"
+elem[42] Text pos=(82.879,96.000) base=93.371 size=(20.320,16.000) src=4 range=[14,15) cluster=[42,43) line=3 dir=LeftToRight text="ち"
+elem[43] Text pos=(82.879,112.000) base=93.371 size=(20.320,16.000) src=4 range=[15,16) cluster=[43,44) line=3 dir=LeftToRight text="ら"
+elem[44] Text pos=(82.879,128.000) base=93.371 size=(20.320,16.000) src=4 range=[16,17) cluster=[44,45) line=3 dir=LeftToRight text="も"
+elem[45] Text pos=(82.879,144.000) base=93.371 size=(20.320,16.000) src=4 range=[17,18) cluster=[45,46) line=3 dir=LeftToRight text="行"
+elem[46] Text pos=(82.879,160.000) base=93.371 size=(20.320,16.000) src=4 range=[18,19) cluster=[46,47) line=3 dir=LeftToRight text="が"
+elem[47] Text pos=(82.879,176.000) base=93.371 size=(20.320,16.000) src=4 range=[19,20) cluster=[47,48) line=3 dir=LeftToRight text="負"
+elem[48] Text pos=(62.559,0.000) base=113.691 size=(20.320,16.000) src=4 range=[20,21) cluster=[48,49) line=4 dir=LeftToRight text="担"
+elem[49] Text pos=(62.559,16.000) base=113.691 size=(20.320,16.000) src=4 range=[21,22) cluster=[49,50) line=4 dir=LeftToRight text="し"
+elem[50] Text pos=(62.559,32.000) base=113.691 size=(20.320,16.000) src=4 range=[22,23) cluster=[50,51) line=4 dir=LeftToRight text="ま"
+elem[51] Text pos=(62.559,48.000) base=113.691 size=(20.320,16.000) src=4 range=[23,24) cluster=[51,52) line=4 dir=LeftToRight text="す"
+elem[52] Text pos=(62.559,64.000) base=113.691 size=(20.320,16.000) src=4 range=[24,25) cluster=[52,53) line=4 dir=LeftToRight text="。"
+elem[53] Text pos=(32.078,0.000) base=144.172 size=(20.320,16.000) src=6 range=[0,1) cluster=[54,55) line=5 dir=LeftToRight text="振" ruby="ふ"@(37.158,4.000) size=8.000 w=8.000 band=10.160 glyphs=1 why=Ruby:Mono
+elem[54] Text pos=(32.078,16.000) base=144.172 size=(20.320,16.000) src=6 range=[1,2) cluster=[55,56) line=5 dir=LeftToRight text="り" ruby="り"@(37.158,20.000) size=8.000 w=8.000 band=10.160 glyphs=1 why=Ruby:Mono
+elem[55] Text pos=(32.078,32.000) base=144.172 size=(20.320,16.000) src=6 range=[2,3) cluster=[56,57) line=5 dir=LeftToRight text="仮" ruby="が"@(37.158,36.000) size=8.000 w=8.000 band=10.160 glyphs=1 why=Ruby:Mono
+elem[56] Text pos=(32.078,48.000) base=144.172 size=(20.320,16.000) src=6 range=[3,4) cluster=[57,58) line=5 dir=LeftToRight text="名" ruby="な"@(37.158,52.000) size=8.000 w=8.000 band=10.160 glyphs=1 why=Ruby:Mono
+elem[57] Text pos=(32.078,64.000) base=144.172 size=(20.320,16.000) src=7 range=[0,1) cluster=[58,59) line=5 dir=LeftToRight text=" "
+elem[58] Text pos=(32.078,80.000) base=144.172 size=(20.320,16.000) src=7 range=[1,2) cluster=[59,60) line=5 dir=LeftToRight text="と"
+elem[59] Text pos=(32.078,96.000) base=144.172 size=(20.320,16.000) src=7 range=[2,3) cluster=[60,61) line=5 dir=LeftToRight text=" "
+elem[60] Text pos=(32.078,112.000) base=144.172 size=(20.320,16.000) src=8 range=[0,1) cluster=[61,62) line=5 dir=LeftToRight text="漢" ruby="か"@(37.158,116.000) size=8.000 w=8.000 band=10.160 glyphs=1 why=Ruby:Mono
+elem[61] Text pos=(32.078,128.000) base=144.172 size=(20.320,16.000) src=8 range=[1,2) cluster=[62,63) line=5 dir=LeftToRight text="字" ruby="んじ"@(37.158,128.000) size=8.000 w=16.000 band=10.160 glyphs=2 why=Ruby:Mono
+elem[62] Text pos=(1.598,4.000) base=174.652 size=(20.320,16.000) src=10 range=[0,1) cluster=[64,65) line=6 dir=LeftToRight text="注" ruby="zhù"@(6.678,0.000) size=8.000 w=24.000 band=10.160 glyphs=3 why=Ruby:Mono
+elem[63] Text pos=(1.598,20.000) base=174.652 size=(20.320,16.000) src=11 range=[0,1) cluster=[65,66) line=6 dir=LeftToRight text="音" ruby="yīn"@(6.678,16.000) size=8.000 w=24.000 band=10.160 glyphs=3 why=Ruby:Mono
+elem[64] Text pos=(1.598,36.000) base=174.652 size=(20.320,16.000) src=12 range=[0,1) cluster=[66,67) line=6 dir=LeftToRight text="符" ruby="fú"@(6.678,36.000) size=8.000 w=16.000 band=10.160 glyphs=2 why=Ruby:Mono
+elem[65] Text pos=(1.598,52.000) base=174.652 size=(20.320,16.000) src=13 range=[0,1) cluster=[67,68) line=6 dir=LeftToRight text="号" ruby="hào"@(6.678,48.000) size=8.000 w=24.000 band=10.160 glyphs=3 why=Ruby:Mono
+elem[66] Text pos=(1.598,68.000) base=174.652 size=(20.320,16.000) src=14 range=[0,1) cluster=[68,69) line=6 dir=LeftToRight text=" "
+elem[67] Text pos=(1.598,84.000) base=174.652 size=(20.320,16.000) src=14 range=[1,2) cluster=[69,70) line=6 dir=LeftToRight text="是"
+elem[68] Text pos=(1.598,100.000) base=174.652 size=(20.320,16.000) src=14 range=[2,3) cluster=[70,71) line=6 dir=LeftToRight text="汉"
+elem[69] Text pos=(1.598,116.000) base=174.652 size=(20.320,16.000) src=14 range=[3,4) cluster=[71,72) line=6 dir=LeftToRight text="语"
+elem[70] Text pos=(1.598,132.000) base=174.652 size=(20.320,16.000) src=14 range=[4,5) cluster=[72,73) line=6 dir=LeftToRight text="拼"
+elem[71] Text pos=(1.598,148.000) base=174.652 size=(20.320,16.000) src=14 range=[5,6) cluster=[73,74) line=6 dir=LeftToRight text="音"
+elem[72] Text pos=(1.598,164.000) base=174.652 size=(20.320,16.000) src=14 range=[6,7) cluster=[74,75) line=6 dir=LeftToRight text="的"
+elem[73] Text pos=(1.598,180.000) base=174.652 size=(20.320,16.000) src=14 range=[7,8) cluster=[75,76) line=6 dir=LeftToRight text="标"
+elem[74] Text pos=(-18.723,0.000) base=194.973 size=(20.320,16.000) src=14 range=[8,9) cluster=[76,77) line=7 dir=LeftToRight text="法"
+elem[75] Text pos=(-18.723,16.000) base=194.973 size=(20.320,16.000) src=14 range=[9,10) cluster=[77,78) line=7 dir=LeftToRight text="。"

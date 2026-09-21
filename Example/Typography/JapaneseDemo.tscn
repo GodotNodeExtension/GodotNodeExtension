@@ -1,0 +1,83 @@
+[gd_scene format=3 uid="uid://d1dh4eet1falk"]
+
+[ext_resource type="Script" uid="uid://ll6d1kgopbil" path="res://Example/Typography/TypographySceneCanvas.cs" id="1_canvas"]
+
+[node name="TypographyDemo" type="Control" unique_id=1872767214]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="." unique_id=1086939394]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.09, 0.11, 1)
+
+[node name="Page" type="MarginContainer" parent="." unique_id=1073638891]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 20
+
+[node name="Column" type="VBoxContainer" parent="Page" unique_id=188370171]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Scroll" type="ScrollContainer" parent="Page/Column" unique_id=1324799215]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Canvas" type="Control" parent="Page/Column/Scroll" unique_id=566751017 node_paths=PackedStringArray("StatusLabel", "FontSizeControl", "OverlayToggle")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+script = ExtResource("1_canvas")
+LanguageTag = "ja"
+Sample = 2
+ColumnHeight = 420.0
+StatusLabel = NodePath("../../Controls/Status")
+FontSizeControl = NodePath("../../Controls/FontSize")
+OverlayToggle = NodePath("../../Controls/Overlay")
+
+[node name="Controls" type="HBoxContainer" parent="Page/Column" unique_id=980047317]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="FontSizeLabel" type="Label" parent="Page/Column/Controls" unique_id=628241367]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.76, 0.83, 1)
+text = "Font size"
+
+[node name="FontSize" type="SpinBox" parent="Page/Column/Controls" unique_id=751008834]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+min_value = 10.0
+max_value = 72.0
+value = 26.0
+
+[node name="Overlay" type="CheckBox" parent="Page/Column/Controls" unique_id=1323506654]
+layout_mode = 2
+text = "Show what the layout placed"
+
+[node name="Status" type="Label" parent="Page/Column/Controls" unique_id=497589266]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.55, 0.6, 0.68, 1)
+text = "
+Japanese [ja] horizontal 26px | measure 976px (canvas) | content 997×1588px | canvas 1008×1620px | 1058 elements | layout 23.6ms | outlining Example"
+autowrap_mode = 3

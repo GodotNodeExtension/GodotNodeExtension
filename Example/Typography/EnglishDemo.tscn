@@ -1,0 +1,86 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/Typography/TypographySceneCanvas.cs" id="1_canvas"]
+
+[node name="TypographyDemo" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.09, 0.11, 1)
+
+[node name="Page" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 20
+
+[node name="Column" type="VBoxContainer" parent="Page"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Scroll" type="ScrollContainer" parent="Page/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Canvas" type="Control" parent="Page/Column/Scroll" node_paths=PackedStringArray("StatusLabel", "FontSizeControl", "OverlayToggle")]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+script = ExtResource("1_canvas")
+StatusLabel = NodePath("../../Controls/Status")
+FontSizeControl = NodePath("../../Controls/FontSize")
+OverlayToggle = NodePath("../../Controls/Overlay")
+LanguageTag = "en"
+WritingMode = 0
+Sample = 4
+FontSize = 26
+Measure = 420.0
+ColumnHeight = 420.0
+
+[node name="Controls" type="HBoxContainer" parent="Page/Column"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="FontSizeLabel" type="Label" parent="Page/Column/Controls"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.72, 0.76, 0.83, 1)
+text = "Font size"
+
+[node name="FontSize" type="SpinBox" parent="Page/Column/Controls"]
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+min_value = 10.0
+max_value = 72.0
+value = 26.0
+
+[node name="Overlay" type="CheckBox" parent="Page/Column/Controls"]
+layout_mode = 2
+text = "Show what the layout placed"
+
+[node name="Status" type="Label" parent="Page/Column/Controls"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.55, 0.60, 0.68, 1)
+autowrap_mode = 3

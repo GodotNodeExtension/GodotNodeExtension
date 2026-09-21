@@ -1,0 +1,13 @@
+# typography golden dump (P0 contract)
+# fonts: ThemeDB.FallbackFont (baselines depend on the engine font + system fallback)
+# note: vertical Bopomofo: the annotation's room comes from the inline axis, and it is drawn beside the column; `base` is a column coordinate here (see the vertical note above)
+contentSize=(120.000 used) (26.416,80.000)
+settings maxWidth=120.000 lineSpacing=0.000 paragraphSpacing=0.000 firstLineIndent=0 alignment=Left prohibition=Basic profile=zh-Hant cjkLatinGapEm=0.250 mode=VerticalRl
+source=2 lines=1 elements=5
+line[0] y=0.000 h=26.416 asc=16.250 desc=4.070 span=[0.000,240.000) para=0 first=True frozen=False elems=5
+boundaries total=4 Plain=4
+elem[0] Text pos=(113.904,0.000) base=22.346 size=(20.320,16.000) src=0 range=[0,1) cluster=[0,1) line=0 dir=LeftToRight text="注"
+elem[1] Text pos=(113.904,16.000) base=22.346 size=(20.320,16.000) src=0 range=[1,2) cluster=[1,2) line=0 dir=LeftToRight text="音"
+elem[2] Text pos=(113.904,32.000) base=22.346 size=(20.320,16.000) src=0 range=[2,3) cluster=[2,3) line=0 dir=LeftToRight text="符"
+elem[3] Text pos=(113.904,48.000) base=22.346 size=(20.320,16.000) src=0 range=[3,4) cluster=[3,4) line=0 dir=LeftToRight text="號"
+elem[4] Text pos=(113.904,64.000) base=22.346 size=(20.320,16.000) src=1 range=[0,1) cluster=[4,5) line=0 dir=LeftToRight text="號" ruby="ㄏㄠˋ"@(116.952,67.203) size=4.800 w=9.594 band=6.096 glyphs=3 why=Ruby:Mono orient=Vertical

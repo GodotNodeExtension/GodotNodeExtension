@@ -1,0 +1,153 @@
+# typography golden dump (P0 contract)
+# fonts: ThemeDB.FallbackFont (baselines depend on the engine font + system fallback)
+contentSize=(240.000 used) (237.422,142.242)
+settings maxWidth=240.000 lineSpacing=0.000 paragraphSpacing=0.000 firstLineIndent=0 alignment=Left prohibition=Basic profile=en cjkLatinGapEm=0.250 mode=HorizontalTb
+source=3 lines=7 elements=70
+line[0] y=0.000 h=20.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=0 first=True frozen=False elems=10
+line[1] y=20.320 h=20.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=0 first=False frozen=False elems=12
+line[2] y=40.641 h=20.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=0 first=False frozen=False elems=14
+line[3] y=60.961 h=20.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=0 first=False frozen=False elems=1
+line[4] y=81.281 h=20.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=1 first=True frozen=False elems=13
+line[5] y=101.602 h=20.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=1 first=False frozen=False elems=13
+line[6] y=121.922 h=20.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=1 first=False frozen=False elems=7
+boundaries total=70 Plain=6 SpaceRun=62 HardBreak=2
+  b[0|1] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[1|2] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[2|3] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[3|4] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[4|5] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[5|6] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[6|7] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[7|8] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[8|9] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[9|10] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[10|11] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[11|12] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[12|13] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[13|14] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[14|15] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[15|16] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[16|17] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[17|18] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[18|19] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[19|20] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[20|21] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[21|22] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[22|23] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[23|24] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[24|25] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[25|26] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[26|27] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[27|28] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[28|29] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[29|30] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[30|31] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[31|32] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[32|33] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[33|34] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[34|35] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[35|36] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[36|37] kind=HardBreak LatinLetter->Neutral owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=HardBreak:UAX14
+  b[37|38] kind=HardBreak Neutral->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=HardBreak:UAX14
+  b[38|39] kind=Plain LatinLetter->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=Plain:UAX14
+  b[39|40] kind=Plain LatinLetter->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=Plain:UAX14
+  b[40|41] kind=Plain LatinLetter->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=Plain:UAX14
+  b[41|42] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[42|43] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[43|44] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[44|45] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[45|46] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[46|47] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[47|48] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[48|49] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[49|50] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[50|51] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[51|52] kind=Plain LatinLetter->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=Plain:UAX14
+  b[52|53] kind=Plain LatinLetter->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=Plain:UAX14
+  b[53|54] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[54|55] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[55|56] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[56|57] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[57|58] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[58|59] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[59|60] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[60|61] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[61|62] kind=Plain LatinLetter->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=Plain:UAX14
+  b[62|63] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[63|64] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[64|65] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[65|66] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[66|67] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[67|68] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[68|69] kind=SpaceRun LatinLetter->Space owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=SpaceRun:UAX14
+  b[69|70] kind=SpaceRun Space->LatinLetter owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=SpaceRun:UAX14
+elem[0] Text pos=(0.000,0.000) base=16.250 size=(28.109,20.320) src=0 range=[0,3) cluster=[0,1) line=0 dir=LeftToRight text="The"
+elem[1] Text pos=(28.109,0.000) base=16.250 size=(4.734,20.320) src=0 range=[3,4) cluster=[1,2) line=0 dir=LeftToRight text=" "
+elem[2] Text pos=(32.844,0.000) base=16.250 size=(41.109,20.320) src=0 range=[4,9) cluster=[2,3) line=0 dir=LeftToRight text="quick"
+elem[3] Text pos=(73.953,0.000) base=16.250 size=(4.734,20.320) src=0 range=[9,10) cluster=[3,4) line=0 dir=LeftToRight text=" "
+elem[4] Text pos=(78.688,0.000) base=16.250 size=(48.781,20.320) src=0 range=[10,15) cluster=[4,5) line=0 dir=LeftToRight text="brown"
+elem[5] Text pos=(127.469,0.000) base=16.250 size=(4.734,20.320) src=0 range=[15,16) cluster=[5,6) line=0 dir=LeftToRight text=" "
+elem[6] Text pos=(132.203,0.000) base=16.250 size=(23.625,20.320) src=0 range=[16,19) cluster=[6,7) line=0 dir=LeftToRight text="fox"
+elem[7] Text pos=(155.828,0.000) base=16.250 size=(4.734,20.320) src=0 range=[19,20) cluster=[7,8) line=0 dir=LeftToRight text=" "
+elem[8] Text pos=(160.562,0.000) base=16.250 size=(46.766,20.320) src=0 range=[20,25) cluster=[8,9) line=0 dir=LeftToRight text="jumps"
+elem[9] Text pos=(207.328,0.000) base=16.250 size=(4.734,20.320) src=0 range=[25,26) cluster=[9,10) line=0 dir=LeftToRight text=" "
+elem[10] Text pos=(0.000,20.320) base=36.570 size=(33.672,20.320) src=0 range=[26,30) cluster=[10,11) line=1 dir=LeftToRight text="over"
+elem[11] Text pos=(33.672,20.320) base=36.570 size=(4.734,20.320) src=0 range=[30,31) cluster=[11,12) line=1 dir=LeftToRight text=" "
+elem[12] Text pos=(38.406,20.320) base=36.570 size=(24.906,20.320) src=0 range=[31,34) cluster=[12,13) line=1 dir=LeftToRight text="the"
+elem[13] Text pos=(63.312,20.320) base=36.570 size=(4.734,20.320) src=0 range=[34,35) cluster=[13,14) line=1 dir=LeftToRight text=" "
+elem[14] Text pos=(68.047,20.320) base=36.570 size=(29.453,20.320) src=0 range=[35,39) cluster=[14,15) line=1 dir=LeftToRight text="lazy"
+elem[15] Text pos=(97.500,20.320) base=36.570 size=(4.734,20.320) src=0 range=[39,40) cluster=[15,16) line=1 dir=LeftToRight text=" "
+elem[16] Text pos=(102.234,20.320) base=36.570 size=(34.500,20.320) src=0 range=[40,44) cluster=[16,17) line=1 dir=LeftToRight text="dog,"
+elem[17] Text pos=(136.734,20.320) base=36.570 size=(4.734,20.320) src=0 range=[44,45) cluster=[17,18) line=1 dir=LeftToRight text=" "
+elem[18] Text pos=(141.469,20.320) base=36.570 size=(28.938,20.320) src=0 range=[45,48) cluster=[18,19) line=1 dir=LeftToRight text="and"
+elem[19] Text pos=(170.406,20.320) base=36.570 size=(4.734,20.320) src=0 range=[48,49) cluster=[19,20) line=1 dir=LeftToRight text=" "
+elem[20] Text pos=(175.141,20.320) base=36.570 size=(24.906,20.320) src=0 range=[49,52) cluster=[20,21) line=1 dir=LeftToRight text="the"
+elem[21] Text pos=(200.047,20.320) base=36.570 size=(4.734,20.320) src=0 range=[52,53) cluster=[21,22) line=1 dir=LeftToRight text=" "
+elem[22] Text pos=(0.000,40.641) base=56.891 size=(30.641,20.320) src=0 range=[53,56) cluster=[22,23) line=2 dir=LeftToRight text="dog"
+elem[23] Text pos=(30.641,40.641) base=56.891 size=(4.734,20.320) src=0 range=[56,57) cluster=[23,24) line=2 dir=LeftToRight text=" "
+elem[24] Text pos=(35.375,40.641) base=56.891 size=(36.891,20.320) src=0 range=[57,61) cluster=[24,25) line=2 dir=LeftToRight text="does"
+elem[25] Text pos=(72.266,40.641) base=56.891 size=(4.734,20.320) src=0 range=[61,62) cluster=[25,26) line=2 dir=LeftToRight text=" "
+elem[26] Text pos=(77.000,40.641) base=56.891 size=(26.000,20.320) src=0 range=[62,65) cluster=[26,27) line=2 dir=LeftToRight text="not"
+elem[27] Text pos=(103.000,40.641) base=56.891 size=(4.734,20.320) src=0 range=[65,66) cluster=[27,28) line=2 dir=LeftToRight text=" "
+elem[28] Text pos=(107.734,40.641) base=56.891 size=(40.562,20.320) src=0 range=[66,70) cluster=[28,29) line=2 dir=LeftToRight text="seem"
+elem[29] Text pos=(148.297,40.641) base=56.891 size=(4.734,20.320) src=0 range=[70,71) cluster=[29,30) line=2 dir=LeftToRight text=" "
+elem[30] Text pos=(153.031,40.641) base=56.891 size=(16.016,20.320) src=0 range=[71,73) cluster=[30,31) line=2 dir=LeftToRight text="to"
+elem[31] Text pos=(169.047,40.641) base=56.891 size=(4.734,20.320) src=0 range=[73,74) cluster=[31,32) line=2 dir=LeftToRight text=" "
+elem[32] Text pos=(173.781,40.641) base=56.891 size=(39.359,20.320) src=0 range=[74,78) cluster=[32,33) line=2 dir=LeftToRight text="mind"
+elem[33] Text pos=(213.141,40.641) base=56.891 size=(4.734,20.320) src=0 range=[78,79) cluster=[33,34) line=2 dir=LeftToRight text=" "
+elem[34] Text pos=(217.875,40.641) base=56.891 size=(14.812,20.320) src=0 range=[79,81) cluster=[34,35) line=2 dir=LeftToRight text="at"
+elem[35] Text pos=(232.688,40.641) base=56.891 size=(4.734,20.320) src=0 range=[81,82) cluster=[35,36) line=2 dir=LeftToRight text=" "
+elem[36] Text pos=(0.000,60.961) base=77.211 size=(21.234,20.320) src=0 range=[82,86) cluster=[36,37) line=3 dir=LeftToRight text="all."
+elem[37] Text pos=(0.000,81.281) base=97.531 size=(16.688,20.320) src=2 range=[0,2) cluster=[38,39) line=4 dir=LeftToRight text="Ty"
+elem[38] Text pos=(16.688,81.281) base=97.531 size=(30.625,20.320) src=2 range=[2,5) cluster=[39,40) line=4 dir=LeftToRight text="pog"
+elem[39] Text pos=(47.312,81.281) base=97.531 size=(14.953,20.320) src=2 range=[5,7) cluster=[40,41) line=4 dir=LeftToRight text="ra"
+elem[40] Text pos=(62.266,81.281) base=97.531 size=(28.547,20.320) src=2 range=[7,10) cluster=[41,42) line=4 dir=LeftToRight text="phy"
+elem[41] Text pos=(90.812,81.281) base=97.531 size=(4.734,20.320) src=2 range=[10,11) cluster=[42,43) line=4 dir=LeftToRight text=" "
+elem[42] Text pos=(95.547,81.281) base=97.531 size=(11.672,20.320) src=2 range=[11,13) cluster=[43,44) line=4 dir=LeftToRight text="is"
+elem[43] Text pos=(107.219,81.281) base=97.531 size=(4.734,20.320) src=2 range=[13,14) cluster=[44,45) line=4 dir=LeftToRight text=" "
+elem[44] Text pos=(111.953,81.281) base=97.531 size=(24.906,20.320) src=2 range=[14,17) cluster=[45,46) line=4 dir=LeftToRight text="the"
+elem[45] Text pos=(136.859,81.281) base=97.531 size=(4.734,20.320) src=2 range=[17,18) cluster=[46,47) line=4 dir=LeftToRight text=" "
+elem[46] Text pos=(141.594,81.281) base=97.531 size=(34.812,20.320) src=2 range=[18,23) cluster=[47,48) line=4 dir=LeftToRight text="craft"
+elem[47] Text pos=(176.406,81.281) base=97.531 size=(4.734,20.320) src=2 range=[23,24) cluster=[48,49) line=4 dir=LeftToRight text=" "
+elem[48] Text pos=(181.141,81.281) base=97.531 size=(15.406,20.320) src=2 range=[24,26) cluster=[49,50) line=4 dir=LeftToRight text="of"
+elem[49] Text pos=(196.547,81.281) base=97.531 size=(4.734,20.320) src=2 range=[26,27) cluster=[50,51) line=4 dir=LeftToRight text=" "
+elem[50] Text pos=(0.000,101.602) base=117.852 size=(14.953,20.320) src=2 range=[27,29) cluster=[51,52) line=5 dir=LeftToRight text="ar"
+elem[51] Text pos=(14.953,101.602) base=117.852 size=(35.047,20.320) src=2 range=[29,33) cluster=[52,53) line=5 dir=LeftToRight text="rang"
+elem[52] Text pos=(50.000,101.602) base=117.852 size=(24.359,20.320) src=2 range=[33,36) cluster=[53,54) line=5 dir=LeftToRight text="ing"
+elem[53] Text pos=(74.359,101.602) base=117.852 size=(4.734,20.320) src=2 range=[36,37) cluster=[54,55) line=5 dir=LeftToRight text=" "
+elem[54] Text pos=(79.094,101.602) base=117.852 size=(29.000,20.320) src=2 range=[37,41) cluster=[55,56) line=5 dir=LeftToRight text="text"
+elem[55] Text pos=(108.094,101.602) base=117.852 size=(4.734,20.320) src=2 range=[41,42) cluster=[56,57) line=5 dir=LeftToRight text=" "
+elem[56] Text pos=(112.828,101.602) base=117.852 size=(17.578,20.320) src=2 range=[42,44) cluster=[57,58) line=5 dir=LeftToRight text="so"
+elem[57] Text pos=(130.406,101.602) base=117.852 size=(4.734,20.320) src=2 range=[44,45) cluster=[58,59) line=5 dir=LeftToRight text=" "
+elem[58] Text pos=(135.141,101.602) base=117.852 size=(30.641,20.320) src=2 range=[45,49) cluster=[59,60) line=5 dir=LeftToRight text="that"
+elem[59] Text pos=(165.781,101.602) base=117.852 size=(4.734,20.320) src=2 range=[49,50) cluster=[60,61) line=5 dir=LeftToRight text=" "
+elem[60] Text pos=(170.516,101.602) base=117.852 size=(34.047,20.320) src=2 range=[50,54) cluster=[61,62) line=5 dir=LeftToRight text="read"
+elem[61] Text pos=(204.562,101.602) base=117.852 size=(24.359,20.320) src=2 range=[54,57) cluster=[62,63) line=5 dir=LeftToRight text="ing"
+elem[62] Text pos=(228.922,101.602) base=117.852 size=(4.734,20.320) src=2 range=[57,58) cluster=[63,64) line=5 dir=LeftToRight text=" "
+elem[63] Text pos=(0.000,121.922) base=138.172 size=(10.234,20.320) src=2 range=[58,60) cluster=[64,65) line=6 dir=LeftToRight text="it"
+elem[64] Text pos=(10.234,121.922) base=138.172 size=(4.734,20.320) src=2 range=[60,61) cluster=[65,66) line=6 dir=LeftToRight text=" "
+elem[65] Text pos=(14.969,121.922) base=138.172 size=(38.984,20.320) src=2 range=[61,66) cluster=[66,67) line=6 dir=LeftToRight text="costs"
+elem[66] Text pos=(53.953,121.922) base=138.172 size=(4.734,20.320) src=2 range=[66,67) cluster=[67,68) line=6 dir=LeftToRight text=" "
+elem[67] Text pos=(58.688,121.922) base=138.172 size=(20.031,20.320) src=2 range=[67,69) cluster=[68,69) line=6 dir=LeftToRight text="no"
+elem[68] Text pos=(78.719,121.922) base=138.172 size=(4.734,20.320) src=2 range=[69,70) cluster=[69,70) line=6 dir=LeftToRight text=" "
+elem[69] Text pos=(83.453,121.922) base=138.172 size=(46.781,20.320) src=2 range=[70,77) cluster=[70,71) line=6 dir=LeftToRight text="effort."

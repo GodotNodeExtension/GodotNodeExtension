@@ -1,0 +1,74 @@
+# typography golden dump (P0 contract)
+# fonts: ThemeDB.FallbackFont (baselines depend on the engine font + system fallback)
+contentSize=(240.000 used) (240.000,101.602)
+settings maxWidth=240.000 lineSpacing=0.000 paragraphSpacing=0.000 firstLineIndent=0 alignment=Left prohibition=Basic profile=und cjkLatinGapEm=0.250 mode=HorizontalTb
+source=3 lines=5 elements=55
+line[0] y=0.000 h=20.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=0 first=True frozen=False elems=14
+line[1] y=20.320 h=20.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=0 first=False frozen=False elems=15
+line[2] y=40.641 h=20.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=0 first=False frozen=False elems=2
+line[3] y=60.961 h=20.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=1 first=True frozen=False elems=15
+line[4] y=81.281 h=20.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=1 first=False frozen=False elems=9
+boundaries total=55 Plain=47 Punctuation=6 HardBreak=2
+  b[14|15] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+  b[15|16] kind=Punctuation Punctuation->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=Punctuation
+  b[29|30] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+  b[30|31] kind=HardBreak Punctuation->Neutral owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=HardBreak
+  b[31|32] kind=HardBreak Neutral->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=HardBreak
+  b[42|43] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+  b[43|44] kind=Punctuation Punctuation->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=Punctuation
+  b[54|55] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+elem[0] Text pos=(0.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[0,1) cluster=[0,1) line=0 dir=LeftToRight text="中"
+elem[1] Text pos=(16.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[1,2) cluster=[1,2) line=0 dir=LeftToRight text="文"
+elem[2] Text pos=(32.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[2,3) cluster=[2,3) line=0 dir=LeftToRight text="排"
+elem[3] Text pos=(48.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[3,4) cluster=[3,4) line=0 dir=LeftToRight text="版"
+elem[4] Text pos=(64.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[4,5) cluster=[4,5) line=0 dir=LeftToRight text="需"
+elem[5] Text pos=(80.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[5,6) cluster=[5,6) line=0 dir=LeftToRight text="要"
+elem[6] Text pos=(96.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[6,7) cluster=[6,7) line=0 dir=LeftToRight text="处"
+elem[7] Text pos=(112.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[7,8) cluster=[7,8) line=0 dir=LeftToRight text="理"
+elem[8] Text pos=(128.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[8,9) cluster=[8,9) line=0 dir=LeftToRight text="标"
+elem[9] Text pos=(144.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[9,10) cluster=[9,10) line=0 dir=LeftToRight text="点"
+elem[10] Text pos=(160.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[10,11) cluster=[10,11) line=0 dir=LeftToRight text="与"
+elem[11] Text pos=(176.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[11,12) cluster=[11,12) line=0 dir=LeftToRight text="行"
+elem[12] Text pos=(192.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[12,13) cluster=[12,13) line=0 dir=LeftToRight text="首"
+elem[13] Text pos=(208.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[13,14) cluster=[13,14) line=0 dir=LeftToRight text="禁"
+elem[14] Text pos=(0.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[14,15) cluster=[14,15) line=1 dir=LeftToRight text="则"
+elem[15] Text pos=(16.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[15,16) cluster=[15,16) line=1 dir=LeftToRight text="，"
+elem[16] Text pos=(32.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[16,17) cluster=[16,17) line=1 dir=LeftToRight text="这"
+elem[17] Text pos=(48.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[17,18) cluster=[17,18) line=1 dir=LeftToRight text="一"
+elem[18] Text pos=(64.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[18,19) cluster=[18,19) line=1 dir=LeftToRight text="段"
+elem[19] Text pos=(80.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[19,20) cluster=[19,20) line=1 dir=LeftToRight text="的"
+elem[20] Text pos=(96.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[20,21) cluster=[20,21) line=1 dir=LeftToRight text="长"
+elem[21] Text pos=(112.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[21,22) cluster=[21,22) line=1 dir=LeftToRight text="度"
+elem[22] Text pos=(128.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[22,23) cluster=[22,23) line=1 dir=LeftToRight text="足"
+elem[23] Text pos=(144.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[23,24) cluster=[23,24) line=1 dir=LeftToRight text="以"
+elem[24] Text pos=(160.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[24,25) cluster=[24,25) line=1 dir=LeftToRight text="检"
+elem[25] Text pos=(176.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[25,26) cluster=[25,26) line=1 dir=LeftToRight text="验"
+elem[26] Text pos=(192.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[26,27) cluster=[26,27) line=1 dir=LeftToRight text="断"
+elem[27] Text pos=(208.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[27,28) cluster=[27,28) line=1 dir=LeftToRight text="行"
+elem[28] Text pos=(224.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[28,29) cluster=[28,29) line=1 dir=LeftToRight text="位"
+elem[29] Text pos=(0.000,40.641) base=56.891 size=(16.000,20.320) src=0 range=[29,30) cluster=[29,30) line=2 dir=LeftToRight text="置"
+elem[30] Text pos=(16.000,40.641) base=56.891 size=(16.000,20.320) src=0 range=[30,31) cluster=[30,31) line=2 dir=LeftToRight text="。"
+elem[31] Text pos=(0.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[0,1) cluster=[32,33) line=3 dir=LeftToRight text="第"
+elem[32] Text pos=(16.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[1,2) cluster=[33,34) line=3 dir=LeftToRight text="二"
+elem[33] Text pos=(32.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[2,3) cluster=[34,35) line=3 dir=LeftToRight text="段"
+elem[34] Text pos=(48.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[3,4) cluster=[35,36) line=3 dir=LeftToRight text="用"
+elem[35] Text pos=(64.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[4,5) cluster=[36,37) line=3 dir=LeftToRight text="来"
+elem[36] Text pos=(80.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[5,6) cluster=[37,38) line=3 dir=LeftToRight text="检"
+elem[37] Text pos=(96.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[6,7) cluster=[38,39) line=3 dir=LeftToRight text="验"
+elem[38] Text pos=(112.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[7,8) cluster=[39,40) line=3 dir=LeftToRight text="段"
+elem[39] Text pos=(128.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[8,9) cluster=[40,41) line=3 dir=LeftToRight text="落"
+elem[40] Text pos=(144.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[9,10) cluster=[41,42) line=3 dir=LeftToRight text="间"
+elem[41] Text pos=(160.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[10,11) cluster=[42,43) line=3 dir=LeftToRight text="距"
+elem[42] Text pos=(176.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[11,12) cluster=[43,44) line=3 dir=LeftToRight text="，"
+elem[43] Text pos=(192.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[12,13) cluster=[44,45) line=3 dir=LeftToRight text="以"
+elem[44] Text pos=(208.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[13,14) cluster=[45,46) line=3 dir=LeftToRight text="及"
+elem[45] Text pos=(224.000,60.961) base=77.211 size=(16.000,20.320) src=2 range=[14,15) cluster=[46,47) line=3 dir=LeftToRight text="段"
+elem[46] Text pos=(0.000,81.281) base=97.531 size=(16.000,20.320) src=2 range=[15,16) cluster=[47,48) line=4 dir=LeftToRight text="落"
+elem[47] Text pos=(16.000,81.281) base=97.531 size=(16.000,20.320) src=2 range=[16,17) cluster=[48,49) line=4 dir=LeftToRight text="末"
+elem[48] Text pos=(32.000,81.281) base=97.531 size=(16.000,20.320) src=2 range=[17,18) cluster=[49,50) line=4 dir=LeftToRight text="行"
+elem[49] Text pos=(48.000,81.281) base=97.531 size=(16.000,20.320) src=2 range=[18,19) cluster=[50,51) line=4 dir=LeftToRight text="的"
+elem[50] Text pos=(64.000,81.281) base=97.531 size=(16.000,20.320) src=2 range=[19,20) cluster=[51,52) line=4 dir=LeftToRight text="对"
+elem[51] Text pos=(80.000,81.281) base=97.531 size=(16.000,20.320) src=2 range=[20,21) cluster=[52,53) line=4 dir=LeftToRight text="齐"
+elem[52] Text pos=(96.000,81.281) base=97.531 size=(16.000,20.320) src=2 range=[21,22) cluster=[53,54) line=4 dir=LeftToRight text="行"
+elem[53] Text pos=(112.000,81.281) base=97.531 size=(16.000,20.320) src=2 range=[22,23) cluster=[54,55) line=4 dir=LeftToRight text="为"
+elem[54] Text pos=(128.000,81.281) base=97.531 size=(16.000,20.320) src=2 range=[23,24) cluster=[55,56) line=4 dir=LeftToRight text="。"

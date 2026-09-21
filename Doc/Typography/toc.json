@@ -1,0 +1,17 @@
+{
+  "pages": [
+    "README.md",
+    "getting-started.md",
+    "writing-modes.md",
+    "layout-and-spacing.md",
+    "line-breaking.md",
+    "input-format.md",
+    "output-format.md",
+    "languages.md",
+    "annotations.md",
+    "rendering.md",
+    "limitations.md",
+    "server-and-threading.md",
+    "design.md"
+  ]
+}

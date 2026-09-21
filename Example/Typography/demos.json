@@ -1,0 +1,49 @@
+{
+  "demos": [
+    {
+      "scene": "ChineseSimplifiedDemo.tscn",
+      "title": "Simplified Chinese",
+      "description": "Line-start and line-end prohibition (a full stop or a comma never starts a line, an opening bracket never ends one), a run of marks at a line end squeezed into half an em, the quarter-em gap the engine inserts between CJK and Latin, and a reading (pinyin) set above the characters with its tone marks. The last paragraph is justified, and every paragraph is indented by two characters - the language's own default."
+    },
+    {
+      "scene": "ChineseTraditionalDemo.tscn",
+      "title": "Traditional Chinese",
+      "description": "The traditional quotation marks and the centred ellipsis, and Bopomofo beside each character: one reading per character, set down a column of its own even in horizontal writing, at half the base size. The line grows for the band the annotation sits in, so nothing overlaps the line above it."
+    },
+    {
+      "scene": "JapaneseDemo.tscn",
+      "title": "Japanese",
+      "description": "jlreq's prohibition at the line head and the line end (small kana, the prolonged sound mark, brackets), furigana over a whole word as well as over a single character, and emphasis dots above the characters. The half em after a line-ending stop is preserved rather than trimmed."
+    },
+    {
+      "scene": "KoreanDemo.tscn",
+      "title": "Korean",
+      "description": "klreq's prohibition set, the narrow sentence marks of horizontal writing (a period and a comma drawn where the wide ones were written), and Hangul mixed with Hanja and Latin in one line. klreq states no annotation convention, so this sample carries none - which is the honest answer for the language."
+    },
+    {
+      "scene": "EnglishDemo.tscn",
+      "title": "English",
+      "description": "Line breaking at spaces, automatic hyphenation where a language's patterns allow it, and the author's own break: the second paragraph carries a soft hyphen, and a line that reaches it continues on the next line with a hyphen. The second paragraph is justified in a narrow measure."
+    },
+    {
+      "scene": "RightToLeftDemo.tscn",
+      "title": "Arabic and Hebrew",
+      "description": "The direction comes from the language, not from the request: each paragraph fills from its right edge, the runs of a mixed line are put in visual order, and paired characters (brackets, quotation marks) are drawn as their mirror image."
+    },
+    {
+      "scene": "VerticalDemo.tscn",
+      "title": "Vertical writing",
+      "description": "Lines are columns that advance leftward from the content box' right edge, and a line's length is the column height. The furigana and the emphasis dots sit on the column's own side (its right), and a Latin word or a number is shaped the way it reads and then turned a quarter turn, so it reads on down the column instead of spacing its letters out to full-width cells."
+    },
+    {
+      "scene": "MixedLanguagesDemo.tscn",
+      "title": "One document, several languages",
+      "description": "The Simplified Chinese, Traditional Chinese and English paragraphs declare their language; the Japanese one declares nothing and is read for what it is, because its text carries kana. So its furigana goes above the characters while the Bopomofo paragraph sets its own beside them - the same document, two conventions."
+    },
+    {
+      "scene": "LineBreakingStressDemo.tscn",
+      "title": "Line breaking under pressure",
+      "description": "A very narrow measure: runs of punctuation, a mark that would start the next line and is allowed to hang past the edge instead, an ellipsis and a dash that may not split, and numbers that stay with their units."
+    }
+  ]
+}

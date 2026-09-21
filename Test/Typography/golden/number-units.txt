@@ -1,0 +1,57 @@
+# typography golden dump (P0 contract)
+# fonts: ThemeDB.FallbackFont (baselines depend on the engine font + system fallback)
+contentSize=(160.000 used) (174.953,60.961)
+settings maxWidth=160.000 lineSpacing=0.000 paragraphSpacing=0.000 firstLineIndent=0 alignment=Left prohibition=Basic profile=zh-Hans cjkLatinGapEm=0.250 mode=HorizontalTb
+source=1 lines=3 elements=28
+line[0] y=0.000 h=20.320 asc=16.250 desc=4.070 span=[0.000,160.000) para=0 first=True frozen=False elems=11
+line[1] y=20.320 h=20.320 asc=16.250 desc=4.070 span=[0.000,160.000) para=0 first=False frozen=False elems=7
+line[2] y=40.641 h=20.320 asc=16.250 desc=4.070 span=[0.000,160.000) para=0 first=False frozen=False elems=10
+boundaries total=27 Plain=7 ScriptChange=4 Punctuation=9 Numeric=7
+  b[1|2] kind=ScriptChange Han->Digit owner=Left spacing=4.000 range=[2.000,8.000] break=True start=False end=False stretch=True reason=ScriptChange:CjkLatinGap
+  b[2|3] kind=Numeric Digit->Han owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=UnbreakablePair
+  b[3|4] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+  b[4|5] kind=Punctuation Punctuation->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=Punctuation
+  b[6|7] kind=ScriptChange Han->Digit owner=Left spacing=4.000 range=[2.000,8.000] break=True start=False end=False stretch=True reason=ScriptChange:CjkLatinGap
+  b[7|8] kind=Numeric Digit->Han owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=UnbreakablePair
+  b[8|9] kind=Numeric Han->Han owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=UnbreakablePair
+  b[9|10] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+  b[10|11] kind=Punctuation Punctuation->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=Punctuation
+  b[12|13] kind=ScriptChange Han->Digit owner=Left spacing=4.000 range=[2.000,8.000] break=True start=False end=False stretch=True reason=ScriptChange:CjkLatinGap
+  b[13|14] kind=Numeric Digit->Han owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=UnbreakablePair
+  b[14|15] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+  b[15|16] kind=Punctuation Punctuation->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=Punctuation
+  b[18|19] kind=Numeric Han->Digit owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=UnbreakablePair
+  b[19|20] kind=Numeric Digit->Han owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=UnbreakablePair
+  b[20|21] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+  b[21|22] kind=Punctuation Punctuation->Han owner=Left spacing=0.000 range=[0.000,0.000] break=True start=False end=False stretch=True reason=Punctuation
+  b[24|25] kind=ScriptChange Han->Digit owner=Left spacing=4.000 range=[2.000,8.000] break=True start=False end=False stretch=True reason=ScriptChange:CjkLatinGap
+  b[25|26] kind=Numeric Digit->Han owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=UnbreakablePair
+  b[26|27] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+elem[0] Text pos=(0.000,0.000) base=16.250 size=(16.000,20.320) src=0 range=[0,1) cluster=[0,1) line=0 dir=LeftToRight text="长"
+elem[1] Text pos=(16.000,0.000) base=16.250 size=(20.000,20.320) src=0 range=[1,2) cluster=[1,2) line=0 dir=LeftToRight text="度"
+elem[2] Text pos=(36.000,0.000) base=16.250 size=(18.781,20.320) src=0 range=[2,4) cluster=[2,3) line=0 dir=LeftToRight text="10"
+elem[3] Text pos=(54.781,0.000) base=16.250 size=(16.000,20.320) src=0 range=[4,5) cluster=[3,4) line=0 dir=LeftToRight text="米"
+elem[4] Text pos=(70.781,0.000) base=16.250 size=(16.000,20.320) src=0 range=[5,6) cluster=[4,5) line=0 dir=LeftToRight text="，"
+elem[5] Text pos=(86.781,0.000) base=16.250 size=(16.000,20.320) src=0 range=[6,7) cluster=[5,6) line=0 dir=LeftToRight text="重"
+elem[6] Text pos=(102.781,0.000) base=16.250 size=(20.000,20.320) src=0 range=[7,8) cluster=[6,7) line=0 dir=LeftToRight text="量"
+elem[7] Text pos=(122.781,0.000) base=16.250 size=(9.391,20.320) src=0 range=[8,9) cluster=[7,8) line=0 dir=LeftToRight text="5"
+elem[8] Text pos=(132.172,0.000) base=16.250 size=(16.000,20.320) src=0 range=[9,10) cluster=[8,9) line=0 dir=LeftToRight text="公"
+elem[9] Text pos=(148.172,0.000) base=16.250 size=(16.000,20.320) src=0 range=[10,11) cluster=[9,10) line=0 dir=LeftToRight text="斤"
+elem[10] Text pos=(164.172,0.000) base=16.250 size=(16.000,20.320) src=0 range=[11,12) cluster=[10,11) line=0 dir=LeftToRight text="，" hanging=True reason=HangingPunctuation
+elem[11] Text pos=(0.000,20.320) base=36.570 size=(16.000,20.320) src=0 range=[12,13) cluster=[11,12) line=1 dir=LeftToRight text="价"
+elem[12] Text pos=(16.000,20.320) base=36.570 size=(20.000,20.320) src=0 range=[13,14) cluster=[12,13) line=1 dir=LeftToRight text="格"
+elem[13] Text pos=(36.000,20.320) base=36.570 size=(28.172,20.320) src=0 range=[14,17) cluster=[13,14) line=1 dir=LeftToRight text="100"
+elem[14] Text pos=(64.172,20.320) base=36.570 size=(16.000,20.320) src=0 range=[17,18) cluster=[14,15) line=1 dir=LeftToRight text="元"
+elem[15] Text pos=(80.172,20.320) base=36.570 size=(16.000,20.320) src=0 range=[18,19) cluster=[15,16) line=1 dir=LeftToRight text="，"
+elem[16] Text pos=(96.172,20.320) base=36.570 size=(16.000,20.320) src=0 range=[19,20) cluster=[16,17) line=1 dir=LeftToRight text="编"
+elem[17] Text pos=(112.172,20.320) base=36.570 size=(16.000,20.320) src=0 range=[20,21) cluster=[17,18) line=1 dir=LeftToRight text="号"
+elem[18] Text pos=(0.000,40.641) base=56.891 size=(16.000,20.320) src=0 range=[21,22) cluster=[18,19) line=2 dir=LeftToRight text="第"
+elem[19] Text pos=(16.000,40.641) base=56.891 size=(9.391,20.320) src=0 range=[22,23) cluster=[19,20) line=2 dir=LeftToRight text="3"
+elem[20] Text pos=(25.391,40.641) base=56.891 size=(16.000,20.320) src=0 range=[23,24) cluster=[20,21) line=2 dir=LeftToRight text="号"
+elem[21] Text pos=(41.391,40.641) base=56.891 size=(16.000,20.320) src=0 range=[24,25) cluster=[21,22) line=2 dir=LeftToRight text="，"
+elem[22] Text pos=(57.391,40.641) base=56.891 size=(16.000,20.320) src=0 range=[25,26) cluster=[22,23) line=2 dir=LeftToRight text="时"
+elem[23] Text pos=(73.391,40.641) base=56.891 size=(16.000,20.320) src=0 range=[26,27) cluster=[23,24) line=2 dir=LeftToRight text="间"
+elem[24] Text pos=(89.391,40.641) base=56.891 size=(20.000,20.320) src=0 range=[27,28) cluster=[24,25) line=2 dir=LeftToRight text="是"
+elem[25] Text pos=(109.391,40.641) base=56.891 size=(37.562,20.320) src=0 range=[28,32) cluster=[25,26) line=2 dir=LeftToRight text="2024"
+elem[26] Text pos=(146.953,40.641) base=56.891 size=(16.000,20.320) src=0 range=[32,33) cluster=[26,27) line=2 dir=LeftToRight text="年"
+elem[27] Text pos=(162.953,40.641) base=56.891 size=(16.000,20.320) src=0 range=[33,34) cluster=[27,28) line=2 dir=LeftToRight text="。" hanging=True reason=HangingPunctuation

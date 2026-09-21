@@ -1,0 +1,91 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/Typography/TypographySceneCanvas.cs" id="1_canvas"]
+
+[node name="Page" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.09, 0.11, 1)
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 20
+
+[node name="Page" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="About" type="RichTextLabel" parent="Margin/Page"]
+layout_mode = 2
+theme_override_colors/default_color = Color(0.78, 0.82, 0.88, 1)
+theme_override_font_sizes/normal_font_size = 15
+bbcode_enabled = true
+autowrap_mode = 3
+custom_minimum_size = Vector2(0, 76)
+size_flags_horizontal = 3
+text = "Everything at once: one long document carrying the Simplified and Traditional Chinese pages, Japanese, Korean, English, right-to-left text, emphasis marks and underlines, and one annotation much wider than its base text."
+
+[node name="Toolbar" type="HBoxContainer" parent="Margin/Page"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="FontLabel" type="Label" parent="Margin/Page/Toolbar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.78, 1)
+text = "Font size"
+
+[node name="FontSize" type="SpinBox" parent="Margin/Page/Toolbar"]
+layout_mode = 2
+min_value = 10.0
+max_value = 96.0
+step = 1.0
+value = 26
+
+[node name="Overlay" type="CheckBox" parent="Margin/Page/Toolbar"]
+layout_mode = 2
+text = "Layout debug"
+
+[node name="Status" type="Label" parent="Margin/Page/Toolbar"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.55, 0.6, 0.68, 1)
+text = ""
+
+[node name="Scroll" type="ScrollContainer" parent="Margin/Page"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Canvas" type="Control" parent="Margin/Page/Scroll" node_paths=PackedStringArray("FontSizeControl", "OverlayToggle", "StatusLabel")]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+script = ExtResource("1_canvas")
+FontSizeControl = NodePath("../../Toolbar/FontSize")
+OverlayToggle = NodePath("../../Toolbar/Overlay")
+StatusLabel = NodePath("../../Toolbar/Status")
+LanguageTag = ""
+WritingMode = 0
+Sample = 9
+FontSize = 26
+Measure = 0.0
+ColumnHeight = 0.0

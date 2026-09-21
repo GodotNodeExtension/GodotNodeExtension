@@ -1,0 +1,15 @@
+# typography golden dump (P0 contract)
+# fonts: ThemeDB.FallbackFont (baselines depend on the engine font + system fallback)
+# note: Bopomofo beside the base text: ruby=@(x,y) starts at the base advance's right edge, w= is the column's height (the sum of the annotation glyphs' own advances, read downwards), size= is 3:10 of the base size, and the base character gained half an em (size=(24.000,...)) which is the room the column occupies - so line[0] h= is the same as it would be without any annotation.
+contentSize=(240.000 used) (112.000,20.320)
+settings maxWidth=240.000 lineSpacing=0.000 paragraphSpacing=0.000 firstLineIndent=0 alignment=Left prohibition=Basic profile=zh-Hant cjkLatinGapEm=0.250 mode=HorizontalTb
+source=3 lines=1 elements=6
+line[0] y=0.000 h=20.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=0 first=True frozen=False elems=6
+boundaries total=5 Plain=4 Punctuation=1
+  b[4|5] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+elem[0] Text pos=(0.000,0.000) base=16.250 size=(24.000,20.320) src=0 range=[0,1) cluster=[0,1) line=0 dir=LeftToRight text="今" ruby="ㄐㄧㄣ"@(20.000,2.965) size=4.800 w=14.391 band=8.000 glyphs=3 why=Ruby:Mono orient=Vertical
+elem[1] Text pos=(24.000,0.000) base=16.250 size=(24.000,20.320) src=1 range=[0,1) cluster=[1,2) line=0 dir=LeftToRight text="天" ruby="ㄊㄧㄢ"@(44.000,2.965) size=4.800 w=14.391 band=8.000 glyphs=3 why=Ruby:Mono orient=Vertical
+elem[2] Text pos=(48.000,0.000) base=16.250 size=(16.000,20.320) src=2 range=[0,1) cluster=[2,3) line=0 dir=LeftToRight text="的"
+elem[3] Text pos=(64.000,0.000) base=16.250 size=(16.000,20.320) src=2 range=[1,2) cluster=[3,4) line=0 dir=LeftToRight text="天"
+elem[4] Text pos=(80.000,0.000) base=16.250 size=(16.000,20.320) src=2 range=[2,3) cluster=[4,5) line=0 dir=LeftToRight text="氣"
+elem[5] Text pos=(96.000,0.000) base=16.250 size=(16.000,20.320) src=2 range=[3,4) cluster=[5,6) line=0 dir=LeftToRight text="。"

@@ -1,0 +1,28 @@
+{
+  "name": "Typography",
+  "version": "0.4.1",
+  "description": "Multi-language typography server: language profiles (clreq/jlreq/klreq parameters, prohibition class sets, right-to-left languages), Unicode line breaking and bidirectional text (UAX #9 through Unicode.Bidi, with P2/P3, L1, L2 and mirroring done here), a boundary model that carries break and spacing decisions, HarfBuzz shaping with language-aware glyph-level output, display-form substitution (quotation marks, ellipsis, sentence marks), automatic hyphenation from TeX patterns, ruby and emphasis marks, image-text mixed layout with polygon wrapping, and an async server architecture",
+  "author": "shitake2333",
+  "license": "MIT",
+  "requirements": {
+    "godot": ">=4.0.0",
+    "dotnet": ">=10.0"
+  },
+  "dependencies": {
+    "nuget": [
+      {
+        "name": "HarfBuzzSharp",
+        "version": ">=8.3.1.2"
+      },
+      {
+        "name": "SkiaSharp.HarfBuzz",
+        "version": ">=3.119.1"
+      },
+      {
+        "name": "Unicode.Bidi",
+        "version": ">=0.3.18"
+      }
+    ],
+    "components": []
+  }
+}

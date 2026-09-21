@@ -1,0 +1,16 @@
+# typography golden dump (P0 contract)
+# fonts: ThemeDB.FallbackFont (baselines depend on the engine font + system fallback)
+# note: Bopomofo tone marks: 平上去 hangs at the last symbol's upper right without a cell, the checked tone at the column's foot, and the neutral tone is a thin cell (1:15 of the base size) in front of the reading
+contentSize=(240.000 used) (136.000,20.320)
+settings maxWidth=240.000 lineSpacing=0.000 paragraphSpacing=0.000 firstLineIndent=0 alignment=Left prohibition=Basic profile=zh-Hant cjkLatinGapEm=0.250 mode=HorizontalTb
+source=4 lines=1 elements=7
+line[0] y=0.000 h=20.320 asc=16.250 desc=4.070 span=[0.000,240.000) para=0 first=True frozen=False elems=7
+boundaries total=6 Plain=5 Punctuation=1
+  b[5|6] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+elem[0] Text pos=(0.000,0.000) base=16.250 size=(24.000,20.320) src=0 range=[0,1) cluster=[0,1) line=0 dir=LeftToRight text="調" ruby="ㄉㄧㄠˋ"@(20.000,2.965) size=4.800 w=14.391 band=8.000 glyphs=4 why=Ruby:Mono orient=Vertical
+elem[1] Text pos=(24.000,0.000) base=16.250 size=(24.000,20.320) src=1 range=[0,1) cluster=[1,2) line=0 dir=LeftToRight text="桌" ruby="˙ㄗ"@(44.000,7.228) size=4.800 w=5.864 band=8.000 glyphs=2 why=Ruby:Mono orient=Vertical
+elem[2] Text pos=(48.000,0.000) base=16.250 size=(24.000,20.320) src=2 range=[0,1) cluster=[2,3) line=0 dir=LeftToRight text="國" ruby="ㄍㄨㄛㆷ"@(68.000,2.965) size=4.800 w=14.391 band=8.000 glyphs=4 why=Ruby:Mono orient=Vertical
+elem[3] Text pos=(72.000,0.000) base=16.250 size=(16.000,20.320) src=3 range=[0,1) cluster=[3,4) line=0 dir=LeftToRight text="的"
+elem[4] Text pos=(88.000,0.000) base=16.250 size=(16.000,20.320) src=3 range=[1,2) cluster=[4,5) line=0 dir=LeftToRight text="聲"
+elem[5] Text pos=(104.000,0.000) base=16.250 size=(16.000,20.320) src=3 range=[2,3) cluster=[5,6) line=0 dir=LeftToRight text="調"
+elem[6] Text pos=(120.000,0.000) base=16.250 size=(16.000,20.320) src=3 range=[3,4) cluster=[6,7) line=0 dir=LeftToRight text="。"

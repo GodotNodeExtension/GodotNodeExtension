@@ -1,0 +1,24 @@
+# typography golden dump (P0 contract)
+# fonts: ThemeDB.FallbackFont (baselines depend on the engine font + system fallback)
+contentSize=(240.000 used) (208.000,30.480)
+settings maxWidth=240.000 lineSpacing=0.000 paragraphSpacing=0.000 firstLineIndent=0 alignment=Left prohibition=Basic profile=zh-Hans cjkLatinGapEm=0.250 mode=HorizontalTb
+source=2 lines=1 elements=13
+line[0] y=0.000 h=30.480 asc=16.250 desc=4.070 span=[0.000,240.000) para=0 first=True frozen=False elems=13
+boundaries total=12 Plain=11 Punctuation=1
+  b[0|1] kind=Plain Han->Han owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=RubyGroup
+  b[1|2] kind=Plain Han->Han owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=RubyGroup
+  b[2|3] kind=Plain Han->Han owner=Left spacing=0.000 range=[0.000,0.000] break=False start=False end=False stretch=True reason=RubyGroup
+  b[11|12] kind=Punctuation Han->Punctuation owner=Left spacing=0.000 range=[0.000,0.000] break=True start=True end=False stretch=True reason=Punctuation
+elem[0] Text pos=(0.000,10.160) base=26.410 size=(16.000,20.320) src=0 range=[0,1) cluster=[0,1) line=0 dir=LeftToRight text="振" ruby="ふ"@(4.000,8.125) size=8.000 w=8.000 band=10.160 glyphs=1 why=Ruby:Mono
+elem[1] Text pos=(16.000,10.160) base=26.410 size=(16.000,20.320) src=0 range=[1,2) cluster=[1,2) line=0 dir=LeftToRight text="り" ruby="り"@(20.000,8.125) size=8.000 w=8.000 band=10.160 glyphs=1 why=Ruby:Mono
+elem[2] Text pos=(32.000,10.160) base=26.410 size=(16.000,20.320) src=0 range=[2,3) cluster=[2,3) line=0 dir=LeftToRight text="仮" ruby="が"@(36.000,8.125) size=8.000 w=8.000 band=10.160 glyphs=1 why=Ruby:Mono
+elem[3] Text pos=(48.000,10.160) base=26.410 size=(16.000,20.320) src=0 range=[3,4) cluster=[3,4) line=0 dir=LeftToRight text="名" ruby="な"@(52.000,8.125) size=8.000 w=8.000 band=10.160 glyphs=1 why=Ruby:Mono
+elem[4] Text pos=(64.000,10.160) base=26.410 size=(16.000,20.320) src=1 range=[0,1) cluster=[4,5) line=0 dir=LeftToRight text="を"
+elem[5] Text pos=(80.000,10.160) base=26.410 size=(16.000,20.320) src=1 range=[1,2) cluster=[5,6) line=0 dir=LeftToRight text="付"
+elem[6] Text pos=(96.000,10.160) base=26.410 size=(16.000,20.320) src=1 range=[2,3) cluster=[6,7) line=0 dir=LeftToRight text="け"
+elem[7] Text pos=(112.000,10.160) base=26.410 size=(16.000,20.320) src=1 range=[3,4) cluster=[7,8) line=0 dir=LeftToRight text="た"
+elem[8] Text pos=(128.000,10.160) base=26.410 size=(16.000,20.320) src=1 range=[4,5) cluster=[8,9) line=0 dir=LeftToRight text="中"
+elem[9] Text pos=(144.000,10.160) base=26.410 size=(16.000,20.320) src=1 range=[5,6) cluster=[9,10) line=0 dir=LeftToRight text="文"
+elem[10] Text pos=(160.000,10.160) base=26.410 size=(16.000,20.320) src=1 range=[6,7) cluster=[10,11) line=0 dir=LeftToRight text="文"
+elem[11] Text pos=(176.000,10.160) base=26.410 size=(16.000,20.320) src=1 range=[7,8) cluster=[11,12) line=0 dir=LeftToRight text="本"
+elem[12] Text pos=(192.000,10.160) base=26.410 size=(16.000,20.320) src=1 range=[8,9) cluster=[12,13) line=0 dir=LeftToRight text="。"

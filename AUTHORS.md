@@ -23,6 +23,9 @@ This file lists the contributors to the GodotNodeExtension project.
 ### GodotSkia
 - **[shitake2333](mailto:z1522716486@hotmail.com)**
 
+### Typography
+- **[shitake2333](mailto:z1522716486@hotmail.com)**
+
 ## Contributing
 
 We welcome contributions from the community! If you'd like to contribute:
