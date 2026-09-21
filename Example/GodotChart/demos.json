@@ -3,7 +3,7 @@
     {
       "scene": "BasicsDemo.tscn",
       "title": "Basics",
-      "description": "Every chart kind the library ships, one cell each - and every mark appears here: bar, grouped bar, line, area, bubble scatter, range area, pie, donut, radar, violin, box, candlestick, heatmap, treemap, sunburst, sankey, chord, gauge, funnel, waffle, timeline, lollipop and milestone. Each cell is a [b]ChartView[/b] node with its kind, rows and field names set in the scene, so it can be copied and edited. Hover a chart for its tooltip; knobs that need code live in the three mark-knob pages, and a data transform (a histogram) in the custom-charts page."
+      "description": "Every chart kind the library ships, [b]one cell at least[/b] each - bar fills four cells (plain, grouped, stacked, and one more carrying the reference lines) and area two (plain, stacked), as variants of one kind - and every mark appears here: bar, line, area, bubble scatter, range area, pie, donut, radar, violin, box, candlestick, heatmap, treemap, sunburst, sankey, chord, gauge, funnel, waffle, timeline, lollipop, milestone and the [b]reference-line mark[/b] ([code]SectionMark[/code]). Each cell is a [b]ChartView[/b] node with its kind, rows and field names set in the scene, so it can be copied and edited. Hover a chart for its tooltip; knobs that need code live in the three mark-knob pages, and a data transform (a histogram) in the custom-charts page."
     },
     {
       "scene": "ChartStreamingDemo.tscn",
@@ -13,7 +13,7 @@
     {
       "scene": "ChartViewFieldsDemo.tscn",
       "title": "ChartView fields (code)",
-      "description": "Every [b]ChartView[/b] knob, set from code: the six data channels with their ranges, all four [code]ColorMapping[/code] kinds, pinned axis domains, the built-in palettes and a [b]theme resource built in code[/b], axes with units and the legend, and every data entry point ([code]SetValues[/code] / [code]SetData[/code] / [code]SetCsv[/code]+[code]ParseCsv[/code] / [code]AddRow[/code]+[code]WindowSize[/code] / [code]Clear[/code]) plus [code]Refresh()[/code] versus [code]Repaint()[/code]."
+      "description": "Every [b]ChartView[/b] knob, set from code: the six data channels with their ranges, four of the five [code]ColorMapping[/code] kinds (the fifth, [code]Auto[/code], is the default this page leaves alone), pinned axis domains, the [b]Light[/b] palette next to a [b]theme resource built in code[/b], axes with units and the legend, and every data entry point ([code]SetValues[/code] / [code]SetData[/code] / [code]SetCsv[/code]+[code]ParseCsv[/code] / [code]AddRow[/code]+[code]WindowSize[/code] / [code]Clear[/code]) plus [code]Refresh()[/code] versus [code]Repaint()[/code]."
     },
     {
       "scene": "ChartViewHooksDemo.tscn",
@@ -43,7 +43,7 @@
     {
       "scene": "ChartScaleDemo.tscn",
       "title": "Scales (code)",
-      "description": "Every [code]IScale[/code] of the library on hand-built charts: [b]TimeScale[/b], [b]SequentialColorScale[/b], [b]OrdinalScale[/b] + [b]ColorScale[/b] + [b]ShapeScale[/b], [b]IdentityColorScale[/b], [b]DivergingColorScale[/b], and [b]BandScale[/b] / [b]RadialScale[/b] consumed by two custom marks - no built-in mark reads those two."
+      "description": "Ten of the library's twelve [code]IScale[/code] implementations on hand-built charts ([code]LogScale[/code] has a cell of its own on the custom-charts page, and [code]OutputRangeScale[/code] is the one [code]ChartView[/code] uses internally for a pinned axis range): [b]TimeScale[/b], [b]SequentialColorScale[/b], [b]OrdinalScale[/b] + [b]ColorScale[/b] + [b]ShapeScale[/b], [b]IdentityColorScale[/b], [b]DivergingColorScale[/b], and [b]BandScale[/b] / [b]RadialScale[/b] consumed by two custom marks - no built-in mark reads those two."
     },
     {
       "scene": "ChartCanvasDemo.tscn",
@@ -53,27 +53,27 @@
     {
       "scene": "ChartRendererDemo.tscn",
       "title": "Renderer slots (code)",
-      "description": "All seven renderer slots replaced one at a time (background, title, grid, axis, axis labels, legend, crosshair) and switchable back to the defaults; the canvas API in full (paths, paint state, dashes, gradients, transforms, clipping, [code]MeasureText[/code], [code]DrawImage[/code], capabilities); and a hit-test-driven overlay that the host paints itself."
+      "description": "All seven renderer slots replaced together with the page's own implementations (background, title, grid, axis, axis labels, legend, crosshair) and switched back to the defaults with one more click; the canvas API in full (paths, paint state, dashes, gradients, transforms, clipping, [code]MeasureText[/code], [code]DrawImage[/code], capabilities); and a hit-test-driven overlay that the host paints itself."
     },
     {
       "scene": "ChartBigDataDemo.tscn",
       "title": "Real data: 24 countries (code)",
-      "description": "A chart a reader actually asks for: the World Bank's annual population growth ([code]SP.POP.GROW[/code]) for 24 major countries over every year from 1970 to 2023 - 1296 rows loaded from a shipped CSV through [code]SetCsv[/code], one series and one colour per country. [b]Wheel[/b] zooms the X axis around the pointer, [b]drag[/b] pans it, [b]double click[/b] resets, and a click on a [b]legend[/b] entry hides or shows that country. The growth rate (percent) is what makes countries of very different size comparable on one Y axis."
+      "description": "A chart a reader actually asks for: the World Bank's annual population growth ([code]SP.POP.GROW[/code]) for 24 major countries over every year from 1970 to 2023 - 1296 rows loaded from a shipped CSV through [code]SetCsv[/code], one series and one colour per country. [b]Wheel[/b] zooms the X axis around the pointer, [b]drag[/b] pans it, [b]double click[/b] resets, and a click on a [b]legend[/b] entry hides or shows that country. The growth rate (percent) is what makes countries of very different size comparable on one Y axis. [b]D[/b] / [b]Z[/b] / [b]B[/b] / [b]X[/b] set the decimation mode, the wheel's zoom factor, the pan button and the double-click reset; the readout names the current value of each."
     },
     {
       "scene": "ChartLayeredRenderingDemo.tscn",
       "title": "Layered rendering (code)",
-      "description": "The same table and the same [b]LineMark[/b] rendered two ways, side by side: the left chart draws every frame in a single pass, the right one keeps its data layer in an image ([code]Chart.UseLayerCache[/code], reached from a page as [code]LayeredRendering = true[/code]) and repaints only the overlay. [b]1[/b]/[b]2[/b]/[b]3[/b]/[b]4[/b] switch 1k-200k rows, [b]B[/b] measures 60 static redraws on both charts at once and [b]H[/b] measures 60 hover redraws - the frame a pointer move costs with and without the cache. Memory is reported twice and the sources are kept apart: the layer image is computed from the chart rectangle (width x height x 4 bytes, what the right chart costs extra), the per-row figure is measured with [code]GC.GetTotalMemory(true)[/code] around the table build."
+      "description": "The same table and the same [b]LineMark[/b] rendered two ways, side by side: the left chart draws every frame in a single pass, the right one keeps its data layer in an image ([code]Chart.UseLayerCache[/code], reached from a page as [code]LayeredRendering = true[/code]) and repaints only the overlay. [b]1[/b]/[b]2[/b]/[b]3[/b]/[b]4[/b] switch 1k-200k rows, [b]B[/b] measures 60 static redraws on both charts at once, [b]H[/b] measures 60 hover redraws, [b]S[/b] toggles [code]LineMark.Smooth[/code] and [b]A[/b] replays the entry animation - the frame a pointer move costs with and without the cache. Memory is reported twice and the sources are kept apart: the layer image is computed from the chart rectangle (width x height x 4 bytes, what the right chart costs extra), the per-row figure is measured with [code]GC.GetTotalMemory(true)[/code] around the table build."
     },
     {
       "scene": "ChartLayoutDemo.tscn",
       "title": "Layout and sizes (code)",
-      "description": "Where a chart's size comes from, on one [b]ChartView[/b] node: [code]Chart.MinimumSize[/code] - the title row, the legend, the X axis label row, the axis title row, the Y label column and the static [code]Chart.MinimumPlotSize[/code] added up - the size the layout around it gave the node, and the plot rectangle [code]Chart.CurrentPlotArea[/code] really got, with its four insets ([code]left = plot.X[/code], [code]right = size.X - (plot.X + plot.W)[/code], the same vertically). That difference is the layout budget, and every figure is read back from the public API a few frames after each key: [b]T[/b] toggles the title, [b]L[/b] walks the legend Top → Bottom → Left → Right → None, [b]A[/b] the X/Y axis titles, [b]Y[/b] a second Y axis (its reservation only - the node has no Y2 export, so the page builds that chain in [code]ConfigureChart[/code]), [b]F[/b] the theme's font size, and [b]M[/b] pins the node to [code]Chart.MinimumSize[/code] and then below it (×0.85 / ×0.70 / ×0.55, once more to let it fill the cell) - far enough and the axis thins its own labels with one warning in the editor Output. The [b]Δ[/b] line reports what the last key changed, and the hint compares the legend positions measured in the same state."
+      "description": "Where a chart's size comes from, on one [b]ChartView[/b] node: [code]Chart.MinimumSize[/code] - the title row, the legend, the X axis label row, the axis title row, the Y label column and the static [code]Chart.MinimumPlotSize[/code] added up - the size the layout around it gave the node, and the plot rectangle [code]Chart.CurrentPlotArea[/code] really got, with its four insets ([code]left = plot.X[/code], [code]right = size.X - (plot.X + plot.W)[/code], the same vertically). That difference is the layout budget, and every figure is read back from the public API a few frames after each key: [b]T[/b] toggles the title, [b]L[/b] walks the legend Top → Bottom → Left → Right → None, [b]A[/b] the X/Y axis titles, [b]Y[/b] a second Y axis (its reservation only - the node has no Y2 export, so the page builds that chain in [code]ConfigureChart[/code]), [b]F[/b] the theme's font size, and [b]M[/b] pins the node to [code]Chart.MinimumSize[/code] and then below it (×0.85 / ×0.70 / ×0.55, once more to let it fill the cell) - far enough and the axis thins its own labels with one warning in the editor Output. The [b]Δ[/b] line reports what the last key changed, and the hint compares the legend positions measured in the same state. [b]R[/b] / [b]S[/b] / [b]N[/b] / [b]P[/b] / [b]V[/b] / [b]W[/b] drive six more exports (label rotation, tick density, label formats, content shape, vertical alignment, pinned Y ends), each one named with its live value in the readout."
     },
     {
       "scene": "ChartMarksCartesianDemo.tscn",
       "title": "Mark knobs: Cartesian (code)",
-      "description": "One cell per Cartesian mark, every knob named in the caption: [b]Interval[/b] (padding, corner radius, stacking - plain, normalised and flat), [b]Line[/b] (smoothing, step mode, area, stroke width, the [b]stacked area[/b]), [b]Point[/b] (radius and size mapping), [b]RangeArea[/b], [b]Box[/b], [b]Candlestick[/b], [b]Heatmap[/b], [b]Timeline[/b], [b]Milestone[/b], [b]Lollipop[/b], [b]Violin[/b] and [b]Waffle[/b]."
+      "description": "One cell per Cartesian mark, every knob named in the caption: [b]Interval[/b] (padding, corner radius, stacking - plain or normalised - and orientation - vertical or horizontal), [b]Line[/b] (smoothing, step mode, area, stroke width, the [b]stacked area[/b]), [b]Point[/b] (radius and size mapping), [b]RangeArea[/b], [b]Box[/b], [b]Candlestick[/b], [b]Heatmap[/b], [b]Timeline[/b], [b]Milestone[/b], [b]Lollipop[/b], [b]Violin[/b] and [b]Waffle[/b]."
     },
     {
       "scene": "ChartMarksPolarDemo.tscn",

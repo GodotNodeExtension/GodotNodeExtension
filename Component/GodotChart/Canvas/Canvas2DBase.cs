@@ -44,14 +44,22 @@ public abstract class Canvas2DBase : ICanvas2D
     /// <inheritdoc />
     public abstract void Fill(IPath2D path, IPaint2D paint);
     /// <inheritdoc />
-    public virtual void Tick() { }
+    public virtual void Tick() => OnTick?.Invoke();
+
+    /// <summary>
+    /// Work a host wants run once per frame, invoked by <see cref="Tick"/>. Null (the default) does nothing,
+    /// and the built-in backends need nothing: this is the hook for a canvas a host did not create itself (one
+    /// that came out of <see cref="Canvas2DFactory"/>), where assigning a delegate is the only way in. A canvas
+    /// that owns its type overrides <see cref="Tick"/> instead.
+    /// </summary>
+    public Action? OnTick { get; set; }
     /// <inheritdoc />
     public abstract CanvasCapabilities Capabilities { get; }
 
     // ── Convenience methods (shared by all backends; virtual so a backend can do them natively) ──
 
     /// <inheritdoc />
-    public void StrokeAndFill(IPath2D path, IPaint2D strokePaint, IPaint2D fillPaint)
+    public virtual void StrokeAndFill(IPath2D path, IPaint2D strokePaint, IPaint2D fillPaint)
     {
         Fill(path, fillPaint);
         Stroke(path, strokePaint);
@@ -180,37 +188,6 @@ public abstract class Canvas2DBase : ICanvas2D
     /// keeps the interface usable for backends without clipping (see <c>SupportsClipping</c>).
     /// </summary>
     public virtual void ClipRect(float x, float y, float w, float h) { }
-
-    /// <summary>The region reported so far this frame; see <see cref="ConsumeDirtyRegion"/>.</summary>
-    private Rect2 _dirtyRegion;
-
-    /// <summary>True once something reported a region, so "nothing reported" stays apart from "0,0,0,0".</summary>
-    private bool _hasDirtyRegion;
-
-    /// <inheritdoc />
-    public virtual void InvalidateRegion(float x, float y, float w, float h)
-    {
-        if (!(w > 0f) || !(h > 0f)) return;
-
-        var region = new Rect2(x, y, w, h);
-        _dirtyRegion = _hasDirtyRegion ? _dirtyRegion.Merge(region) : region;
-        _hasDirtyRegion = true;
-    }
-
-    /// <summary>
-    /// The region this frame changed, or null for "the whole surface" - which is what a backend uploads when
-    /// nothing declared a region, and why this API can be adopted one page at a time. Consuming clears it, so the
-    /// next frame starts with no region again.
-    /// </summary>
-    protected Rect2? ConsumeDirtyRegion()
-    {
-        if (!_hasDirtyRegion) return null;
-
-        _hasDirtyRegion = false;
-        Rect2 region = _dirtyRegion;
-        _dirtyRegion = default;
-        return region;
-    }
 
     /// <summary>
     /// Drop every saved state and return to the identity transform. A backend calls this when it repairs a

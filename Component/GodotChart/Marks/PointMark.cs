@@ -35,6 +35,14 @@ public class PointMark : Mark
     /// </summary>
     public override bool InteractionStateInOverlay => true;
 
+    /// <summary>
+    /// The opacity a point draws with when the element is not told otherwise: the theme's
+    /// <see cref="ChartTheme.PointDefaultOpacity"/>. It is the *default* handed to
+    /// <see cref="Mark.ComputeElementOpacity"/>, which resolves the opacity channel itself - resolving it here
+    /// as well made every point look the channel up twice.
+    /// </summary>
+    private static float PointOpacity(MarkContext ctx) => (ctx.Theme ?? ChartTheme.Default).PointDefaultOpacity;
+
     /// <inheritdoc />
     public override void Render(MarkContext ctx)
     {
@@ -59,8 +67,9 @@ public class PointMark : Mark
             var yRaw  = ctx.Encodes.Resolve(YChannel, row);
             if (xRaw == null || yRaw == null) continue;
             var color = ResolveFill(ctx, row, i, GetDefaultColor(ctx));
-            var alpha = ResolveOpacity(ctx, row, (ctx.Theme ?? ChartTheme.Default).PointDefaultOpacity);
-            float opacity = ComputeElementOpacity(ctx, row, i, alpha);
+            // ResolveOpacity runs *inside* ComputeElementOpacity: passing an already-resolved value would
+            // look up the channel twice per element (and the second lookup is the one that counts).
+            float opacity = ComputeElementOpacity(ctx, row, i, PointOpacity(ctx));
             var shape = ResolveShape(ctx, row);
 
             bool isHovered  = stateHere && i == ctx.HoveredRowIndex;
@@ -145,8 +154,8 @@ public class PointMark : Mark
     public override void RenderOverlay(MarkContext ctx)
     {
         // Only while the chart keeps the data layer in an image: with the cache off Render painted the state.
-        if (!ctx.StateInOverlay) return;
-        if (ctx.HoveredRowIndex < 0 && ctx.SelectedRowIndex < 0) return;
+        // The rows are read where they are needed (the loop walks the interaction rows).
+        if (!OverlayRows(ctx, out _, out _)) return;
 
         var xScale = ctx.Scales.TryGet(Channel.X);
         var yScale = ctx.Scales.TryGet(YChannel);
@@ -175,8 +184,7 @@ public class PointMark : Mark
             if (!float.IsFinite(xNorm) || !float.IsFinite(yNorm)) continue;
 
             var color = ResolveFill(ctx, row, index, GetDefaultColor(ctx));
-            var alpha = ResolveOpacity(ctx, row, (ctx.Theme ?? ChartTheme.Default).PointDefaultOpacity);
-            float opacity = ComputeElementOpacity(ctx, row, index, alpha);
+            float opacity = ComputeElementOpacity(ctx, row, index, PointOpacity(ctx));
 
             DrawPoint(ctx, index, row, xRaw, yRaw, ctx.Plot.MapX(xNorm), ctx.Plot.MapY(yNorm),
                 ResolveShape(ctx, row), SizeRadius(ctx, sScale, row) ?? DefaultRadius,

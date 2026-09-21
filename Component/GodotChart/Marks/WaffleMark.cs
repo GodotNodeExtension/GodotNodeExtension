@@ -45,8 +45,14 @@ public class WaffleMark : Mark
         set { _cellGap = MathF.Max(0f, value); InvalidateCellCache(); }
     }
 
-    /// <summary>Corner radius of each cell. Default 2.</summary>
-    public float CellRadius { get; set; } = 2f;
+    /// <summary>
+    /// Corner radius of each cell in pixels, default <c>3</c> - the same value and the same name the other
+    /// square marks use, so <see cref="ChartView"/> copies <see cref="ChartTheme.CornerRadius"/> onto it like
+    /// it does for the interval, box, candlestick, funnel, heatmap, timeline and treemap marks. It used to be
+    /// called <c>CellRadius</c> with a default of 2 and no theme branch, so a page that set the theme's corner
+    /// radius changed every square mark except this one.
+    /// </summary>
+    public float CornerRadius { get; set; } = 3f;
 
     // Cached layout — keyed on the owning chart, the layout version and the data list, plus the
     // grid properties above (their setters invalidate explicitly).
@@ -55,6 +61,13 @@ public class WaffleMark : Mark
 
     /// <summary>Number of times the cell layout was rebuilt — used by tests to verify caching.</summary>
     internal int LayoutBuildCount { get; private set; }
+
+    /// <summary>
+    /// Drop the cached cell layout. The layout properties call it when they change; a host that rewrites the
+    /// rows of the list it handed the chart (the same list object, same version) calls it directly - the cache
+    /// key cannot see that kind of change (the sankey and treemap marks expose the same entry point).
+    /// </summary>
+    public void InvalidateCache() => InvalidateCellCache();
 
     /// <summary>Drop the cached cell layout (called when a layout property changes).</summary>
     private void InvalidateCellCache() { _cachedCells = null; _cacheKey = null; }
@@ -160,8 +173,8 @@ public class WaffleMark : Mark
         var path = ShapePath(ctx);
         var paint = ShapePaint(ctx);
 
-        if (CellRadius > 0)
-            path.RoundRect(px, py, drawSize, drawSize, CellRadius);
+        if (CornerRadius > 0)
+            path.RoundRect(px, py, drawSize, drawSize, CornerRadius);
         else
             path.Rect(px, py, drawSize, drawSize);
 
@@ -211,11 +224,7 @@ public class WaffleMark : Mark
     public override void RenderOverlay(MarkContext ctx)
     {
         // Only while the chart keeps the data layer in an image: with the cache off Render painted the state.
-        if (!ctx.StateInOverlay) return;
-
-        int hovered = ctx.HoveredRowIndex;
-        int selected = ctx.SelectedRowIndex;
-        if (hovered < 0 && selected < 0) return;
+        if (!OverlayRows(ctx, out int hovered, out int selected)) return;
         if (ctx.Data.Count == 0) return;
 
         var cells = BuildCellLayout(ctx);

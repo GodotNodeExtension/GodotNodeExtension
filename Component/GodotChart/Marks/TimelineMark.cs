@@ -253,11 +253,7 @@ public class TimelineMark : Mark
     public override void RenderOverlay(MarkContext ctx)
     {
         // Only while the chart keeps the data layer in an image: with the cache off Render painted the state.
-        if (!ctx.StateInOverlay) return;
-
-        int hovered = ctx.HoveredRowIndex;
-        int selected = ctx.SelectedRowIndex;
-        if (hovered < 0 && selected < 0) return;
+        if (!OverlayRows(ctx, out int hovered, out int selected)) return;
 
         var resolved = ResolveScalesAndBar(ctx);
         if (resolved == null) return;

@@ -39,10 +39,10 @@ public class SankeyMark : Mark
     public string TargetField { get; set; } = "target";
 
     /// <summary>
-    /// How tightly the node columns are packed, as a ratio [0, 1]. 0 keeps the default spread
-    /// across the whole plot width (columns evenly spaced, the last one flush with the right edge);
-    /// 1 packs the columns edge to edge against that right-aligned last column. The last column is
-    /// anchored to the plot's right edge for every value.
+    /// Inter-column pitch as a ratio [0, 1], default <c>0.3</c>: 0 spreads the columns evenly across the plot
+    /// (the widest pitch there is), 1 packs them edge to edge at one <see cref="NodeWidth"/>, and anything
+    /// between interpolates. The last column stays flush with the plot's right edge for every value, so the
+    /// whole band slides left as the pitch shrinks.
     /// </summary>
     public float ColumnGap { get; set; } = 0.3f;
 

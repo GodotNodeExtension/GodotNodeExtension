@@ -958,7 +958,10 @@ public partial class Chart : IDisposable
         => EstimateMinimumSize(_theme, Title != null, _xAxisConfig?.Title != null, _yAxisConfig?.Title != null,
             _legendConfig?.Position ?? LegendPosition.None, ThemedLabelFontSize(_theme),
             // The chart's own paddings: a host that moved them gets an estimate that matches its layout.
-            PaddingLeft, PaddingRight, PaddingTop, PaddingBottom);
+            // The legend's padding comes from the config it was handed, so the estimate and the measuring side
+            // add the same amount (the constant is only the fallback for a chart without a config).
+            PaddingLeft, PaddingRight, PaddingTop, PaddingBottom,
+            _legendConfig?.Padding ?? EstimatedLegendRowPadding);
 
     /// <summary>Label font size a theme asks for, or the library default when it leaves the size at zero.</summary>
     internal static float ThemedLabelFontSize(ChartTheme theme)
@@ -980,6 +983,10 @@ public partial class Chart : IDisposable
     /// <param name="hasYAxisTitle">Whether the Y axis has a title (it needs a column of its own).</param>
     /// <param name="legend">Legend position (top/bottom legends reserve a row of height).</param>
     /// <param name="labelFontSize">Label font size the tick labels are drawn with.</param>
+    /// <param name="legendPadding">
+    /// Padding a top/bottom legend adds around its text; pass the legend's own <see cref="LegendConfig.Padding"/>
+    /// when there is one, so the estimate and the measuring side add the same amount.
+    /// </param>
     /// <param name="paddingLeft">Chart padding on the left; the defaults are used when the chart's own are not known yet.</param>
     /// <param name="paddingRight">Chart padding on the right.</param>
     /// <param name="paddingTop">Chart padding at the top.</param>
@@ -987,7 +994,8 @@ public partial class Chart : IDisposable
     internal static Vector2 EstimateMinimumSize(ChartTheme theme, bool hasTitle, bool hasXAxisTitle,
         bool hasYAxisTitle, LegendPosition legend, float labelFontSize,
         float paddingLeft = ChartDefaults.PaddingLeft, float paddingRight = ChartDefaults.PaddingRight,
-        float paddingTop = ChartDefaults.PaddingTop, float paddingBottom = ChartDefaults.PaddingBottom)
+        float paddingTop = ChartDefaults.PaddingTop, float paddingBottom = ChartDefaults.PaddingBottom,
+        float legendPadding = EstimatedLegendRowPadding)
     {
         float labelLine = LabelLineHeight(labelFontSize);
         // Five characters at the label font ("1200", "-40.5", "1.2k"), measured through the axis' own
@@ -1003,7 +1011,7 @@ public partial class Chart : IDisposable
             hasXAxisTitle ? AxisTitleBand(labelLine, theme) : 0f,
             labelColumn, 0f,
             hasTitle ? theme.TitleReservedHeight : 0f,
-            legendRow ? labelLine + 2f * EstimatedLegendRowPadding : 0f,
+            legendRow ? labelLine + 2f * legendPadding : 0f,
             labelLine, hasXAxisTitle);
     }
 
@@ -1054,8 +1062,13 @@ public partial class Chart : IDisposable
             MathF.Ceiling(paddingTop + paddingBottom + extraBottomPad + MinimumPlotSize.Y + titleBand
                 + legendHeight + labelLine * (hasXAxisTitle ? 2f : 1f)));
 
-    /// <summary>Padding one estimated legend row adds around its text; the default of <see cref="LegendConfig.Padding"/>.</summary>
-    private const float EstimatedLegendRowPadding = 6f;
+    /// <summary>
+    /// Padding an estimated legend row adds around its text when the caller does not hand over the legend's own
+    /// (<see cref="LegendConfig.Padding"/>'s default). A chart that has a <see cref="LegendConfig"/> passes its
+    /// own padding instead: the estimate used to add this constant's 6 while the measuring side added the
+    /// configured value, so a page with another padding got an estimate and a measurement that disagreed.
+    /// </summary>
+    internal const float EstimatedLegendRowPadding = 6f;
 
     /// <summary>
     /// Clearance between the axis title band and the tick label column, shared by the layout and the estimate.

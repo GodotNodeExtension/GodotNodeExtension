@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://bw0jrruwfri1x"]
+[gd_scene format=3 uid="uid://bw0jrruwfri1x"]
 
 [ext_resource type="Script" uid="uid://b0dp6p6n4upf0" path="res://Component/GodotChart/ChartView.cs" id="1_chart"]
 
@@ -16,9 +16,10 @@ layout_mode = 2
 theme_override_constants/separation = 6
 
 [node name="Header" type="Label" parent="Layout" unique_id=892339675]
+visible = false
 custom_minimum_size = Vector2(1, 0)
 layout_mode = 2
-text = "Basics - every chart kind, one cell each, and every mark of the library is shown here. Each cell is a ChartView node: its Kind, Rows (typed key/value dictionaries) and channel fields are set right here in the scene, so you can copy one and edit it. Knobs that need code live in the three mark-knob pages, and data transforms (a histogram, for instance) in the custom-charts page."
+text = "Basics - every chart kind the library ships, one cell at least each (bar fills four of them and area two, as variants of one kind), and every mark of the library is shown here, the reference-line mark included. Each cell is a ChartView node: its Kind, Rows (typed key/value dictionaries) and channel fields are set right here in the scene, so you can copy one and edit it. Knobs that need code live in the three mark-knob pages, and data transforms (a histogram, for instance) in the custom-charts page."
 autowrap_mode = 3
 
 [node name="Grid" type="GridContainer" parent="Layout" unique_id=2081446504]
@@ -28,26 +29,25 @@ theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 12
 columns = 3
 
-[node name="Bar" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Bar" type="VBoxContainer" parent="Layout/Grid" unique_id=1190451910]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Bar"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Bar" unique_id=1049484050]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Bar[/b] · IntervalMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Bar[/b] · IntervalMark"
 
-[node name="BarChart" type="Control" parent="Layout/Grid/Bar"]
+[node name="BarChart" type="Control" parent="Layout/Grid/Bar" unique_id=1840626292]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
-Kind = 1
 Title = "Monthly revenue"
 Rows = Array[Dictionary]([{
 "month": "Jan",
@@ -72,28 +72,28 @@ XField = "month"
 YField = "value"
 XAxisTitle = "Month"
 YAxisTitle = "Revenue"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Grouped bar" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Grouped bar" type="VBoxContainer" parent="Layout/Grid" unique_id=295974042]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Grouped bar"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Grouped bar" unique_id=1009559055]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Grouped bar[/b] · IntervalMark + GroupedBars"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Grouped bar[/b] · IntervalMark + GroupedBars"
 
-[node name="Grouped barChart" type="Control" parent="Layout/Grid/Grouped bar"]
+[node name="Grouped barChart" type="Control" parent="Layout/Grid/Grouped bar" unique_id=165245488]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
-Kind = 1
-GroupedBars = true
 Title = "Revenue per region, side by side"
 Rows = Array[Dictionary]([{
 "month": "Jan",
@@ -125,102 +125,106 @@ YField = "value"
 ColorField = "region"
 XAxisTitle = "Month"
 YAxisTitle = "Revenue"
+GroupedBars = true
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Stacked bar" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Stacked bar" type="VBoxContainer" parent="Layout/Grid" unique_id=572471670]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Stacked bar"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Stacked bar" unique_id=1287013099]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Stacked bar[/b] · IntervalMark + Stack = Stack"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Stacked bar[/b] · IntervalMark + Stack = Stack"
 
-[node name="Stacked barChart" type="Control" parent="Layout/Grid/Stacked bar"]
+[node name="Stacked barChart" type="Control" parent="Layout/Grid/Stacked bar" unique_id=292972805]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
-Kind = 1
-Stack = 1
 Title = "Revenue per channel, piled up"
 Rows = Array[Dictionary]([{
 "category": "Q1",
-"value": 24,
-"series": "retail"
+"series": "retail",
+"value": 24
 }, {
 "category": "Q1",
-"value": 16,
-"series": "online"
+"series": "online",
+"value": 16
 }, {
 "category": "Q1",
-"value": 9,
-"series": "wholesale"
+"series": "wholesale",
+"value": 9
 }, {
 "category": "Q2",
-"value": 28,
-"series": "retail"
+"series": "retail",
+"value": 28
 }, {
 "category": "Q2",
-"value": 12,
-"series": "online"
+"series": "online",
+"value": 12
 }, {
 "category": "Q2",
-"value": 14,
-"series": "wholesale"
+"series": "wholesale",
+"value": 14
 }, {
 "category": "Q3",
-"value": 22,
-"series": "retail"
+"series": "retail",
+"value": 22
 }, {
 "category": "Q3",
-"value": 19,
-"series": "online"
+"series": "online",
+"value": 19
 }, {
 "category": "Q3",
-"value": 8,
-"series": "wholesale"
+"series": "wholesale",
+"value": 8
 }, {
 "category": "Q4",
-"value": 31,
-"series": "retail"
+"series": "retail",
+"value": 31
 }, {
 "category": "Q4",
-"value": 17,
-"series": "online"
+"series": "online",
+"value": 17
 }, {
 "category": "Q4",
-"value": 12,
-"series": "wholesale"
+"series": "wholesale",
+"value": 12
 }])
 XField = "category"
 YField = "value"
 ColorField = "series"
 XAxisTitle = "Quarter"
 YAxisTitle = "Revenue"
+Stack = 1
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Line" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Line" type="VBoxContainer" parent="Layout/Grid" unique_id=1488297254]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Line"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Line" unique_id=1264929789]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Line[/b] · LineMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Line[/b] · LineMark"
 
-[node name="LineChart" type="Control" parent="Layout/Grid/Line"]
+[node name="LineChart" type="Control" parent="Layout/Grid/Line" unique_id=23394922]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 2
 Title = "Monthly revenue"
@@ -247,25 +251,27 @@ XField = "month"
 YField = "value"
 XAxisTitle = "Month"
 YAxisTitle = "Revenue"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Area" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Area" type="VBoxContainer" parent="Layout/Grid" unique_id=1236284528]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Area"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Area" unique_id=18901141]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Area[/b] · LineMark + ShowArea"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Area[/b] · LineMark + ShowArea"
 
-[node name="AreaChart" type="Control" parent="Layout/Grid/Area"]
+[node name="AreaChart" type="Control" parent="Layout/Grid/Area" unique_id=852550804]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 3
 Title = "Monthly revenue, filled"
@@ -292,102 +298,106 @@ XField = "month"
 YField = "value"
 XAxisTitle = "Month"
 YAxisTitle = "Revenue"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Stacked area" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Stacked area" type="VBoxContainer" parent="Layout/Grid" unique_id=1614324574]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Stacked area"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Stacked area" unique_id=1813028502]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Stacked area[/b] · LineMark + ShowArea + Stack = Stack"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Stacked area[/b] · LineMark + ShowArea + Stack = Stack"
 
-[node name="Stacked areaChart" type="Control" parent="Layout/Grid/Stacked area"]
+[node name="Stacked areaChart" type="Control" parent="Layout/Grid/Stacked area" unique_id=1765304090]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 3
-Stack = 1
 Title = "Product sales, piled up"
 Rows = Array[Dictionary]([{
 "category": "Jan",
-"value": 32,
-"series": "Product A"
+"series": "Product A",
+"value": 32
 }, {
 "category": "Jan",
-"value": 21,
-"series": "Product B"
+"series": "Product B",
+"value": 21
 }, {
 "category": "Jan",
-"value": 14,
-"series": "Product C"
+"series": "Product C",
+"value": 14
 }, {
 "category": "Feb",
-"value": 38,
-"series": "Product A"
+"series": "Product A",
+"value": 38
 }, {
 "category": "Feb",
-"value": 26,
-"series": "Product B"
+"series": "Product B",
+"value": 26
 }, {
 "category": "Feb",
-"value": 11,
-"series": "Product C"
+"series": "Product C",
+"value": 11
 }, {
 "category": "Mar",
-"value": 30,
-"series": "Product A"
+"series": "Product A",
+"value": 30
 }, {
 "category": "Mar",
-"value": 24,
-"series": "Product B"
+"series": "Product B",
+"value": 24
 }, {
 "category": "Mar",
-"value": 19,
-"series": "Product C"
+"series": "Product C",
+"value": 19
 }, {
 "category": "Apr",
-"value": 44,
-"series": "Product A"
+"series": "Product A",
+"value": 44
 }, {
 "category": "Apr",
-"value": 18,
-"series": "Product B"
+"series": "Product B",
+"value": 18
 }, {
 "category": "Apr",
-"value": 22,
-"series": "Product C"
+"series": "Product C",
+"value": 22
 }])
 XField = "category"
 YField = "value"
 ColorField = "series"
 XAxisTitle = "Month"
 YAxisTitle = "Units"
+Stack = 1
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Bubble" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Bubble" type="VBoxContainer" parent="Layout/Grid" unique_id=1181624671]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Bubble"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Bubble" unique_id=500112530]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Bubble[/b] · PointMark + SizeField"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Bubble[/b] · PointMark + SizeField"
 
-[node name="BubbleChart" type="Control" parent="Layout/Grid/Bubble"]
+[node name="BubbleChart" type="Control" parent="Layout/Grid/Bubble" unique_id=317671965]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 4
 Title = "Samples sized by weight"
@@ -417,25 +427,27 @@ YField = "value"
 SizeField = "weight"
 XAxisTitle = "Sample"
 YAxisTitle = "Score"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Range area" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Range area" type="VBoxContainer" parent="Layout/Grid" unique_id=813071149]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Range area"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Range area" unique_id=420223069]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Range area[/b] · RangeAreaMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Range area[/b] · RangeAreaMark"
 
-[node name="Range areaChart" type="Control" parent="Layout/Grid/Range area"]
+[node name="Range areaChart" type="Control" parent="Layout/Grid/Range area" unique_id=1277559257]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 5
 Title = "Temperature band per day"
@@ -468,25 +480,27 @@ XField = "day"
 YField = "value"
 XAxisTitle = "Day"
 YAxisTitle = "Temperature °C"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Pie" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Pie" type="VBoxContainer" parent="Layout/Grid" unique_id=243714870]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Pie"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Pie" unique_id=1451190200]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Pie[/b] · PieMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Pie[/b] · PieMark"
 
-[node name="PieChart" type="Control" parent="Layout/Grid/Pie"]
+[node name="PieChart" type="Control" parent="Layout/Grid/Pie" unique_id=1756476121]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 6
 Title = "Share of sessions by device"
@@ -502,25 +516,27 @@ Rows = Array[Dictionary]([{
 }])
 XField = "category"
 YField = "value"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Donut" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Donut" type="VBoxContainer" parent="Layout/Grid" unique_id=257199948]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Donut"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Donut" unique_id=722067826]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Donut[/b] · PieMark + InnerRadius"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Donut[/b] · PieMark + InnerRadius"
 
-[node name="DonutChart" type="Control" parent="Layout/Grid/Donut"]
+[node name="DonutChart" type="Control" parent="Layout/Grid/Donut" unique_id=67378899]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 7
 Title = "Share of sessions, ring form"
@@ -536,99 +552,103 @@ Rows = Array[Dictionary]([{
 }])
 XField = "category"
 YField = "value"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Radar" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Radar" type="VBoxContainer" parent="Layout/Grid" unique_id=189849684]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Radar"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Radar" unique_id=982042112]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Radar[/b] · RadarMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Radar[/b] · RadarMark"
 
-[node name="RadarChart" type="Control" parent="Layout/Grid/Radar"]
+[node name="RadarChart" type="Control" parent="Layout/Grid/Radar" unique_id=10041574]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 8
 Title = "Two players over six stats"
 Rows = Array[Dictionary]([{
 "category": "Speed",
-"value": 82,
-"series": "Player A"
+"series": "Player A",
+"value": 82
 }, {
 "category": "Speed",
-"value": 70,
-"series": "Player B"
+"series": "Player B",
+"value": 70
 }, {
 "category": "Power",
-"value": 74,
-"series": "Player A"
+"series": "Player A",
+"value": 74
 }, {
 "category": "Power",
-"value": 88,
-"series": "Player B"
+"series": "Player B",
+"value": 88
 }, {
 "category": "Accuracy",
-"value": 91,
-"series": "Player A"
+"series": "Player A",
+"value": 91
 }, {
 "category": "Accuracy",
-"value": 64,
-"series": "Player B"
+"series": "Player B",
+"value": 64
 }, {
 "category": "Stamina",
-"value": 68,
-"series": "Player A"
+"series": "Player A",
+"value": 68
 }, {
 "category": "Stamina",
-"value": 79,
-"series": "Player B"
+"series": "Player B",
+"value": 79
 }, {
 "category": "Agility",
-"value": 77,
-"series": "Player A"
+"series": "Player A",
+"value": 77
 }, {
 "category": "Agility",
-"value": 83,
-"series": "Player B"
+"series": "Player B",
+"value": 83
 }, {
 "category": "Vision",
-"value": 85,
-"series": "Player A"
+"series": "Player A",
+"value": 85
 }, {
 "category": "Vision",
-"value": 61,
-"series": "Player B"
+"series": "Player B",
+"value": 61
 }])
 XField = "category"
 YField = "value"
 ColorField = "series"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Violin" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Violin" type="VBoxContainer" parent="Layout/Grid" unique_id=1448993010]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Violin"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Violin" unique_id=1918145125]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Violin[/b] · ViolinMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Violin[/b] · ViolinMark"
 
-[node name="ViolinChart" type="Control" parent="Layout/Grid/Violin"]
+[node name="ViolinChart" type="Control" parent="Layout/Grid/Violin" unique_id=791212749]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 9
 Title = "Score distribution per group"
@@ -709,222 +729,231 @@ XField = "category"
 YField = "value"
 XAxisTitle = "Group"
 YAxisTitle = "Score"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Box" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Box" type="VBoxContainer" parent="Layout/Grid" unique_id=510251879]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Box"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Box" unique_id=1788890633]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Box[/b] · BoxMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Box[/b] · BoxMark"
 
-[node name="BoxChart" type="Control" parent="Layout/Grid/Box"]
+[node name="BoxChart" type="Control" parent="Layout/Grid/Box" unique_id=1453477180]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 10
 Title = "Five-number summary per team"
 Rows = Array[Dictionary]([{
-"team": "Alpha",
+"max": 44,
+"median": 24,
 "min": 8,
 "q1": 16,
-"median": 24,
 "q3": 31,
-"max": 44
+"team": "Alpha"
 }, {
-"team": "Beta",
+"max": 34,
+"median": 27,
 "min": 18,
 "q1": 24,
-"median": 27,
 "q3": 29,
-"max": 34
+"team": "Beta"
 }, {
-"team": "Gamma",
+"max": 38,
+"median": 22,
 "min": 5,
 "q1": 14,
-"median": 22,
 "q3": 29,
-"max": 38
+"team": "Gamma"
 }, {
-"team": "Delta",
+"max": 61,
+"median": 41,
 "min": 26,
 "q1": 33,
-"median": 41,
 "q3": 52,
-"max": 61
+"team": "Delta"
 }, {
-"team": "Epsilon",
+"max": 25,
+"median": 20,
 "min": 12,
 "q1": 19,
-"median": 20,
 "q3": 21,
-"max": 25
+"team": "Epsilon"
 }])
 XField = "team"
 XAxisTitle = "Team"
 YAxisTitle = "Score"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Candlestick" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Candlestick" type="VBoxContainer" parent="Layout/Grid" unique_id=1541527421]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Candlestick"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Candlestick" unique_id=953218056]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Candlestick[/b] · CandlestickMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Candlestick[/b] · CandlestickMark"
 
-[node name="CandlestickChart" type="Control" parent="Layout/Grid/Candlestick"]
+[node name="CandlestickChart" type="Control" parent="Layout/Grid/Candlestick" unique_id=738956816]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 11
 Title = "Open/high/low/close per session"
 Rows = Array[Dictionary]([{
-"session": "S1",
-"open": 100,
+"close": 103,
 "high": 104,
 "low": 98,
-"close": 103
+"open": 100,
+"session": "S1"
 }, {
-"session": "S2",
-"open": 103,
+"close": 100,
 "high": 105,
 "low": 99,
-"close": 100
+"open": 103,
+"session": "S2"
 }, {
-"session": "S3",
-"open": 100,
+"close": 96,
 "high": 102,
 "low": 95,
-"close": 96
+"open": 100,
+"session": "S3"
 }, {
-"session": "S4",
-"open": 96,
+"close": 100,
 "high": 101,
 "low": 95,
-"close": 100
+"open": 96,
+"session": "S4"
 }, {
-"session": "S5",
-"open": 100,
+"close": 106,
 "high": 107,
 "low": 100,
-"close": 106
+"open": 100,
+"session": "S5"
 }, {
-"session": "S6",
-"open": 106,
+"close": 103,
 "high": 108,
 "low": 102,
-"close": 103
+"open": 106,
+"session": "S6"
 }, {
-"session": "S7",
-"open": 103,
+"close": 98,
 "high": 104,
 "low": 97,
-"close": 98
+"open": 103,
+"session": "S7"
 }, {
-"session": "S8",
-"open": 98,
+"close": 104,
 "high": 105,
 "low": 97,
-"close": 104
+"open": 98,
+"session": "S8"
 }])
 XField = "session"
 XAxisTitle = "Session"
 YAxisTitle = "Price"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Heatmap" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Heatmap" type="VBoxContainer" parent="Layout/Grid" unique_id=1132861371]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Heatmap"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Heatmap" unique_id=1328157914]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Heatmap[/b] · HeatmapMark · [b]ChartView.HeatmapMaxCells[/b] = 64 (a budget over the cells)"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Heatmap[/b] · HeatmapMark"
 
-[node name="HeatmapChart" type="Control" parent="Layout/Grid/Heatmap"]
+[node name="HeatmapChart" type="Control" parent="Layout/Grid/Heatmap" unique_id=1698965551]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 12
 Title = "Load per weekday and slot"
 Rows = Array[Dictionary]([{
-"weekday": "Mon",
+"load": 3,
 "slot": "AM",
-"load": 3
+"weekday": "Mon"
 }, {
-"weekday": "Mon",
+"load": 7,
 "slot": "PM",
-"load": 7
+"weekday": "Mon"
 }, {
-"weekday": "Tue",
+"load": 5,
 "slot": "AM",
-"load": 5
+"weekday": "Tue"
 }, {
-"weekday": "Tue",
+"load": 9,
 "slot": "PM",
-"load": 9
+"weekday": "Tue"
 }, {
-"weekday": "Wed",
+"load": 8,
 "slot": "AM",
-"load": 8
+"weekday": "Wed"
 }, {
-"weekday": "Wed",
+"load": 6,
 "slot": "PM",
-"load": 6
+"weekday": "Wed"
 }, {
-"weekday": "Thu",
+"load": 4,
 "slot": "AM",
-"load": 4
+"weekday": "Thu"
 }, {
-"weekday": "Thu",
+"load": 10,
 "slot": "PM",
-"load": 10
+"weekday": "Thu"
 }, {
-"weekday": "Thu",
+"load": 5,
 "slot": "Eve",
-"load": 5
+"weekday": "Thu"
 }])
 XField = "weekday"
 YField = "slot"
 ColorField = "load"
+HeatmapMaxCells = 64
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Treemap" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Treemap" type="VBoxContainer" parent="Layout/Grid" unique_id=1289851633]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Treemap"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Treemap" unique_id=1889134493]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Treemap[/b] · TreemapMark · [b]ChartView.DiagramMaxNodes[/b] = 24 (a budget over the nodes)"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Treemap[/b] · TreemapMark"
 
-[node name="TreemapChart" type="Control" parent="Layout/Grid/Treemap"]
+[node name="TreemapChart" type="Control" parent="Layout/Grid/Treemap" unique_id=1279552018]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 13
 Title = "Code size by area"
@@ -963,25 +992,28 @@ Rows = Array[Dictionary]([{
 }])
 XField = "label"
 YField = "value"
+DiagramMaxNodes = 24
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Sunburst" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Sunburst" type="VBoxContainer" parent="Layout/Grid" unique_id=1983312477]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Sunburst"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Sunburst" unique_id=1296394688]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Sunburst[/b] · SunburstMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Sunburst[/b] · SunburstMark"
 
-[node name="SunburstChart" type="Control" parent="Layout/Grid/Sunburst"]
+[node name="SunburstChart" type="Control" parent="Layout/Grid/Sunburst" unique_id=1800615520]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 14
 Title = "The same tree as rings"
@@ -1020,25 +1052,27 @@ Rows = Array[Dictionary]([{
 }])
 XField = "label"
 YField = "value"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Sankey" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Sankey" type="VBoxContainer" parent="Layout/Grid" unique_id=573267069]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Sankey"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Sankey" unique_id=1179305944]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Sankey[/b] · SankeyMark · [b]ChartView.DiagramMaxNodes[/b] = 24 (a budget over the nodes)"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Sankey[/b] · SankeyMark"
 
-[node name="SankeyChart" type="Control" parent="Layout/Grid/Sankey"]
+[node name="SankeyChart" type="Control" parent="Layout/Grid/Sankey" unique_id=1595955513]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 15
 Title = "Flow between pipeline stages"
@@ -1068,25 +1102,28 @@ Rows = Array[Dictionary]([{
 "value": 8
 }])
 YField = "value"
+DiagramMaxNodes = 24
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Chord" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Chord" type="VBoxContainer" parent="Layout/Grid" unique_id=373458949]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Chord"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Chord" unique_id=61360671]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Chord[/b] · ChordMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Chord[/b] · ChordMark"
 
-[node name="ChordChart" type="Control" parent="Layout/Grid/Chord"]
+[node name="ChordChart" type="Control" parent="Layout/Grid/Chord" unique_id=290139015]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 16
 Title = "Two-way relations between teams"
@@ -1116,54 +1153,58 @@ Rows = Array[Dictionary]([{
 "value": 5
 }])
 YField = "value"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Gauge" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Gauge" type="VBoxContainer" parent="Layout/Grid" unique_id=387489603]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Gauge"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Gauge" unique_id=886591736]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Gauge[/b] · GaugeMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Gauge[/b] · GaugeMark"
 
-[node name="GaugeChart" type="Control" parent="Layout/Grid/Gauge"]
+[node name="GaugeChart" type="Control" parent="Layout/Grid/Gauge" unique_id=1888485326]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 17
-YAxisRange = Vector2(0, 100)
 Title = "One value on an arc"
+YAxisRange = Vector2(0, 100)
 Rows = Array[Dictionary]([{
 "category": "Completion",
 "value": 68
 }])
 XField = "category"
 YField = "value"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Funnel" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Funnel" type="VBoxContainer" parent="Layout/Grid" unique_id=829030758]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Funnel"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Funnel" unique_id=1018076591]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Funnel[/b] · FunnelMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Funnel[/b] · FunnelMark"
 
-[node name="FunnelChart" type="Control" parent="Layout/Grid/Funnel"]
+[node name="FunnelChart" type="Control" parent="Layout/Grid/Funnel" unique_id=1246085340]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 18
 Title = "Stage drop-off"
@@ -1182,25 +1223,27 @@ Rows = Array[Dictionary]([{
 }])
 XField = "category"
 YField = "value"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Waffle" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Waffle" type="VBoxContainer" parent="Layout/Grid" unique_id=2129699158]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Waffle"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Waffle" unique_id=2065652301]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Waffle[/b] · WaffleMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Waffle[/b] · WaffleMark"
 
-[node name="WaffleChart" type="Control" parent="Layout/Grid/Waffle"]
+[node name="WaffleChart" type="Control" parent="Layout/Grid/Waffle" unique_id=1022242763]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 19
 Title = "A share of 100 cells"
@@ -1219,72 +1262,76 @@ Rows = Array[Dictionary]([{
 }])
 XField = "category"
 YField = "value"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Timeline" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Timeline" type="VBoxContainer" parent="Layout/Grid" unique_id=1736523870]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Timeline"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Timeline" unique_id=561289036]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Timeline[/b] · TimelineMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Timeline[/b] · TimelineMark"
 
-[node name="TimelineChart" type="Control" parent="Layout/Grid/Timeline"]
+[node name="TimelineChart" type="Control" parent="Layout/Grid/Timeline" unique_id=1625265021]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 20
 Title = "Spans per lane"
 Rows = Array[Dictionary]([{
+"end": 5,
 "lane": "Shield",
-"start": 0,
-"end": 5
+"start": 0
 }, {
+"end": 8,
 "lane": "Haste",
-"start": 2,
-"end": 8
+"start": 2
 }, {
+"end": 7,
 "lane": "Poison",
-"start": 3,
-"end": 7
+"start": 3
 }, {
+"end": 12,
 "lane": "Regen",
-"start": 6,
-"end": 12
+"start": 6
 }, {
+"end": 11,
 "lane": "Stun",
-"start": 9,
-"end": 11
+"start": 9
 }])
 XField = "lane"
 YField = "end"
 XAxisTitle = "Seconds"
 YAxisTitle = "Lane"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Lollipop" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Lollipop" type="VBoxContainer" parent="Layout/Grid" unique_id=505864307]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Lollipop"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Lollipop" unique_id=1897335622]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
+text = "[b]Lollipop[/b] · LollipopMark"
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Lollipop[/b] · LollipopMark"
 
-[node name="LollipopChart" type="Control" parent="Layout/Grid/Lollipop"]
+[node name="LollipopChart" type="Control" parent="Layout/Grid/Lollipop" unique_id=903375492]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-layout_mode = 2
+mouse_filter = 1
 script = ExtResource("1_chart")
 Kind = 21
 Title = "Orders per day"
@@ -1311,79 +1358,81 @@ XField = "category"
 YField = "value"
 XAxisTitle = "Day"
 YAxisTitle = "Orders"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 
-[node name="Milestone" type="VBoxContainer" parent="Layout/Grid"]
+[node name="Milestone" type="VBoxContainer" parent="Layout/Grid" unique_id=853791727]
 layout_mode = 2
-theme_override_constants/separation = 4
 size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Milestone"]
-layout_mode = 2
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Milestone" unique_id=438668859]
 custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
 bbcode_enabled = true
-fit_content = true
-scroll_active = false
-autowrap_mode = 3
 text = "[b]Milestone[/b] · MilestoneMark"
-
-[node name="MilestoneChart" type="Control" parent="Layout/Grid/Milestone"]
-size_flags_horizontal = 3
-size_flags_vertical = 3
-layout_mode = 2
-script = ExtResource("1_chart")
-Kind = 22
-Title = "Events on lanes"
-Rows = Array[Dictionary]([{
-"week": 2,
-"lane": "Release",
-"label": "v0.9"
-}, {
-"week": 7,
-"lane": "Release",
-"label": "v1.0"
-}, {
-"week": 3,
-"lane": "Docs",
-"label": "guide"
-}, {
-"week": 9,
-"lane": "Docs",
-"label": "api ref"
-}, {
-"week": 5,
-"lane": "Infra",
-"label": "CI"
-}, {
-"week": 11,
-"lane": "Infra",
-"label": "CD"
-}])
-XField = "week"
-YField = "lane"
-XAxisTitle = "Week"
-YAxisTitle = "Lane"
-
-[node name="Reference lines" type="VBoxContainer" parent="Layout/Grid"]
-layout_mode = 2
-theme_override_constants/separation = 4
-size_flags_horizontal = 3
-
-[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Reference lines"]
-layout_mode = 2
-custom_minimum_size = Vector2(1, 0)
-bbcode_enabled = true
 fit_content = true
 scroll_active = false
-autowrap_mode = 3
-text = "[b]Reference lines[/b] · SectionMark · SectionLevels = 1500, 2200 · SectionBandFrom/To · SectionLabelFormat"
 
-[node name="ReferenceLinesChart" type="Control" parent="Layout/Grid/Reference lines"]
+[node name="MilestoneChart" type="Control" parent="Layout/Grid/Milestone" unique_id=1073479850]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 mouse_filter = 1
 script = ExtResource("1_chart")
-Kind = 1
+Kind = 22
+Title = "Events on lanes"
+Rows = Array[Dictionary]([{
+"label": "v0.9",
+"lane": "Release",
+"week": 2
+}, {
+"label": "v1.0",
+"lane": "Release",
+"week": 7
+}, {
+"label": "guide",
+"lane": "Docs",
+"week": 3
+}, {
+"label": "api ref",
+"lane": "Docs",
+"week": 9
+}, {
+"label": "CI",
+"lane": "Infra",
+"week": 5
+}, {
+"label": "CD",
+"lane": "Infra",
+"week": 11
+}])
+XField = "week"
+YField = "lane"
+XAxisTitle = "Week"
+YAxisTitle = "Lane"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
+
+[node name="Reference lines" type="VBoxContainer" parent="Layout/Grid" unique_id=1326034234]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Reference lines" unique_id=565530603]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Reference lines[/b] · SectionMark · SectionLevels = 1500, 2200 · SectionBandFrom/To · SectionTarget = Y · SectionDashed = false · SectionLabelFormat"
+fit_content = true
+scroll_active = false
+
+[node name="ReferenceLinesChart" type="Control" parent="Layout/Grid/Reference lines" unique_id=830042364]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("1_chart")
 Title = "Bar with a target line and a band"
 Rows = Array[Dictionary]([{
 "month": "Jan",
@@ -1408,8 +1457,11 @@ XField = "month"
 YField = "value"
 XAxisTitle = "Month"
 YAxisTitle = "Revenue"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
 SectionLevels = Array[float]([1500.0, 2200.0])
 SectionBandFrom = 1800.0
 SectionBandTo = 2400.0
 SectionColor = Color(1, 0.78, 0.35, 0.9)
+SectionDashed = false
 SectionLabelFormat = "{0:N0}"

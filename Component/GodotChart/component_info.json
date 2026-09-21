@@ -1,6 +1,6 @@
 {
   "name": "GodotChart",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A declarative chart library for Godot with a SkiaSharp backend: 22 chart kinds (20 Mark classes, plus the SectionMark annotation mark) across Cartesian, polar, hierarchical and flow layouts with auto-inferred scales, theming, animation and hit testing.",
   "author": "shitake2333",
   "license": "MIT",

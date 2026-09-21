@@ -23,7 +23,7 @@ namespace GodotNodeExtension.Example.GodotChart;
 /// <item><see cref="MilestoneMark"/>: LabelField, MarkerRadius, MarkerShape, ShowAxisLine, AlternateLabels;</item>
 /// <item><see cref="LollipopMark"/>: DotRadius, StemWidth, Orientation;</item>
 /// <item><see cref="ViolinMark"/>: BinCount, WidthRatio, FillOpacity, ShowMedian, ShowBox;</item>
-/// <item><see cref="WaffleMark"/>: TotalCells, Columns, CellGap, CellRadius.</item>
+/// <item><see cref="WaffleMark"/>: TotalCells, Columns, CellGap, CornerRadius.</item>
 /// </list>
 /// <para>
 /// The scene captions are deliberately terse - knob name, value, separator - so the layouts stay
@@ -39,7 +39,7 @@ namespace GodotNodeExtension.Example.GodotChart;
 /// <item>library defaults the demo moves away from: BarPadding 0.2, CornerRadius 3, StrokeWidth 2,
 /// AreaOpacity 0.15, ShowArea false, DefaultRadius 5, FillOpacity 0.3 (RangeArea) / 0.5 (Violin),
 /// BoxWidthRatio 0.5, WhiskerWidth 1.5, BodyWidthRatio 0.6, WickWidth 1.5, CellGap 1 (Heatmap) /
-/// 2 (Waffle), CellRadius 2, BarHeightRatio 0.6, MarkerRadius 6, BinCount 20, WidthRatio 0.7,
+/// 2 (Waffle), CornerRadius 6, BarHeightRatio 0.6, MarkerRadius 6, BinCount 20, WidthRatio 0.7,
 /// Columns 10; MinRadius / RadiusRange default to the theme's PointSizeMin (3) / PointSizeRange (20);
 /// </item>
 /// <item>knobs a caption drops to stay inside its two line budget, all of them set in this script:
@@ -523,7 +523,7 @@ public partial class ChartMarksCartesianDemo : Control
             waffle.TotalCells = 100;    // default 100: one cell per unit of the total
             waffle.Columns = 20;        // default 10: 5 rows of 20 instead of 10 rows of 10
             waffle.CellGap = 4f;        // default 2
-            waffle.CellRadius = 6f;     // default 2
+            waffle.CornerRadius = 6f;   // default 3, and ChartView copies the theme's CornerRadius onto it
         });
         WaffleChart.SetValues([("Segment A", 42.0), ("Segment B", 28.0), ("Segment C", 18.0), ("Segment D", 12.0)]);
     }

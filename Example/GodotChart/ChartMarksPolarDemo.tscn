@@ -31,7 +31,7 @@ autowrap_mode = 3
 bbcode_enabled = true
 fit_content = true
 scroll_active = false
-text = "[b][font_size=19]Polar mark knobs[/font_size][/b]\n[color=#93a1b5]Pie, donut, gauge, radar and funnel, each one ChartView configured through view.ConfigureMark(...). These marks draw from the plot's short edge, so the cell is what sizes them (every cell here asks for a square content box: ChartView reports it as PlotAspectRatio = 1) - and PlotAlignHorizontal decides whether that box sits left, centre or right in the cell (the Pie and Donut·rich center cells show left and right). Cartesian / hierarchy knobs: ChartMarksCartesianDemo / ChartMarksHierarchyDemo.[/color]"
+text = "[b][font_size=19]Polar mark knobs[/font_size][/b]\n[color=#93a1b5]Pie, donut, gauge, radar and funnel, each one ChartView configured through view.ConfigureMark(...). These marks draw from the plot's short edge, so the cell is what sizes them: every cell sets [code]PlotAspectRatio = 1[/code] (a square content box) - and [code]PlotAlignHorizontal[/code] decides whether that box sits left, centre or right in the cell (the Pie and Donut·rich center cells show left and right). Cartesian / hierarchy knobs: ChartMarksCartesianDemo / ChartMarksHierarchyDemo.[/color]"
 
 [node name="HeaderRule" type="HSeparator" parent="Layout"]
 layout_mode = 2
@@ -63,6 +63,7 @@ size_flags_vertical = 3
 layout_mode = 2
 script = ExtResource("2_chart")
 Kind = 6
+PlotAspectRatio = 1
 Title = "Pie: knobs + SliceLabelBuilder"
 PlotAlignHorizontal = 0
 
@@ -87,6 +88,7 @@ size_flags_vertical = 3
 layout_mode = 2
 script = ExtResource("2_chart")
 Kind = 7
+PlotAspectRatio = 1
 Title = "Donut: ring + center text"
 
 [node name="DonutRich" type="VBoxContainer" parent="Layout/Grid"]
@@ -110,6 +112,7 @@ size_flags_vertical = 3
 layout_mode = 2
 script = ExtResource("2_chart")
 Kind = 7
+PlotAspectRatio = 1
 Title = "Donut: CenterContentBuilder (rich center)"
 PlotAlignHorizontal = 2
 
@@ -134,6 +137,7 @@ size_flags_vertical = 3
 layout_mode = 2
 script = ExtResource("2_chart")
 Kind = 17
+PlotAspectRatio = 1
 Title = "Gauge: sweep + colours"
 
 [node name="GaugeRing" type="VBoxContainer" parent="Layout/Grid"]
@@ -157,6 +161,7 @@ size_flags_vertical = 3
 layout_mode = 2
 script = ExtResource("2_chart")
 Kind = 17
+PlotAspectRatio = 1
 Title = "Gauge: ring + labels off"
 
 [node name="Radar" type="VBoxContainer" parent="Layout/Grid"]
@@ -180,6 +185,7 @@ size_flags_vertical = 3
 layout_mode = 2
 script = ExtResource("2_chart")
 Kind = 8
+PlotAspectRatio = 1
 Title = "Radar: two series, GridRings = 4"
 
 [node name="RadarGridless" type="VBoxContainer" parent="Layout/Grid"]
@@ -203,6 +209,7 @@ size_flags_vertical = 3
 layout_mode = 2
 script = ExtResource("2_chart")
 Kind = 8
+PlotAspectRatio = 1
 Title = "Radar: grid off, labels on"
 
 [node name="Funnel" type="VBoxContainer" parent="Layout/Grid"]
@@ -226,4 +233,5 @@ size_flags_vertical = 3
 layout_mode = 2
 script = ExtResource("2_chart")
 Kind = 18
+PlotAspectRatio = 1
 Title = "Funnel: stage knobs"

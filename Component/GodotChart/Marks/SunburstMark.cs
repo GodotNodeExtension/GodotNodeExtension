@@ -25,8 +25,14 @@ public class SunburstMark : Mark
     /// <summary>Field name for the parent label (null or empty = root level).</summary>
     public string ParentField { get; set; } = "parent";
 
-    /// <summary>Outer radius as ratio of min(width, height)/2. Range (0, 1].</summary>
-    public float RadiusFactor { get; set; } = 0.9f;
+    /// <summary>
+    /// Outer radius as ratio of min(width, height)/2. Range (0, 1].
+    /// <para>
+    /// 0.85 for every polar mark (pie, donut, gauge, radar, chord): the same default at 0.9 made a sunburst
+    /// 11% larger than the mark next to it in a grid of cells of one size.
+    /// </para>
+    /// </summary>
+    public float RadiusFactor { get; set; } = 0.85f;
 
     /// <summary>Inner radius ratio relative to min(width, height) / 2.</summary>
     public float InnerRadiusRatio { get; set; } = 0.15f;
@@ -145,7 +151,7 @@ public class SunburstMark : Mark
         if (ctx.Data.Count == 0) return;
         float anim = ComputeAnimProgress(ctx);
 
-        float minDim = Math.Min(ctx.Plot.Width, ctx.Plot.Height);
+        float minDim = MathF.Min(ctx.Plot.Width, ctx.Plot.Height);
         var (cxP, cyP) = PolarGeometry.Center(ctx.Plot);
         float maxRadius = minDim / 2f * RadiusFactor;
 
@@ -282,7 +288,7 @@ public class SunburstMark : Mark
         // of a drawn (and therefore hittable) arc.
         if (!ctx.Plot.Contains(screenPos.X, screenPos.Y)) return null;
 
-        float minDim = Math.Min(ctx.Plot.Width, ctx.Plot.Height);
+        float minDim = MathF.Min(ctx.Plot.Width, ctx.Plot.Height);
         var (cx, cy) = PolarGeometry.Center(ctx.Plot);
         float maxRadius = minDim / 2f * RadiusFactor;
 

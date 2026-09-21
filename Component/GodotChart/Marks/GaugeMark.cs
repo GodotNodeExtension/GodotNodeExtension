@@ -28,7 +28,17 @@ public class GaugeMark : Mark
     /// <summary>End angle in degrees. Default is 30 (roughly the 4 o'clock position), using the same convention as <see cref="StartAngleDeg"/>.</summary>
     public float EndAngleDeg { get; set; } = 30f;
 
-    /// <summary>Arc track width relative to the outer radius.</summary>
+    /// <summary>
+    /// Thickness of the arc band as a fraction of the outer radius (default <c>0.12</c>), i.e. the ring's inner
+    /// edge is <c>outerR * (1 - ArcWidth)</c>.
+    /// <para>
+    /// <see cref="InnerRadiusRatio"/> wins while it is greater than zero: a gauge with both set draws the hole
+    /// the ratio asks for (<c>outerR * InnerRadiusRatio</c>) and this width is not read. The family is not
+    /// uniform here - a pie takes <c>InnerRadius</c> as a ratio of the outer radius, a chord takes
+    /// <c>ArcWidthRatio</c>, a sunburst takes <c>InnerRadiusRatio</c> - so the pair exists to let a gauge be
+    /// specified either way (a thin ring, or a hole) without a second mark.
+    /// </para>
+    /// </summary>
     public float ArcWidth { get; set; } = 0.12f;
 
     /// <summary>Background arc color (the track). Null = use theme color.</summary>
@@ -51,7 +61,11 @@ public class GaugeMark : Mark
     /// <summary>Whether to show min/max labels at the arc endpoints.</summary>
     public bool ShowMinMaxLabels { get; set; } = true;
 
-    /// <summary>Inner radius ratio for donut-style gauge [0, 1). 0 = use ArcWidth from outer.</summary>
+    /// <summary>
+    /// Inner radius of the band as a fraction of the outer radius, [0, 1); <c>0</c> (the default) leaves the
+    /// ring's thickness to <see cref="ArcWidth"/> instead. It is the donut form of the same knob and takes
+    /// precedence whenever it is positive, so a gauge that sets both is specified here, not by the width.
+    /// </summary>
     public float InnerRadiusRatio { get; set; }
 
     /// <summary>Outer radius as ratio of min(width, height)/2. Range (0, 1].</summary>
@@ -59,7 +73,7 @@ public class GaugeMark : Mark
 
     private (float startRad, float totalSweep, float outerR, float innerR) ComputeArcParams(MarkContext ctx)
     {
-        float maxR = PolarGeometry.Radius(ctx.Plot, RadiusFactor);
+        float maxRadius = PolarGeometry.Radius(ctx.Plot, RadiusFactor);
         float startRad = StartAngleDeg * MathF.PI / 180f;
         float endRad   = EndAngleDeg   * MathF.PI / 180f;
         float totalSweep = endRad - startRad;
@@ -67,7 +81,7 @@ public class GaugeMark : Mark
         // A sweep of exactly 2*pi is turned into 0 by the backend (angles are taken modulo a full
         // turn), which would make the whole arc disappear. Keep a hair below a full turn.
         totalSweep = MathF.Min(totalSweep, PolarGeometry.FullTurnCap);
-        float outerR = maxR;
+        float outerR = maxRadius;
         float innerR = InnerRadiusRatio > 0 ? outerR * InnerRadiusRatio : outerR * (1f - ArcWidth);
         return (startRad, totalSweep, outerR, innerR);
     }
@@ -136,37 +150,40 @@ public class GaugeMark : Mark
         // cache on the overlay paints it (see InteractionStateInOverlay / RenderOverlay).
         bool stateHere = !ctx.StateInOverlay;
 
-        // Render only the first data row (gauge is a single-value mark)
-        for (int i = 0; i < Math.Min(ctx.Data.Count, 1); i++)
+        // A gauge is a single-value mark: it draws the first row and ignores the rest. It used to loop over
+        // `Math.Min(ctx.Data.Count, 1)` entries, which made the row index a constant the whole method then
+        // carried around (the centre label's `i == 0` was always true and the selection ring always compared
+        // against 0).
+        if (ctx.Data.Count == 0) return;
+
+        var gaugeRow = ctx.Data[0];
+        if (IsSeriesHidden(ctx, gaugeRow)) return;
+
+        var gaugeY = ctx.Encodes.Resolve(YChannel, gaugeRow);
+        if (gaugeY == null) return;
+
+        // A non-finite value - or one the scale cannot read at all - has no position: draw no arc instead of
+        // sweeping a NaN one.
+        double gaugeMapped = MapSafely(yScale, gaugeY);
+        if (!double.IsFinite(gaugeMapped)) return;
+
+        // Clamp the normalized value: an out-of-range value must not sweep past the end of the scale, and a
+        // negative one must not wrap into a backwards arc.
+        float gaugeNorm = Math.Clamp((float)gaugeMapped, 0f, 1f);
+        float gaugeSweep = totalSweep * gaugeNorm * anim;
+
+        var gaugeColor = ResolveFill(ctx, gaugeRow, 0, ValueColor ?? GetDefaultColor(ctx));
+        float gaugeOpacity = ComputeElementOpacity(ctx, gaugeRow, 0);
+
+        DrawValueArc(ctx, cx, cy, outerR, innerR, startRad, gaugeSweep, gaugeColor, gaugeOpacity,
+            selected: stateHere && ctx.SelectedRowIndex == 0);
+
+        if (ShowCenterLabel)
         {
-            var row  = ctx.Data[i];
-            if (IsSeriesHidden(ctx, row)) continue;
-            var yRaw = ctx.Encodes.Resolve(YChannel, row);
-            if (yRaw == null) continue;
-
-            // A non-finite value - or one the scale cannot read at all - has no position: skip the row
-            // instead of sweeping a NaN arc.
-            double mapped = MapSafely(yScale, yRaw);
-            if (!double.IsFinite(mapped)) continue;
-            // Clamp the normalized value: an out-of-range value must not sweep past the end of the
-            // scale, and a negative one must not wrap into a backwards arc.
-            float norm = Math.Clamp((float)mapped, 0f, 1f);
-            float sweepAnimated = totalSweep * norm * anim;
-
-            var color = ResolveFill(ctx, row, i, ValueColor ?? GetDefaultColor(ctx));
-            float opacity = ComputeElementOpacity(ctx, row, i);
-
-            DrawValueArc(ctx, cx, cy, outerR, innerR, startRad, sweepAnimated, color, opacity,
-                selected: stateHere && i == ctx.SelectedRowIndex);
-
-            if (ShowCenterLabel && i == 0)
-            {
-                var labelPaint = ShapePaint(ctx);
-                var glc = (ctx.Theme ?? ChartTheme.Default).GaugeLabelColor;
-                labelPaint.SetColor(glc with { A = glc.A * ctx.Animation.GlobalOpacity });
-                string text = yScale.Format(yRaw);
-                DrawTextCentered(ctx, labelPaint, text, cx, cy, FontSettings.Default);
-            }
+            var labelPaint = ShapePaint(ctx);
+            var glc = (ctx.Theme ?? ChartTheme.Default).GaugeLabelColor;
+            labelPaint.SetColor(glc with { A = glc.A * ctx.Animation.GlobalOpacity });
+            DrawTextCentered(ctx, labelPaint, yScale.Format(gaugeY), cx, cy, FontSettings.Default);
         }
 
         // Min/Max labels
@@ -196,11 +213,7 @@ public class GaugeMark : Mark
     public override void RenderOverlay(MarkContext ctx)
     {
         // Only while the chart keeps the data layer in an image: with the cache off Render painted the state.
-        if (!ctx.StateInOverlay) return;
-
-        int hovered = ctx.HoveredRowIndex;
-        int selected = ctx.SelectedRowIndex;
-        if (hovered < 0 && selected < 0) return;
+        if (!OverlayRows(ctx, out int hovered, out int selected)) return;
 
         var yScale = ctx.Scales.TryGet(YChannel) as LinearScale;
         if (yScale == null || ctx.Data.Count == 0) return;

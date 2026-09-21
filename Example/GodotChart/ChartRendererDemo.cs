@@ -36,6 +36,15 @@ public partial class ChartRendererDemo : Control
 {
     private const float ApiChartHeight = 132f;   // cell 2: the chart keeps this band, the API tour follows
     private const string TitleBadge = "title renderer + badge";
+
+    // The page's own accents, so a role is not hand-tuned once per method (the readout golds used to differ in
+    // the second decimal). One-shot colours that demonstrate the drawing API stay inline where they are used.
+    private static readonly Color AccentGold = new(1f, 0.86f, 0.42f);
+    private static readonly Color AccentGoldSoft = new(1f, 0.90f, 0.45f, 0.85f);
+    private static readonly Color AccentMint = new(0.55f, 0.95f, 0.80f);
+    private static readonly Color HintText = new(0.80f, 0.88f, 1f, 0.85f);
+    private static readonly Color ReadoutPlate = new(0.08f, 0.10f, 0.16f, 0.94f);
+    private static readonly Color ReadoutText = new(1f, 1f, 1f, 0.92f);
     /// <summary>Cell 1: all seven renderer slots replaced by custom implementations.</summary>
     [Export] public Canvas2DControl SlotsChart { get; set; } = null!;
     /// <summary>Cell 2: the raw canvas drawing API (<see cref="IPath2D"/> / <see cref="IPaint2D"/>).</summary>
@@ -155,7 +164,7 @@ public partial class ChartRendererDemo : Control
         DefaultRenderers.DrawTitle(ctx);
         if (ctx.Title is null) return;
         using var paint = ctx.Canvas.CreatePaint();
-        paint.SetColor(new Color(0.55f, 0.95f, 0.80f));
+        paint.SetColor(AccentMint);
         ctx.Canvas.DrawText(TitleBadge, ctx.OffsetX + ctx.Width - 10f, ctx.OffsetY + ctx.Theme.TitleYOffset,
             new FontSettings { Size = 11f, Align = TextAlign.Right }, paint);
     }
@@ -291,7 +300,7 @@ public partial class ChartRendererDemo : Control
         path.ArcTo(x + w * 0.5f, y + 86f, 11f, 0f, MathF.PI * 1.5f);
         canvas.Stroke(path, paint);
         path.Reset().Circle(x + w * 0.5f, y + 86f, 2.5f);
-        paint.SetColor(new Color(1f, 0.85f, 0.4f));
+        paint.SetColor(AccentGold);
         canvas.Fill(path, paint);
     }
     private static void ApiShapes(ICanvas2D canvas, float x, float y, float w)
@@ -312,7 +321,7 @@ public partial class ChartRendererDemo : Control
     private static void ApiPaintState(ICanvas2D canvas, float x, float y, float w)
     {
         using var paint = canvas.CreatePaint();
-        paint.SetColor(new Color(1f, 0.78f, 0.38f)).SetLineCap(LineCap.Butt).SetLineJoin(LineJoin.Miter);
+        paint.SetColor(AccentGold).SetLineCap(LineCap.Butt).SetLineJoin(LineJoin.Miter);
         canvas.DrawLine(x + 8f, y + 30f, x + w - 8f, y + 30f, paint.SetStrokeWidth(4f));
         using var dashed = canvas.CreatePaint();
         dashed.SetColor(new Color(0.95f, 0.55f, 0.85f)).SetStrokeWidth(2f).SetLineCap(LineCap.Round);
@@ -359,7 +368,7 @@ public partial class ChartRendererDemo : Control
         canvas.Rotate(MathF.PI / 4f);
         canvas.Scale(1.5f, 1.5f);
         path.Reset().RoundRect(-7f, -7f, 14f, 14f, 3f);
-        paint.SetColor(new Color(1f, 0.90f, 0.55f)).SetStrokeWidth(2f).SetOpacity(0.9f);
+        paint.SetColor(AccentGold).SetStrokeWidth(2f).SetOpacity(0.9f);
         canvas.Stroke(path, paint);
         canvas.Restore();
     }
@@ -369,7 +378,7 @@ public partial class ChartRendererDemo : Control
         var font = new FontSettings { Size = 11f, Align = TextAlign.Left };
         var metrics = canvas.MeasureText(measured, font);
         using var paint = canvas.CreatePaint();
-        paint.SetColor(new Color(0.78f, 0.86f, 1f, 0.9f));
+        paint.SetColor(HintText);
         canvas.DrawText($"{measured} -> {metrics.Width:F0} x {metrics.Height:F0} px", 6f, y + 12f, font, paint);
         var image = CheckerImage(canvas);
         if (image is null) return;
@@ -424,7 +433,7 @@ public partial class ChartRendererDemo : Control
         using var paint = canvas.CreatePaint();
         if (hit is not { Hit: true })
         {
-            paint.SetColor(new Color(0.80f, 0.88f, 1f, 0.85f));
+            paint.SetColor(HintText);
             canvas.DrawText(_hitTestPointer is null
                 ? "hover a dot: this cell hit-tests and paints the ring itself"
                 : "nothing under the pointer (HitTest() returned null)",
@@ -434,7 +443,7 @@ public partial class ChartRendererDemo : Control
         var center = new Vector2(hit.ScreenX, hit.ScreenY);
         using var path = canvas.CreatePath();
         path.Circle(center.X, center.Y, 16f);
-        paint.SetColor(new Color(1f, 0.88f, 0.40f)).SetStrokeWidth(2f);
+        paint.SetColor(AccentGold).SetStrokeWidth(2f);
         canvas.Stroke(path, paint);
         path.Reset().Circle(center.X, center.Y, 5f);
         canvas.Fill(path, paint);
@@ -444,7 +453,7 @@ public partial class ChartRendererDemo : Control
         DrawReadout(canvas,
             Math.Clamp(center.X + 20f, plot.X, MathF.Max(plot.X, plot.X + plot.Width - plate)),
             Math.Clamp(center.Y - 30f, plot.Y, MathF.Max(plot.Y, plot.Y + plot.Height - 22f)),
-            plate, new Color(1f, 0.90f, 0.45f, 0.85f), readout);
+            plate, AccentGoldSoft, readout);
     }
 
     // ── Redraw, input and helpers ──────────────────────────────────────────
@@ -497,12 +506,12 @@ public partial class ChartRendererDemo : Control
         using var path = canvas.CreatePath();
         using var paint = canvas.CreatePaint();
         path.RoundRect(x, y, width, 20f, 5f);
-        paint.SetColor(new Color(0.08f, 0.10f, 0.16f, 0.94f));
+        paint.SetColor(ReadoutPlate);
         canvas.Fill(path, paint);
         path.Reset().RoundRect(x, y, width, 20f, 5f);
         paint.SetColor(border).SetStrokeWidth(1f);
         canvas.Stroke(path, paint);
-        paint.SetColor(new Color(1f, 1f, 1f, 0.92f));
+        paint.SetColor(ReadoutText);
         canvas.DrawText(text, x + 6f, y + 14f, new FontSettings { Size = 11f }, paint);
     }
     private static DataRow Row(params (string Field, object Value)[] fields)

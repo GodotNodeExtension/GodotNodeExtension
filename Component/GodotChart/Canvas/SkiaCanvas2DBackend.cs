@@ -277,12 +277,24 @@ public class SkiaCanvas2DBackend : Canvas2DBase
     /// <summary>Save depth of the Skia canvas at <see cref="BeginFrame"/>, to repair an unbalanced frame.</summary>
     private int _frameSaveCount = -1;
 
+    /// <summary>
+    /// Whether this backend released its surface. The base class answers <c>false</c> for a backend that owns
+    /// no resources of its own, and this one owns a Skia surface - without the override a host that asked
+    /// whether the canvas it holds is still usable got "yes" for a disposed backend, and the first drawing call
+    /// threw instead.
+    /// </summary>
+    public override bool IsDisposed => _disposed;
+
     // Object pools for reusable Path/Paint objects to reduce GC pressure
 
     /// <summary>
-    /// Maximum number of reusable Path/Paint objects kept in the pool.
-    /// Increase for complex charts (e.g. Sankey/Chord with hundreds of paths).
-    /// Default is 64.
+    /// Maximum number of reusable Path/Paint objects kept in the pool, for a host that draws very complex
+    /// charts (a sankey or chord with hundreds of paths). Default 64.
+    /// <para>
+    /// Set it through <see cref="Canvas2DFactory.Create(int, int, CanvasBackendType, int)"/>: the pool belongs
+    /// to the surface the factory builds, and nothing in a page reaches the backend itself (this property used
+    /// to have no caller outside the tests, so the advice it documents had no way to be followed).
+    /// </para>
     /// </summary>
     public int MaxPoolSize { get; init; } = 64;
 
@@ -339,7 +351,7 @@ public class SkiaCanvas2DBackend : Canvas2DBase
     /// <exception cref="ObjectDisposedException">
     /// The backend has no surface: it was disposed, or <see cref="Initialize"/> was never called.
     /// </exception>
-    public SkiaCanvasTexture2D SkiaTexture
+    internal SkiaCanvasTexture2D SkiaTexture
         => _skiaTexture ?? throw new ObjectDisposedException(
             nameof(SkiaCanvas2DBackend),
             "The backend has no Skia texture: it was disposed or never initialized.");

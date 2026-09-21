@@ -461,7 +461,7 @@ bbcode_enabled = true
 fit_content = true
 scroll_active = false
 autowrap_mode = 3
-text = "[b]Waffle[/b] · TotalCells 100 · Columns 20 · CellGap 4 · CellRadius 6"
+text = "[b]Waffle[/b] · TotalCells 100 · Columns 20 · CellGap 4 · CornerRadius 6"
 
 [node name="WaffleChart" type="Control" parent="Layout/Grid/Waffle"]
 size_flags_horizontal = 3

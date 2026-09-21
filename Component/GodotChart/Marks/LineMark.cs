@@ -503,11 +503,11 @@ public class LineMark : Mark
     public override void RenderOverlay(MarkContext ctx)
     {
         // Only while the chart keeps the data layer in an image: with the cache off Render painted the state.
-        if (!ctx.StateInOverlay) return;
+        // The rows are read where they are needed (the marker looks them up in this frame's geometry).
+        if (!OverlayRows(ctx, out _, out _)) return;
 
         // A stacked band carries no hover/selection visual of its own (RenderStacked draws none).
         if (Stack != StackMode.None) return;
-        if (ctx.HoveredRowIndex < 0 && ctx.SelectedRowIndex < 0) return;
 
         float globalOpacity = ctx.Animation.GlobalOpacity;
         var rowIndexMap = GetRowIndexMap(ctx);

@@ -229,7 +229,11 @@ public interface ICanvas2D : IDisposable
     /// <summary>
     /// Fill the path and stroke its outline. The two paints are separate, so the default implementation
     /// fills and then strokes (two rasterization passes); a backend whose native API can do both with one
-    /// paint may merge them.
+    /// paint overrides this.
+    /// <para>
+    /// A convenience for hosts: the library itself fills a shape and strokes its outline as two calls, so it
+    /// never goes through here.
+    /// </para>
     /// </summary>
     void StrokeAndFill(IPath2D path, IPaint2D strokePaint, IPaint2D fillPaint);
 
@@ -324,17 +328,6 @@ public interface ICanvas2D : IDisposable
     /// Only meaningful after <see cref="Save"/>; <see cref="Restore"/> undoes it.
     /// </summary>
     void ClipRect(float x, float y, float w, float h);
-
-    /// <summary>
-    /// Report the rectangle this frame changed, so a backend may upload only that part of its surface. Several
-    /// calls in one frame widen the region; a frame that reports nothing is uploaded whole, which is what keeps
-    /// a backend that ignores this call correct.
-    /// </summary>
-    /// <param name="x">Left edge in surface pixels.</param>
-    /// <param name="y">Top edge in surface pixels.</param>
-    /// <param name="w">Width in pixels.</param>
-    /// <param name="h">Height in pixels.</param>
-    void InvalidateRegion(float x, float y, float w, float h);
 
     /// <summary>
     /// Measure the rendered dimensions of the given text with the specified font settings.

@@ -809,6 +809,27 @@ public abstract class Mark
         => (ctx.Theme ?? ChartTheme.Default).EnableHoverHighlight ? factor : 1f;
 
     /// <summary>
+    /// Whether an overlay pass has anything to paint, and for which rows: false while the chart keeps the data
+    /// layer in an image (<see cref="MarkContext.StateInOverlay"/> is off - with the cache off
+    /// <see cref="Render"/> painted the state itself) and false while neither the hovered nor the selected row
+    /// is known.
+    /// <para>
+    /// Every mark's overlay pass starts here instead of repeating the two conditions and the row lookups, so
+    /// none of them can gate on something else than the others (the thirteen copies had already drifted in what
+    /// they checked *after* the gate, never in the gate itself - which is exactly the kind of copy that drifts).
+    /// </para>
+    /// </summary>
+    /// <param name="ctx">Context of the frame.</param>
+    /// <param name="hovered">The hovered row, or -1.</param>
+    /// <param name="selected">The selected row, or -1.</param>
+    protected static bool OverlayRows(MarkContext ctx, out int hovered, out int selected)
+    {
+        hovered = ctx.StateInOverlay ? ctx.HoveredRowIndex : -1;
+        selected = ctx.StateInOverlay ? ctx.SelectedRowIndex : -1;
+        return hovered >= 0 || selected >= 0;
+    }
+
+    /// <summary>
     /// Row indices whose interaction state an overlay pass has to paint: the hovered and the selected one, in
     /// that order and without a duplicate. Only these two are drawn, which keeps a hover frame O(1) in the
     /// number of elements instead of O(rows).
@@ -1356,8 +1377,13 @@ public abstract class Mark
         }
     }
 
-    /// <summary>Font of one span of a custom label line: the label font with the span's own overrides.</summary>
-    private static FontSettings SpanFont(MarkContext ctx, in TooltipSpan span, FontSettings font)
+    /// <summary>
+    /// Font of one span of a custom label line: the label font with the span's own overrides. Every span of a
+    /// <see cref="TooltipLine"/> goes through it, so a mark that lays a line out itself (the pie's centre
+    /// content) cannot end up drawing the same line with fewer styles than the shared
+    /// <see cref="DrawLabelContent"/> does.
+    /// </summary>
+    protected static FontSettings SpanFont(MarkContext ctx, in TooltipSpan span, FontSettings font)
         => ThemedFont(ctx, font with
         {
             Size = span.FontSize ?? font.Size,

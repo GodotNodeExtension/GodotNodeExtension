@@ -984,7 +984,7 @@ new Chart(canvas)
 `TotalCells` 个格子（默认 100）按最大余数法分配，所以一行**不是**一个格子。计数从左下角开始。网格本身不使用任何刻度，
 该 Mark 也声明为「不用坐标轴」（`UsesAxes`），因此只放华夫饼图的图表不会绘制坐标轴与网格；与柱状图等混用时才会保留。
 
-**属性：** 带默认值的完整列表见 [WaffleMark](api-reference.cn.md#wafflemark)。`TotalCells` 是网格的格子数（按最大余数法分配），`Columns` 是网格形状；`CellGap` / `CellRadius` 控制格子样式。
+**属性：** 带默认值的完整列表见 [WaffleMark](api-reference.cn.md#wafflemark)。`TotalCells` 是网格的格子数（按最大余数法分配），`Columns` 是网格形状；`CellGap` / `CornerRadius` 控制格子样式。
 
 ```csharp compile
 var data = new List<DataRow>
@@ -994,7 +994,7 @@ var data = new List<DataRow>
 };
 new Chart(canvas)
     .Data(data)
-    .Mark(new WaffleMark { TotalCells = 100, Columns = 10, CellGap = 2f, CellRadius = 2f })
+    .Mark(new WaffleMark { TotalCells = 100, Columns = 10, CellGap = 2f, CornerRadius = 2f })
     .Encode(Channel.X, "type")
     .Encode(Channel.Y, "value")
     .Encode(Channel.Color, "type")

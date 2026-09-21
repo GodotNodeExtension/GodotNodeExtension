@@ -76,6 +76,29 @@ public partial class ChartView : Control
 | `EditorPreview` | `bool` | `true` | 在编辑器里也绘制图表（本节点是 tool 脚本） |
 | `IgnoreContentMinimumSize` | `bool` | `false` | 改为报告绘图区自身的最小尺寸（而不是内容：标题、图例、轴标签），让页面可以把节点压小 |
 
+```csharp compile
+// ChartView 的导出：场景里能配，代码里也能设。每一条都在某个示例页上出现过
+// （ChartLayoutDemo / ChartBigDataDemo / BasicsDemo），这里是整套一起设。
+view.XAxisLabelRotation = 30f;          // 长类目名斜排后仍能看全
+view.XAxisTickStep = 500f;              // 以数据单位计的步长；0 表示交给轴自己决定
+view.XAxisTickSpacing = 40f;            // 一个标签可占的像素；0 表示用主题的间距
+view.XAxisTickCount = 12;               // 精确刻度数；0 表示按轴长推导
+view.XAxisLabelFormat = "0.0 °C";       // 空串表示沿用标度自身的文本
+view.YAxisLabelFormat = "0.0 °C";       // 两条轴的标签由同一段代码生成
+view.YAxisMinLimit = 0f;                // NaN 表示该端继续自适应
+view.YAxisMaxLimit = 100f;
+view.PlotAspectRatio = 1f;              // 内容框的宽高比（1 = 正方）；0 表示交给 mark
+view.PlotAlignVertical = VerticalAlignment.Center;
+view.Decimate = DecimateMode.On;        // 折线/面积类的抽点策略
+view.ZoomFactor = 1.5f;                 // 滚轮一格缩放多少
+view.PanButton = MouseButton.Middle;
+view.ResetZoomOnDoubleClick = false;
+view.HeatmapMaxCells = 64;              // 单元格预算；超出时 mark 会警告
+view.DiagramMaxNodes = 24;              // treemap / sankey 的节点预算
+view.SectionTarget = ChartSectionTarget.Y;  // 参考线属于哪条轴
+view.SectionDashed = false;             // 实线（默认虚线）
+```
+
 ### 各类默认字段绑定
 
 `Kind` 始终显式指定——节点不会根据数据去推断（见上文 `ChartKind` 列表）。下面是 `ChartView` 为各类型绑定的字段；
@@ -821,7 +844,7 @@ new IntervalMark
 | `TotalCells` | int | 100 |
 | `Columns` | int | 10 |
 | `CellGap` | float | 2 |
-| `CellRadius` | float | 2 |
+| `CornerRadius` | float | 3 |
 
 **数据：** 一行 = 一个类别，不是一个格子：`Y` 是权重（值 <= 0 或缺值的行被丢弃），`TotalCells` 个格子
 （默认 100）按最大余数法分配；`X` 只用于悬停提示，`Color` 决定格子颜色（不绑颜色时每个格子都用 mark 的默认色，看不出分配比例）。

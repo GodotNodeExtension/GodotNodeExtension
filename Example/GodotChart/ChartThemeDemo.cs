@@ -142,6 +142,12 @@ public partial class ChartThemeDemo : MarginContainer
     /// <summary>Cell showing chart-level colour overrides winning over the theme.</summary>
     [Export] public ChartView OverrideChart { get; set; } = null!;
 
+    /// <summary>Cell showing the theme's own layout reservations (the title band and the Y2 column).</summary>
+    [Export] public ChartView LayoutChart { get; set; } = null!;
+
+    /// <summary>Violin cell showing one per-mark group plus the hit-test knobs.</summary>
+    [Export] public ChartView MarkGroupsChart { get; set; } = null!;
+
     /// <summary>Edits the live theme resource (background + palette) and emits its Changed signal.</summary>
     [Export] public Button MutateButton { get; set; } = null!;
 
@@ -169,11 +175,95 @@ public partial class ChartThemeDemo : MarginContainer
         ConfigureInteractionCell();
         ConfigureLiveThemeCell();
         ConfigureOverrideCell();
+        ConfigureLayoutCell();
+        ConfigureMarkGroupsCell();
 
         MutateButton.Pressed += OnMutateTheme;
         ResetButton.Pressed += OnResetTheme;
 
         Report("hover a bar or a slice and click one: the highlight, the crosshair, the tooltip and the selection ring are theme switches");
+    }
+
+    // ── Layout: the reservations the theme makes ────────────────────────────
+
+    /// <summary>
+    /// The Layout group: what the theme reserves <b>before</b> anything is measured.
+    /// <see cref="ChartTheme.TitleReservedHeight"/> is the band a title keeps above the plot
+    /// (24 by default) and <see cref="ChartTheme.Y2LabelReservedWidth"/> is the column a second Y axis labels
+    /// into (35 by default). Both are raised here, and both effects are visible at once: the title band is
+    /// taller, and the right column is held even though this chart draws no mark against Y2 - a second axis is
+    /// added through the <see cref="ChartView.ConfigureChart"/> hook only so the reservation is spent instead
+    /// of merely existing (the same chain ChartLayoutDemo builds for its <c>Y</c> key).
+    /// <para>
+    /// The rest of the group (<see cref="ChartTheme.AxisTitleMargin"/>, <see cref="ChartTheme.TitleYOffset"/>,
+    /// <see cref="ChartTheme.XAxisLabelOffset"/>, <see cref="ChartTheme.YAxisLabelGap"/>,
+    /// <see cref="ChartTheme.TickLabelSpacing"/>, <see cref="ChartTheme.FallbackTickCount"/>,
+    /// <see cref="ChartTheme.MinTickCount"/> / <see cref="ChartTheme.MaxTickCount"/>,
+    /// <see cref="ChartTheme.XAxisLabelRotation"/> and <see cref="ChartTheme.AxisTitleBaselineNudge"/>) is
+    /// measured by ChartLayoutDemo, where every one of them moves a number in the readout.
+    /// </para>
+    /// </summary>
+    private void ConfigureLayoutCell()
+    {
+        var theme = ChartTheme.Dark().Clone();
+        theme.TitleReservedHeight = 40f;
+        theme.Y2LabelReservedWidth = 64f;
+        ConfigureBars(LayoutChart, theme);
+
+        LayoutChart.ConfigureChart = chart =>
+        {
+            // No mark of this chart draws against Y2: the point is the column the axis reserves.
+            chart.Encode(Channel.Y2, "value");
+            chart.Y2Axis(new AxisConfig());
+        };
+    }
+
+    // ── The per-mark groups ─────────────────────────────────────────────────
+
+    /// <summary>
+    /// One of the thirteen per-mark groups, plus the Hit test group. A per-mark group holds the defaults a mark
+    /// of that kind reads instead of restating them itself, so a theme can restyle one kind without touching
+    /// the others: this violin cell sets <see cref="ChartTheme.ViolinBoxColor"/>,
+    /// <see cref="ChartTheme.ViolinMedianDotColor"/>, <see cref="ChartTheme.ViolinMedianDotRadius"/> and
+    /// <see cref="ChartTheme.ViolinBoxWidthRatio"/>, and the same pattern applies to the other twelve groups
+    /// (box, candlestick, chord, gauge, line, lollipop, point, radar, range area, sankey, sunburst, treemap) -
+    /// they are listed in the API reference with their defaults.
+    /// <para>
+    /// <see cref="ChartTheme.HitTestPointPadding"/> widens the grab area around a data point and
+    /// <see cref="ChartTheme.HitTestSnapDistance"/> how far a probe may be from a series and still answer, so
+    /// this cell is the one to hover: well beside a violin's outline it still reports the sample.
+    /// </para>
+    /// </summary>
+    private void ConfigureMarkGroupsCell()
+    {
+        var theme = ChartTheme.Dark().Clone();
+        theme.ViolinBoxColor = new Color(1f, 0.78f, 0.35f);
+        theme.ViolinMedianDotColor = new Color(1f, 0.45f, 0.55f);
+        theme.ViolinMedianDotRadius = 5f;
+        theme.ViolinBoxWidthRatio = 0.30f;
+        theme.HitTestPointPadding = 12f;
+        theme.HitTestSnapDistance = 30f;
+
+        MarkGroupsChart.XField = "category";
+        MarkGroupsChart.YField = "value";
+        MarkGroupsChart.SetData(BuildDistributions());
+        MarkGroupsChart.CustomTheme = theme;
+    }
+
+    /// <summary>Three categories of six samples - what a violin needs before it can draw a density outline.</summary>
+    private static DataRow[] BuildDistributions() =>
+    [
+        .. Distribution("A", 12, 15, 18, 22, 27, 31),
+        .. Distribution("B", 18, 24, 26, 29, 33, 38),
+        .. Distribution("C", 9, 13, 20, 21, 25, 30),
+    ];
+
+    private static DataRow[] Distribution(string category, params double[] samples)
+    {
+        var rows = new DataRow[samples.Length];
+        for (int i = 0; i < samples.Length; i++)
+            rows[i] = Row(category, samples[i], "samples");
+        return rows;
     }
 
     // ── Shared chart, so only the theme differs between the bar cells ───────

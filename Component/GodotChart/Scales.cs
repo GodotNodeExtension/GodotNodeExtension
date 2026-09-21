@@ -380,7 +380,11 @@ public class LinearScale : IScale
     public double Map(object value)
     {
         if (!ScaleConvert.TryToDouble(value, out double v)) return double.NaN;
-        if (ScaleMath.IsDegenerate(Min, Max)) return 0;
+        // A degenerate domain (every value equal) has no ends to spread over, so the value sits in the middle -
+        // the convention the ordinal, colour and time scales already used, and the position the single tick of
+        // such an axis is drawn at (see ComputeTicks). Returning 0 put the mark at the start of the axis while
+        // its label sat in the middle.
+        if (ScaleMath.IsDegenerate(Min, Max)) return 0.5;
         return (v - Min) / (Max - Min);
     }
 
@@ -671,7 +675,7 @@ public class SequentialColorScale : IColorScale
     {
         double v = ScaleConvert.ToDouble(value, nameof(SequentialColorScale));
         if (!double.IsFinite(v)) return double.NaN;
-        // Same degenerate-domain convention as the other scales: the middle of the ramp.
+        // The one degenerate-domain convention of the family (see LinearScale.Map): the middle of the ramp.
         if (ScaleMath.IsDegenerate(Min, Max)) return 0.5;
         return Math.Clamp((v - Min) / (Max - Min), 0, 1);
     }
@@ -947,7 +951,8 @@ public class LogScale : IScale
         // `Min`, which drew them at the bottom of the axis as if they were real data points; NaN is the
         // honest answer (and the one the other scales give).
         if (!ScaleConvert.TryToDouble(value, out double v) || v <= 0) return double.NaN;
-        if (_logRange < 1e-10) return 0;
+        // A degenerate range (max == min) collapses to the middle, like every other scale (see LinearScale.Map).
+        if (_logRange < 1e-10) return 0.5;
         return Math.Clamp((Math.Log10(v) - _logMin) / _logRange, 0, 1);
     }
 

@@ -168,6 +168,11 @@ Treemap Mark**（另有 **Feature Toggles** 与 **Hit Test**）。只有主题�
 分组：Interval、Heatmap、Funnel、Waffle、Milestone、Timeline 直接用上面的共享默认值。上面的表只列了主要属性；
 完整清单按这些分组名显示在 Inspector 里。
 
+示例页 `ChartThemeDemo` 按格子逐组走了一遍：两套内置主题、`Clone`、边框、排版、线宽与提示框度量、功能开关、
+运行中改主题资源、Chart 级覆盖、**Layout** 预留（标题带与 Y2 列），以及一个按 mark 分的组（小提琴那组，
+连同 **Hit Test** 的几个旋钮）。没有自己格子的那些组——其余按 mark 分的组、以及上表里的提示框偏移与图例间距——
+配置方式和有格子的一模一样：同一个主题资源、Inspector 里的同一个分组。
+
 ---
 
 ## 自定义主题资源（ChartView）

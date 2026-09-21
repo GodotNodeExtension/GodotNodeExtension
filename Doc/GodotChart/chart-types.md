@@ -1064,7 +1064,7 @@ mixes a waffle with a bar chart keeps them. That axis-free flag is the only thin
 
 **Properties:** the full list with defaults is in [WaffleMark](api-reference.md#wafflemark).
 `TotalCells` is the size of the grid (shared out by the largest-remainder method) and `Columns` its
-shape; `CellGap` / `CellRadius` style the cells.
+shape; `CellGap` / `CornerRadius` style the cells.
 
 ```csharp compile
 var data = new List<DataRow>
@@ -1074,7 +1074,7 @@ var data = new List<DataRow>
 };
 new Chart(canvas)
     .Data(data)
-    .Mark(new WaffleMark { TotalCells = 100, Columns = 10, CellGap = 2f, CellRadius = 2f })
+    .Mark(new WaffleMark { TotalCells = 100, Columns = 10, CellGap = 2f, CornerRadius = 2f })
     .Encode(Channel.X, "type")
     .Encode(Channel.Y, "value")
     .Encode(Channel.Color, "type")

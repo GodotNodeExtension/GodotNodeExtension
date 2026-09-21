@@ -207,7 +207,7 @@ orders them and carries the descriptions):
 |---|---|
 | `BasicsDemo.tscn` | every chart kind the library ships (all 22; the bar and area cells repeat as grouped and stacked variants), plus the `SectionMark` reference lines |
 | `ChartStreamingDemo.tscn` | two feeds at **different rates**: a 60 Hz oscilloscope over a fixed-size **ring buffer** (axis pinned at 0..N) and a **price feed** appending one 10 s candle every 10 s through **`AddRow` + `WindowSize`**, plus a live gauge |
-| `ChartViewFieldsDemo.tscn` | `ChartView` configured from code: all six channels with their ranges, the four `ColorMapping` kinds, pinned axis domains, `ThemeKind` and a theme resource, axes/units/legend, every data entry point (`SetValues` / `SetData` / `SetCsv` + `ParseCsv` / `AddRow` + `WindowSize` / `Clear`) and `Refresh` versus `Repaint` |
+| `ChartViewFieldsDemo.tscn` | `ChartView` configured from code: all six channels with their ranges, four of the five `ColorMapping` kinds (the fifth, `Auto`, is the default the page leaves alone), pinned axis domains, `ThemeKind` and a theme resource, axes/units/legend, every data entry point (`SetValues` / `SetData` / `SetCsv` + `ParseCsv` / `AddRow` + `WindowSize` / `Clear`) and `Refresh` versus `Repaint` |
 | `ChartViewHooksDemo.tscn` | `ConfigureMark`, `Tooltip.Options` with both content builders, a `CanvasFactory` that shares one canvas between two views, the `Surface` / `Canvas` / `Texture` trio, and the editor-only `EditorPreview` (`ConfigureChart` itself is on `ChartViewFieldsDemo` and `ChartCallbacksDemo`) |
 | `ChartCallbacksDemo.tscn` | `OnHover` / `OnClick` / `OnSelectionChanged` / `OnFocusChanged` / `OnLegendClick` (with `Handled`), `Select` / `FocusSeries` / `HideSeries` / `ShowAllSeries`, an external legend built from `GetSeriesInfo()`, and a host that walks the pointer itself through `HitTest` + `Interaction` + `Hover` + `NotifyHoverChanged` |
 | `ChartAnimationDemo.tscn` | the animation **host** loop: an `AnimationController` per frame, `AnimationContext` handed to `Chart.Animate(ctx)`, entry / hover / data transition / exit buttons, and the seven `EaseType` curves drawn by a custom mark |
@@ -215,11 +215,11 @@ orders them and carries the descriptions):
 | `ChartCustomizationDemo.tscn` | hand-built chart: the full `Channel.Y2` chain (`Encode` + `Scale` + `Y2Axis` + `ScaleDomain`), three custom `Mark` subclasses, mark-level encodes, `ApplyToAllMarks`, a custom `IDataTransform`, and background/grid/title renderer slots |
 | `ChartScaleDemo.tscn` | the scales the page demonstrates: `TimeScale`, `SequentialColorScale`, `OrdinalScale` + `ColorScale` + `ShapeScale`, `IdentityColorScale`, `DivergingColorScale`, and `BandScale` / `RadialScale` consumed by two custom marks (`LogScale` is on `ChartCustomizationDemo`) |
 | `ChartCanvasDemo.tscn` | host loop: `Interaction` + `NotifyHoverChanged`, `HandleClick`, the query properties, both `AppendData` overloads (A / B keys), and one canvas from `Canvas2DFactory.Create` shared by two charts |
-| `ChartRendererDemo.tscn` | all seven renderer slots replaced one at a time, plus the drawing API: `IPath2D` geometry, `IPaint2D` dashes and gradients, the save/restore stack with clip and transforms, `MeasureText`, `DrawImage` and `Capabilities` |
+| `ChartRendererDemo.tscn` | all seven renderer slots replaced together with the page's own implementations (and put back to the defaults with one more click), plus the drawing API: `IPath2D` geometry, `IPaint2D` dashes and gradients, the save/restore stack with clip and transforms, `MeasureText`, `DrawImage` and `Capabilities` |
 | `ChartMarksCartesianDemo.tscn` | per-mark knobs of the Cartesian marks (bars, lines, points, range areas, box plots, candles, heatmap, timeline, milestone, lollipop, violin, waffle) |
-| `ChartBigDataDemo.tscn` | a real data set (24 countries, 1970-2023) with wheel zoom, pan, legend filtering and a reference line |
+| `ChartBigDataDemo.tscn` | a real data set (24 countries, 1970-2023) with wheel zoom, pan, legend filtering and a reference line, plus the decimation, zoom-factor, pan-button and double-click-reset exports under **D** / **Z** / **B** / **X** |
 | `ChartLayeredRenderingDemo.tscn` | the same chart rendered both ways (layered / not) with the draw time and the layer memory side by side |
-| `ChartLayoutDemo.tscn` | the layout budget of one `ChartView`: `Chart.MinimumSize` and `Chart.MinimumPlotSize`, the size the layout gave the node, and the insets around `Chart.CurrentPlotArea` - with keys for the title, the legend position, the axis titles, a second Y axis, the theme font size and a node pinned to its minimum (and below it) |
+| `ChartLayoutDemo.tscn` | the layout budget of one `ChartView`: `Chart.MinimumSize` and `Chart.MinimumPlotSize`, the size the layout gave the node, and the insets around `Chart.CurrentPlotArea` - with keys for the title, the legend position, the axis titles, a second Y axis, the theme font size and a node pinned to its minimum (and below it), plus six axis and content **exports** (label rotation, tick density, label formats, content shape and alignment, pinned Y ends) |
 | `ChartMarksPolarDemo.tscn` | per-mark knobs of the polar marks (pie, donut, gauge, radar, funnel) |
 | `ChartMarksHierarchyDemo.tscn` | per-mark knobs of the treemap, sunburst, sankey and chord marks |
 
@@ -233,7 +233,10 @@ three charts are declared in the scene too, and the script only feeds them data)
 code page configured and running. Whatever a page does in code, remember that a `ChartView`
 **replaces its `Chart` instance on every rebuild**, so a subscription made on `view.Chart` lasts only
 until the next `Refresh()` - that is what `ConfigureChart` is for (the pages that subscribe are
-`ChartCallbacksDemo` and `ChartViewFieldsDemo`).
+`ChartCallbacksDemo` and `ChartViewFieldsDemo`). The pages are deliberately **standalone**: each one carries its
+own small helpers (a `Row(...)` row factory, a `Report(...)` status line, its own input handling) instead of
+sharing a support file, so a single script can be read, copied and edited on its own - the same few helpers
+appearing in more than one page is the price of that.
 
 ## Custom Drawing
 

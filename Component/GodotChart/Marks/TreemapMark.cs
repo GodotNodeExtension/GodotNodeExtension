@@ -271,11 +271,7 @@ public class TreemapMark : Mark
     public override void RenderOverlay(MarkContext ctx)
     {
         // Only while the chart keeps the data layer in an image: with the cache off Render painted the state.
-        if (!ctx.StateInOverlay) return;
-
-        int hovered = ctx.HoveredRowIndex;
-        int selected = ctx.SelectedRowIndex;
-        if (hovered < 0 && selected < 0) return;
+        if (!OverlayRows(ctx, out int hovered, out int selected)) return;
 
         var cached = CachedLayout(ctx);
         if (cached == null) return;

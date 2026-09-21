@@ -78,6 +78,29 @@ carry the field simply contributes no value for that channel.
 | `EditorPreview` | `bool` | `true` | Also draw the chart inside the editor (the node is a tool script) |
 | `IgnoreContentMinimumSize` | `bool` | `false` | Report the plot's own minimum size instead of the content's (title, legend, axis labels), so a page may squeeze the node |
 
+```csharp compile
+// The ChartView exports a page either writes in the scene or sets from code. Every one of them is shown on a
+// page of its own (ChartLayoutDemo, ChartBigDataDemo, BasicsDemo); this is the whole set at once.
+view.XAxisLabelRotation = 30f;          // long category names stay readable at an angle
+view.XAxisTickStep = 500f;              // one step in data units; 0 lets the axis decide
+view.XAxisTickSpacing = 40f;            // pixels one label may take; 0 keeps the theme's spacing
+view.XAxisTickCount = 12;               // an exact count; 0 derives it from the axis length
+view.XAxisLabelFormat = "0.0 °C";       // empty keeps the scale's own text
+view.YAxisLabelFormat = "0.0 °C";       // both axes are labelled by the same code
+view.YAxisMinLimit = 0f;                // NaN fits that end
+view.YAxisMaxLimit = 100f;
+view.PlotAspectRatio = 1f;              // width / height of the content box (1 = square); 0 leaves it to the marks
+view.PlotAlignVertical = VerticalAlignment.Center;
+view.Decimate = DecimateMode.On;        // point reduction for line/area kinds
+view.ZoomFactor = 1.5f;                 // how far one wheel step goes
+view.PanButton = MouseButton.Middle;
+view.ResetZoomOnDoubleClick = false;
+view.HeatmapMaxCells = 64;              // cell budget; the mark warns when the rows exceed it
+view.DiagramMaxNodes = 24;              // node budget for treemap and sankey
+view.SectionTarget = ChartSectionTarget.Y;  // the axis the reference lines belong to
+view.SectionDashed = false;             // solid instead of dashed
+```
+
 ### Default Field Bindings
 
 `Kind` is always explicit - the node never infers it from the rows (see the `ChartKind` list below).
@@ -856,7 +879,7 @@ position is missing or non-finite is skipped. See [Chart Types](chart-types.md#m
 | `TotalCells` | int | 100 |
 | `Columns` | int | 10 |
 | `CellGap` | float | 2 |
-| `CellRadius` | float | 2 |
+| `CornerRadius` | float | 3 |
 
 **Data:** one row = one category, not one cell: `Y` is its weight (rows with a value <= 0 or no value are
 dropped) and the `TotalCells` cells (100 by default) are shared out by the largest-remainder method -

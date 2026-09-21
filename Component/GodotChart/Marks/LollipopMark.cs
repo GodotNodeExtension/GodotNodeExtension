@@ -161,6 +161,12 @@ public class LollipopMark : Mark
         // cache on the overlay paints it (see InteractionStateInOverlay / RenderOverlay).
         bool stateHere = !ctx.StateInOverlay;
 
+        // Data labels, the same contract as the other Cartesian marks: one element per row, drawn only while
+        // ShowLabel is on (it is off by default). The label's own text is the value the stem is drawn from -
+        // the X value for a horizontal lollipop, the Y value otherwise - and LabelPosition decides where it
+        // sits relative to the dot.
+        var labels = BeginLabelCollection();
+
         for (int i = 0; i < ctx.Data.Count; i++)
         {
             if (!TryRowGeometry(ctx, ordinalScale, valueScale, horizontal, i, baseline, anim, out var geometry))
@@ -174,16 +180,26 @@ public class LollipopMark : Mark
             DrawLollipop(ctx, geometry, baseline, horizontal, shape, color, opacity,
                 hovered: stateHere && i == ctx.HoveredRowIndex,
                 selected: stateHere && i == ctx.SelectedRowIndex);
+
+            if (labels != null)
+            {
+                object? value = horizontal ? ctx.Encodes.Resolve(Channel.X, row) : ctx.Encodes.Resolve(YChannel, row);
+                object? other = horizontal ? ctx.Encodes.Resolve(YChannel, row) : ctx.Encodes.Resolve(Channel.X, row);
+                labels.Add(new LabelElement(geometry.Cx, geometry.Cy, FormatLabel(LabelFormat, value, other),
+                    opacity, row, i, color, LabelValue(value)));
+            }
         }
+
+        if (labels != null)
+            DrawLabels(ctx, labels);
     }
 
     /// <inheritdoc />
     public override void RenderOverlay(MarkContext ctx)
     {
         // Only while the chart keeps the data layer in an image: with the cache off Render painted the state.
-        if (!ctx.StateInOverlay) return;
-
-        if (ctx.HoveredRowIndex < 0 && ctx.SelectedRowIndex < 0) return;
+        // The rows are read where they are needed (the loop walks the interaction rows).
+        if (!OverlayRows(ctx, out _, out _)) return;
 
         var (ordinalScale, valueScale, horizontal, baseline) = ResolveAxes(ctx);
         if (ordinalScale == null || valueScale == null) return;

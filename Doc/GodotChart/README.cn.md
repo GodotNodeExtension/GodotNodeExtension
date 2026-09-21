@@ -204,7 +204,7 @@ view.CustomTheme = new ChartTheme
 | 场景 | 展示内容 |
 |---|---|
 | `BasicsDemo.tscn` | 库里的全部图表类型（22 种；柱状与面积另有分组/堆叠变体格），以及 `SectionMark` 参考线 |
-| `ChartViewFieldsDemo.tscn` | 用代码配置 `ChartView`：六个通道及其区间、四种 `ColorMapping`、锁定轴域、`ThemeKind` 与主题资源、轴标题/单位/图例、全部数据入口（`SetValues` / `SetData` / `SetCsv` + `ParseCsv` / `AddRow` + `WindowSize` / `Clear`），以及 `Refresh` 与 `Repaint` 的差别 |
+| `ChartViewFieldsDemo.tscn` | 用代码配置 `ChartView`：六个通道及其区间、五种 `ColorMapping` 里的四种（第五种 `Auto` 是默认值，该页不动它）、锁定轴域、`ThemeKind` 与主题资源、轴标题/单位/图例、全部数据入口（`SetValues` / `SetData` / `SetCsv` + `ParseCsv` / `AddRow` + `WindowSize` / `Clear`），以及 `Refresh` 与 `Repaint` 的差别 |
 | `ChartViewHooksDemo.tscn` | `ConfigureMark`、`Tooltip.Options` 的两种内容构建器、让两个视图共享一张画布的 `CanvasFactory`、`Surface` / `Canvas` / `Texture` 三件套，以及编辑器专用的 `EditorPreview`（`ConfigureChart` 本身在 `ChartViewFieldsDemo` 与 `ChartCallbacksDemo` 上） |
 | `ChartCallbacksDemo.tscn` | `OnHover` / `OnClick` / `OnSelectionChanged` / `OnFocusChanged` / `OnLegendClick`（含 `Handled` 拦截）、`Select` / `FocusSeries` / `HideSeries` / `ShowAllSeries`、用 `GetSeriesInfo()` 自建外部图例，以及宿主自己用 `HitTest` + `Interaction` + `Hover` + `NotifyHoverChanged` 处理指针 |
 | `ChartThemeDemo.tscn` | 逐组演示 `ChartTheme`：调色板与渐变、边框配色、排版、线宽与提示框度量、`Enable*` 开关、`Clone()` 与 `Dark()` / `Light()` 对照、运行中改主题资源、以及 `Chart` 级颜色覆盖 |
@@ -213,11 +213,11 @@ view.CustomTheme = new ChartTheme
 | `ChartCustomizationDemo.tscn` | 纯代码构建：完整的 `Channel.Y2` 链路（`Encode` + `Scale` + `Y2Axis` + `ScaleDomain`）、三个自定义 `Mark` 子类、mark 级编码、`ApplyToAllMarks`、自定义 `IDataTransform`，以及背景/网格/标题三个渲染槽的替换 |
 | `ChartScaleDemo.tscn` | 该页演示的各个标度：`TimeScale`、`SequentialColorScale`、`OrdinalScale` + `ColorScale` + `ShapeScale`、`IdentityColorScale`、`DivergingColorScale`，以及由两个自定义 mark 消费的 `BandScale` / `RadialScale`（`LogScale` 在 `ChartCustomizationDemo` 页） |
 | `ChartCanvasDemo.tscn` | 宿主闭环：`Interaction` + `NotifyHoverChanged`、`HandleClick`、若干查询属性、`AppendData` 的两个重载（A / B 键），以及由 `Canvas2DFactory.Create` 造出、被两个图表共享的一张画布 |
-| `ChartRendererDemo.tscn` | 七个渲染槽逐个替换，外加绘制 API：`IPath2D` 几何、`IPaint2D` 虚线与渐变、带裁剪与变换的 save/restore 栈、`MeasureText`、`DrawImage` 与 `Capabilities` |
+| `ChartRendererDemo.tscn` | 七个渲染槽一次性换成该页自己的实现（再点一次还原为默认），外加绘制 API：`IPath2D` 几何、`IPaint2D` 虚线与渐变、带裁剪与变换的 save/restore 栈、`MeasureText`、`DrawImage` 与 `Capabilities` |
 | `ChartMarksCartesianDemo.tscn` | 笛卡尔坐标系 mark 的专有旋钮（柱/线/点/区间面积/箱线/K 线/热力/时间轴/里程碑/棒棒糖/小提琴/华夫格） |
-| `ChartBigDataDemo.tscn` | 真实数据（24 国、1970–2023），滚轮缩放、拖拽平移、图例筛选与参考线 |
+| `ChartBigDataDemo.tscn` | 真实数据（24 国、1970–2023），滚轮缩放、拖拽平移、图例筛选与参考线；另有 **D** / **Z** / **B** / **X** 四个导出（抽点模式、滚轮缩放步长、拖拽按键、双击复位） |
 | `ChartLayeredRenderingDemo.tscn` | 同一张图表两种渲染方式（分层 / 不分层）并排对比耗时与图层内存 |
-| `ChartLayoutDemo.tscn` | 单个 `ChartView` 的布局预算：`Chart.MinimumSize` 与 `Chart.MinimumPlotSize`、布局实际给节点的尺寸，以及 `Chart.CurrentPlotArea` 四周的内缩量；按键可切标题、图例位置、轴标题、第二 Y 轴、主题字号，并把节点压到最小尺寸（及其以下） |
+| `ChartLayoutDemo.tscn` | 单个 `ChartView` 的布局预算：`Chart.MinimumSize` 与 `Chart.MinimumPlotSize`、布局实际给节点的尺寸，以及 `Chart.CurrentPlotArea` 四周的内缩量；按键可切标题、图例位置、轴标题、第二 Y 轴、主题字号与六个轴/内容**导出**（标签旋转、刻度密度、标签格式、内容形状与对齐、锁定 Y 端），并把节点压到最小尺寸（及其以下） |
 | `ChartMarksPolarDemo.tscn` | 极坐标系 mark 的专有旋钮（饼图/环图/仪表盘/雷达/漏斗） |
 | `ChartMarksHierarchyDemo.tscn` | 矩形树图、旭日图、桑基图、弦图四种 mark 的专有旋钮 |
 
@@ -229,7 +229,9 @@ view.CustomTheme = new ChartTheme
 真正跑起来的样子。无论哪一页，都要记住
 **`ChartView` 每次重建都会替换 `Chart` 实例**，
 所以挂在 `view.Chart` 上的订阅只活到下一次 `Refresh()` —— 这正是 `ConfigureChart` 的用途
-（订阅它的页面是 `ChartCallbacksDemo` 与 `ChartViewFieldsDemo`）。
+（订阅它的页面是 `ChartCallbacksDemo` 与 `ChartViewFieldsDemo`）。这些示例页刻意**各自独立**：每页自带它需要的
+小助手（`Row(...)` 造行、`Report(...)` 状态行、同样的输入处理），而不是共享一个 support 文件 —— 这样单独一个
+脚本也能读、能抄、能改；同一个助手出现在多个页面里，就是这个取舍的代价。
 
 ## 自绘（下层 API）
 

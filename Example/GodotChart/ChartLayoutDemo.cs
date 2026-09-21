@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using Godot;
 using GodotNodeExtension.Component.GodotChart;
 
@@ -24,6 +25,18 @@ namespace GodotNodeExtension.Example.GodotChart;
 /// default / large) and <c>M</c> pins the node to <see cref="Chart.MinimumSize"/>, then to 0.85 / 0.70 / 0.55
 /// of it, then lets it fill its cell again. Below the minimum the axis thins its own labels and the chart
 /// prints one warning to the editor Output; the readout says where the node sits.
+/// </para>
+/// <para>
+/// The second half of the keys drives the axis and content <b>exports</b> - the knobs a page sets in the scene
+/// or from code, each one visible in the readout next to the reservation it moves: <c>R</c>
+/// <see cref="ChartView.XAxisLabelRotation"/> (0° → 30° → 60°), <c>S</c> the tick density
+/// (<see cref="ChartView.XAxisTickStep"/> / <see cref="ChartView.XAxisTickSpacing"/> /
+/// <see cref="ChartView.XAxisTickCount"/>, one mode each), <c>N</c> the label formats
+/// (<see cref="ChartView.XAxisLabelFormat"/> and <see cref="ChartView.YAxisLabelFormat"/> take the same one -
+/// one code labels both axes), <c>P</c> <see cref="ChartView.PlotAspectRatio"/> (fill / square / wide), <c>V</c>
+/// <see cref="ChartView.PlotAlignVertical"/>, and <c>W</c> the pinned Y ends
+/// (<see cref="ChartView.YAxisMinLimit"/> / <see cref="ChartView.YAxisMaxLimit"/>). A rotated label occupies
+/// less of the axis and a pinned end stops the axis refitting to the data: both move the numbers above.
 /// </para>
 /// <para>
 /// The readout keeps two kinds of comparison, both measured and never estimated: the <b>Δ</b> line holds the
@@ -59,6 +72,49 @@ public partial class ChartLayoutDemo : Control
         LegendPosition.Top, LegendPosition.Bottom, LegendPosition.Left, LegendPosition.Right, LegendPosition.None,
     ];
 
+    /// <summary>
+    /// Label rotations <c>R</c> cycles. A rotated label occupies less of the axis horizontally, so the axis
+    /// keeps more of them before its stride starts skipping - the readout's label column moves with it.
+    /// </summary>
+    private static readonly float[] RotationCycle = [0f, 30f, 60f];
+
+    /// <summary>
+    /// Tick densities <c>S</c> cycles. The three exports are alternatives - a step in data units, the pixels one
+    /// label may take, an exact count - and the first entry leaves all three at <c>0</c> ("the axis decides").
+    /// </summary>
+    private static readonly (string Name, float Step, float Spacing, int Count)[] TickModes =
+    [
+        ("automatic", 0f, 0f, 0),
+        ("step 500", 500f, 0f, 0),
+        ("spacing 40px", 0f, 40f, 0),
+        ("count 12", 0f, 0f, 12),
+    ];
+
+    /// <summary>Label formats <c>N</c> cycles; an empty one keeps the scale's own text.</summary>
+    private static readonly string[] LabelFormats = ["", "0.0 °C", "# N0"];
+
+    /// <summary>Content shapes <c>P</c> cycles: the cell's own shape, a square, a wide box.</summary>
+    private static readonly float[] AspectCycle = [0f, 1f, 1.6f];
+
+    /// <summary>Vertical alignment <c>V</c> cycles - where the content box sits in the plot rectangle.</summary>
+    private static readonly VerticalAlignment[] AlignCycle =
+    [
+        VerticalAlignment.Top, VerticalAlignment.Center, VerticalAlignment.Bottom,
+    ];
+
+    /// <summary>
+    /// The Y-limit modes <c>W</c> cycles: both ends fitted, then one end pinned, then both. The pinned values are
+    /// the data's own range, so a pinned end is visible (the bars reach the axis edge) instead of a number
+    /// nobody can relate to.
+    /// </summary>
+    private static readonly (string Name, bool PinMin, bool PinMax)[] LimitModes =
+    [
+        ("fit both ends", false, false),
+        ("pin the lower end", true, false),
+        ("pin the upper end", false, true),
+        ("pin both ends", true, true),
+    ];
+
     /// <summary>Seconds between two readout refreshes (the numbers only move on a key or on a resize).</summary>
     private const double ReadoutInterval = 0.25;
 
@@ -83,6 +139,12 @@ public partial class ChartLayoutDemo : Control
     private int _fontIndex = 1;         // default
     private int _shrinkIndex;           // 0 = the layout decides
     private int _legendIndex;           // the scene's legend position
+    private int _rotationIndex;         // 0 = the scene's rotation
+    private int _tickModeIndex;         // 0 = the axis decides
+    private int _formatIndex;           // 0 = the scale's own text
+    private int _aspectIndex;           // 0 = the cell's own shape
+    private int _alignIndex;            // the scene's vertical alignment
+    private int _limitIndex;            // 0 = both Y ends fitted
     private bool _titleOn;
     private bool _axisTitlesOn = true;
     private bool _y2On;
@@ -152,6 +214,10 @@ public partial class ChartLayoutDemo : Control
         ApplyFontScale();
         View.CustomTheme = _theme;
 
+        _rotationIndex = System.Math.Max(0, System.Array.IndexOf(RotationCycle, View.XAxisLabelRotation));
+        _aspectIndex = System.Math.Max(0, System.Array.IndexOf(AspectCycle, View.PlotAspectRatio));
+        _alignIndex = System.Math.Max(0, System.Array.IndexOf(AlignCycle, View.PlotAlignVertical));
+
         View.ConfigureChart = ApplySecondAxis;
         RefreshReadout();
     }
@@ -209,6 +275,12 @@ public partial class ChartLayoutDemo : Control
             Key.Y => "Y second Y axis",
             Key.F => "F font size",
             Key.M => "M size",
+            Key.R => "R label rotation",
+            Key.S => "S tick density",
+            Key.N => "N label format",
+            Key.P => "P content shape",
+            Key.V => "V vertical alignment",
+            Key.W => "W pinned Y ends",
             _ => string.Empty,
         };
 
@@ -225,6 +297,12 @@ public partial class ChartLayoutDemo : Control
             case Key.A: ToggleAxisTitles(); break;
             case Key.Y: ToggleSecondAxis(); break;
             case Key.F: CycleFontSize(); break;
+            case Key.R: CycleRotation(); break;
+            case Key.S: CycleTickMode(); break;
+            case Key.N: CycleLabelFormat(); break;
+            case Key.P: CycleAspect(); break;
+            case Key.V: CycleVerticalAlignment(); break;
+            case Key.W: CycleLimits(); break;
             default: CycleShrink(); break;
         }
 
@@ -285,6 +363,135 @@ public partial class ChartLayoutDemo : Control
     {
         _shrinkIndex = (_shrinkIndex + 1) % ShrinkFactors.Length;
         ApplyShrink();
+    }
+
+    /// <summary>Walk the label rotation (<see cref="ChartView.XAxisLabelRotation"/>).</summary>
+    private void CycleRotation()
+    {
+        _rotationIndex = NextIndex(_rotationIndex, RotationCycle.Length);
+        View.XAxisLabelRotation = NextRotation(_rotationIndex);
+    }
+
+    /// <summary>Walk the tick density: the three exports that ask for one, one mode at a time.</summary>
+    private void CycleTickMode()
+    {
+        _tickModeIndex = NextIndex(_tickModeIndex, TickModes.Length);
+        (string _, float step, float spacing, int count) = NextTickMode(_tickModeIndex);
+        View.XAxisTickStep = step;
+        View.XAxisTickSpacing = spacing;
+        View.XAxisTickCount = count;
+    }
+
+    /// <summary>Walk the label format, applied to both axes (they are labelled by the same code).</summary>
+    private void CycleLabelFormat()
+    {
+        _formatIndex = NextIndex(_formatIndex, LabelFormats.Length);
+        string format = NextLabelFormat(_formatIndex);
+        View.XAxisLabelFormat = format;
+        View.YAxisLabelFormat = format;
+    }
+
+    /// <summary>Walk the content shape (<see cref="ChartView.PlotAspectRatio"/>).</summary>
+    private void CycleAspect()
+    {
+        _aspectIndex = NextIndex(_aspectIndex, AspectCycle.Length);
+        View.PlotAspectRatio = NextAspect(_aspectIndex);
+    }
+
+    /// <summary>Walk the vertical alignment (<see cref="ChartView.PlotAlignVertical"/>).</summary>
+    private void CycleVerticalAlignment()
+    {
+        _alignIndex = NextIndex(_alignIndex, AlignCycle.Length);
+        View.PlotAlignVertical = NextAlignment(_alignIndex);
+    }
+
+    /// <summary>Walk the pinned Y ends (<see cref="ChartView.YAxisMinLimit"/> / <see cref="ChartView.YAxisMaxLimit"/>).</summary>
+    private void CycleLimits()
+    {
+        _limitIndex = NextIndex(_limitIndex, LimitModes.Length);
+        ApplyLimits();
+    }
+
+    // ── The cycles themselves ────────────────────────────────────────────────
+    // Pure functions so the key handlers and the tests walk the same values (Test/GodotChart/ExampleDemoKeysTest).
+
+    /// <summary>Next index of a cycle, wrapping at its end.</summary>
+    /// <param name="index">Current index.</param>
+    /// <param name="length">Entries in the cycle.</param>
+    internal static int NextIndex(int index, int length) => length <= 0 ? 0 : (index + 1) % length;
+
+    /// <summary>Rotation the next <c>R</c> press applies.</summary>
+    /// <param name="index">Index the press moves to.</param>
+    internal static float NextRotation(int index) => RotationCycle[index % RotationCycle.Length];
+
+    /// <summary>The tick exports the next <c>S</c> press applies.</summary>
+    /// <param name="index">Index the press moves to.</param>
+    internal static (string Name, float Step, float Spacing, int Count) NextTickMode(int index)
+        => TickModes[index % TickModes.Length];
+
+    /// <summary>The format the next <c>N</c> press applies to both axes.</summary>
+    /// <param name="index">Index the press moves to.</param>
+    internal static string NextLabelFormat(int index) => LabelFormats[index % LabelFormats.Length];
+
+    /// <summary>The content shape the next <c>P</c> press applies.</summary>
+    /// <param name="index">Index the press moves to.</param>
+    internal static float NextAspect(int index) => AspectCycle[index % AspectCycle.Length];
+
+    /// <summary>The alignment the next <c>V</c> press applies.</summary>
+    /// <param name="index">Index the press moves to.</param>
+    internal static VerticalAlignment NextAlignment(int index) => AlignCycle[index % AlignCycle.Length];
+
+    /// <summary>The Y-limit mode the next <c>W</c> press applies.</summary>
+    /// <param name="index">Index the press moves to.</param>
+    internal static (string Name, bool PinMin, bool PinMax) NextLimitMode(int index)
+        => LimitModes[index % LimitModes.Length];
+
+    /// <summary>How many entries the rotation cycle has (the tests walk it).</summary>
+    internal static int RotationCount => RotationCycle.Length;
+
+    /// <summary>How many entries the tick-density cycle has.</summary>
+    internal static int TickModeCount => TickModes.Length;
+
+    /// <summary>How many entries the label-format cycle has.</summary>
+    internal static int LabelFormatCount => LabelFormats.Length;
+
+    /// <summary>How many entries the content-shape cycle has.</summary>
+    internal static int AspectCount => AspectCycle.Length;
+
+    /// <summary>How many entries the alignment cycle has.</summary>
+    internal static int AlignmentCount => AlignCycle.Length;
+
+    /// <summary>How many entries the Y-limit cycle has.</summary>
+    internal static int LimitModeCount => LimitModes.Length;
+
+    /// <summary>
+    /// Pin the Y ends the current <c>W</c> mode asks for. The values come from the data, so a pinned end is
+    /// visible: with both ends pinned the axis stops refitting and the bars reach its edges.
+    /// </summary>
+    private void ApplyLimits()
+    {
+        (string _, bool pinMin, bool pinMax) = NextLimitMode(_limitIndex);
+        (float min, float max) = DataRange();
+
+        View.YAxisMinLimit = pinMin ? min : float.NaN;
+        View.YAxisMaxLimit = pinMax ? max : float.NaN;
+    }
+
+    /// <summary>The value range of the rows the chart holds (read back through the public API).</summary>
+    private (float Min, float Max) DataRange()
+    {
+        string field = string.IsNullOrEmpty(View.YField) ? FallbackValueField : View.YField;
+        float min = float.MaxValue;
+        float max = float.MinValue;
+
+        foreach (var row in View.Chart?.GetRenderDataSnapshot() ?? [])
+        {
+            if (!row.TryGet(field, out double value)) continue;
+            min = Mathf.Min(min, (float)value);
+            max = Mathf.Max(max, (float)value);
+        }
+
+        return min > max ? (0f, 0f) : (min, max);
     }
 
     // ── What the keys change on the chart ────────────────────────────────────
@@ -369,15 +576,43 @@ public partial class ChartLayoutDemo : Control
     private string ContentState()
     {
         return $"{(_titleOn ? "title" : "no title")} + {(_axisTitlesOn ? "axis titles" : "no axis titles")} + " +
-               $"{(_y2On ? "Y2" : "no Y2")} + fonts {FontNames[_fontIndex]}";
+               $"{(_y2On ? "Y2" : "no Y2")} + fonts {FontNames[_fontIndex]} + {KnobsLabel()}";
     }
 
     /// <summary>The state as the readout and the Δ line describe it.</summary>
     private string StateLabel()
     {
         return $"title {OnOff(_titleOn)} · legend {LegendCycle[_legendIndex]} · axis titles {OnOff(_axisTitlesOn)} · " +
-               $"Y2 {OnOff(_y2On)} · fonts {FontNames[_fontIndex]} · {ShrinkLabel()}";
+               $"Y2 {OnOff(_y2On)} · fonts {FontNames[_fontIndex]} · {ShrinkLabel()} · {KnobsLabel()}";
     }
+
+    /// <summary>
+    /// The export knobs of this page in one line, for the readout's state line and for the key the legend
+    /// samples are stored under: the minimum size moves with the label rotation, the tick density and the label
+    /// format, so two samples are only comparable while those match as well.
+    /// </summary>
+    private string KnobsLabel()
+    {
+        (string ticks, float _, float _, int _) = TickModes[_tickModeIndex];
+        (string limits, bool _, bool _) = LimitModes[_limitIndex];
+        string format = LabelFormats[_formatIndex].Length > 0 ? LabelFormats[_formatIndex] : "scale's own";
+        return $"rotation {RotationCycle[_rotationIndex]:F0}° · ticks {ticks} · format {format} · " +
+               $"shape {AspectLabel()} · align {AlignCycle[_alignIndex]} · Y ends {limits}";
+    }
+
+    /// <summary>The content shape as the readout names it (0 = the cell's own shape).</summary>
+    private string AspectLabel()
+        => AspectCycle[_aspectIndex] <= 0f ? "fill the cell" : $"{AspectCycle[_aspectIndex]:F1} : 1";
+
+    /// <summary>The tick mode as the readout names it.</summary>
+    private string TickName() => TickModes[_tickModeIndex].Name;
+
+    /// <summary>The Y-limit mode as the readout names it.</summary>
+    private string LimitName() => LimitModes[_limitIndex].Name;
+
+    /// <summary>A numeric export as the readout prints it: <c>0</c> is the "let the axis decide" value.</summary>
+    private static string Number(float value)
+        => value > 0f ? value.ToString("G4", CultureInfo.InvariantCulture) : "auto (0)";
 
     /// <summary>Where the node's size comes from, in the words of the M key.</summary>
     private string ShrinkLabel()
@@ -494,6 +729,17 @@ public partial class ChartLayoutDemo : Control
             DegenerateText(plot),
             BudgetHint(chart, sample, left, right, top, bottom, ratio),
             "",
+            "[b]5 · the export knobs this page drives[/b] (ChartView exports, set from code here)",
+            $"XAxisLabelRotation  {View.XAxisLabelRotation:F0}°   ·   tick density {TickName()}   " +
+            $"(XAxisTickStep {Number(View.XAxisTickStep)} · XAxisTickSpacing {Number(View.XAxisTickSpacing)} · " +
+            $"XAxisTickCount {View.XAxisTickCount})",
+            $"XAxisLabelFormat  {Quote(View.XAxisLabelFormat)}   ·   YAxisLabelFormat  {Quote(View.YAxisLabelFormat)}" +
+            "   (one format reaches both axes: one code labels them)",
+            $"PlotAspectRatio  {AspectLabel()}   ·   PlotAlignVertical {AlignCycle[_alignIndex]}   " +
+            "→ the box the content is shaped into, and where it sits in the plot rectangle",
+            $"YAxisMinLimit / YAxisMaxLimit  {LimitName()}   " +
+            "(NaN fits that end; a pinned end stops the axis refitting to the data)",
+            "",
             "[b]last change[/b]",
             _changeText.Length > 0
                 ? _changeText
@@ -603,6 +849,9 @@ public partial class ChartLayoutDemo : Control
                $"band); the plot keeps {ratio:F1} % of the node. Press L to measure the other legend positions: " +
                "the hint then compares the measured numbers of this same state instead of guessing.[/color]";
     }
+
+    /// <summary>A format string as the readout prints it, with empty named instead of shown as nothing.</summary>
+    private static string Quote(string format) => format.Length > 0 ? $"\"{format}\"" : "\"\" (the scale's own)";
 
     /// <summary>Which inset is the widest, and how wide it is.</summary>
     private static string WidestSide(float left, float right, float top, float bottom, out float inset)

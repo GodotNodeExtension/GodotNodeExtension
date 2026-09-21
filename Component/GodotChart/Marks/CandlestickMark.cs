@@ -44,7 +44,7 @@ public class CandlestickMark : Mark
     /// <summary>Width of the high/low wicks in pixels. Default 1.5.</summary>
     public float  WickWidth      { get; set; } = 1.5f;
 
-    /// <summary>Corner radius of the candle body in pixels. Default 1.</summary>
+    /// <summary>Corner radius of the candle body in pixels. Default 3.</summary>
     public float  CornerRadius   { get; set; } = 3f;
 
     /// <summary>
@@ -267,11 +267,7 @@ public class CandlestickMark : Mark
     public override void RenderOverlay(MarkContext ctx)
     {
         // Only while the chart keeps the data layer in an image: with the cache off Render painted the state.
-        if (!ctx.StateInOverlay) return;
-
-        int hovered = ctx.HoveredRowIndex;
-        int selected = ctx.SelectedRowIndex;
-        if (hovered < 0 && selected < 0) return;
+        if (!OverlayRows(ctx, out int hovered, out int selected)) return;
 
         var xScale = ctx.Scales.TryGet(Channel.X) as OrdinalScale;
         var yScale = ctx.Scales.TryGet(YChannel) as LinearScale;

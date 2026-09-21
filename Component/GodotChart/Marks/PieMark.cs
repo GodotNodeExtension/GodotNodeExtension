@@ -151,8 +151,8 @@ public class PieMark : Mark
     private (float centreX, float centreY, float radius) PieGeometry(MarkContext ctx)
     {
         float sizeFactor = ShowLabel ? RadiusFactor / MathF.Max(LabelDistance, 1f) : RadiusFactor;
-        float maxR = MathF.Min(ctx.Plot.Width, ctx.Plot.Height) / 2f * sizeFactor;
-        return (ctx.Plot.X + ctx.Plot.Width / 2f, ctx.Plot.Y + ctx.Plot.Height / 2f, maxR);
+        float maxRadius = MathF.Min(ctx.Plot.Width, ctx.Plot.Height) / 2f * sizeFactor;
+        return (ctx.Plot.X + ctx.Plot.Width / 2f, ctx.Plot.Y + ctx.Plot.Height / 2f, maxRadius);
     }
 
     /// <summary>
@@ -322,11 +322,13 @@ public class PieMark : Mark
                 float lineWidth = 0f;
                 for (int s = 0; s < spans.Length; s++)
                 {
-                    fonts[s] = ThemedFont(ctx, new FontSettings
+                    // The shared span font: size from the centre's own two sizes, then everything the span
+                    // carries (bold, italic, decoration, letter spacing, family, font resource). Building the
+                    // FontSettings here instead dropped those four, so the same TooltipLine came out in
+                    // another face in the ring's centre than under a legend or a label.
+                    fonts[s] = SpanFont(ctx, spans[s], new FontSettings
                     {
                         Size = j == 0 ? CenterFontSize : CenterSubFontSize,
-                        Bold = spans[s].Bold,
-                        Italic = spans[s].Italic,
                         Align = TextAlign.Left,
                     });
                     lineWidth += ctx.Canvas.MeasureText(spans[s].Text, fonts[s]).Width;

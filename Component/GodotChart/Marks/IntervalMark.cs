@@ -274,14 +274,15 @@ public class IntervalMark : Mark
     public override void RenderOverlay(MarkContext ctx)
     {
         // Only while the chart keeps the data layer in an image: with the cache off Render painted the state.
-        if (!ctx.StateInOverlay) return;
+        // The rows are read where they are needed (the stacked branch walks the layout, the plain one the
+        // interaction rows).
+        if (!OverlayRows(ctx, out _, out _)) return;
 
         // A stacked segment's geometry depends on the accumulation below it: the overlay walks the same
         // layout, keeps only the baselines and draws the interactive segment(s) - no label buffer, the
         // labels of a cached frame are already in the layer.
         if (Stack != StackMode.None)
         {
-            if (ctx.HoveredRowIndex < 0 && ctx.SelectedRowIndex < 0) return;
             DrawStackedSegments(ctx, stateHere: true, labelBuffer: null, interactiveOnly: true);
             return;
         }

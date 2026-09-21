@@ -47,7 +47,7 @@ bbcode_enabled = true
 fit_content = true
 scroll_active = false
 autowrap_mode = 3
-text = "[b]LineMark[/b] · ColorField = country (24 series) · ZoomMode = X (wheel + drag + double-click reset) · legend click toggles a series · [b]SectionMark[/b] = the dashed 0 % reference line · [b]LayeredRendering[/b] = hover redraws only the overlay"
+text = "[b]LineMark[/b] · ColorField = country (24 series) · ZoomMode = X (wheel + drag + double-click reset) · legend click toggles a series · [b]SectionMark[/b] = the dashed 0 % reference line · [b]LayeredRendering[/b] = hover redraws only the overlay\n[b]Exports[/b]  D Decimate (Auto → Off → On) · Z ZoomFactor 1.1 → 1.5 → 2.0 · B PanButton Left → Middle → Right · X ResetZoomOnDoubleClick on/off"
 
 [node name="Chart" type="Control" parent="Layout/Column/Cell"]
 layout_mode = 2

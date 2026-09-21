@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://fa0ug50jt8jf" path="res://Example/GodotChart/ChartThemeDemo.cs" id="1_demo"]
 [ext_resource type="Script" uid="uid://b0dp6p6n4upf0" path="res://Component/GodotChart/ChartView.cs" id="2_chart"]
 
-[node name="ChartThemeDemo" type="MarginContainer" unique_id=1298266612 node_paths=PackedStringArray("DarkChart", "LightChart", "CloneChart", "FrameChart", "TypographyChart", "MetricsChart", "HoverChart", "InteractionChart", "LiveThemeChart", "OverrideChart", "MutateButton", "ResetButton", "Status")]
+[node name="ChartThemeDemo" type="MarginContainer" unique_id=1298266612 node_paths=PackedStringArray("DarkChart", "LightChart", "CloneChart", "FrameChart", "TypographyChart", "MetricsChart", "HoverChart", "InteractionChart", "LiveThemeChart", "OverrideChart", "LayoutChart", "MarkGroupsChart", "MutateButton", "ResetButton", "Status")]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -22,6 +22,8 @@ HoverChart = NodePath("Layout/Grid/Hover/HoverChart")
 InteractionChart = NodePath("Layout/Grid/Interaction/InteractionChart")
 LiveThemeChart = NodePath("Layout/Grid/LiveTheme/LiveThemeChart")
 OverrideChart = NodePath("Layout/Grid/Override/OverrideChart")
+LayoutChart = NodePath("Layout/Grid/LayoutGroup/LayoutChart")
+MarkGroupsChart = NodePath("Layout/Grid/MarkGroups/MarkGroupsChart")
 MutateButton = NodePath("Layout/Controls/MutateButton")
 ResetButton = NodePath("Layout/Controls/ResetButton")
 Status = NodePath("Layout/Status")
@@ -34,7 +36,7 @@ theme_override_constants/separation = 6
 custom_minimum_size = Vector2(1, 0)
 layout_mode = 2
 bbcode_enabled = true
-text = "[b][font_size=19]The ChartTheme surface[/font_size][/b]\n[color=#93a1b5]Group by group: palette and gradient, frame colours, typography, line widths and tooltip metrics, the Enable* toggles, Clone next to Dark / Light, a resource edited at runtime and Chart-level overrides - the act/plan rows are the same everywhere, and the explanations live in ChartThemeDemo.cs.[/color]"
+text = "[b][font_size=19]The ChartTheme surface[/font_size][/b]\n[color=#93a1b5]Group by group: palette and gradient, frame colours, typography, line widths and tooltip metrics, the Enable* toggles, Clone next to Dark / Light, a resource edited at runtime and Chart-level overrides, the [b]Layout[/b] reservations and the [b]per-mark[/b] groups - the act/plan rows are the same everywhere, and the explanations live in ChartThemeDemo.cs.[/color]"
 fit_content = true
 scroll_active = false
 
@@ -276,3 +278,46 @@ size_flags_vertical = 3
 mouse_filter = 1
 script = ExtResource("2_chart")
 Title = "Chart-level colours"
+
+[node name="LayoutGroup" type="VBoxContainer" parent="Layout/Grid" unique_id=1770023301]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/LayoutGroup" unique_id=1770023302]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Layout[/b] · TitleReservedHeight 40 (default 24) · Y2LabelReservedWidth 64 (default 35) · the title band is spent, the Y2 column is held for an axis this chart does not draw"
+fit_content = true
+scroll_active = false
+
+[node name="LayoutChart" type="Control" parent="Layout/Grid/LayoutGroup" unique_id=1770023303]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("2_chart")
+Title = "Layout: what the theme reserves"
+
+[node name="MarkGroups" type="VBoxContainer" parent="Layout/Grid" unique_id=1770023401]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/MarkGroups" unique_id=1770023402]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Per-mark groups[/b] · ViolinBoxColor · MedianDotColor / Radius · BoxWidthRatio · plus the Hit test group (PointPadding 12, SnapDistance 30): hover well beside a violin and it still answers"
+fit_content = true
+scroll_active = false
+
+[node name="MarkGroupsChart" type="Control" parent="Layout/Grid/MarkGroups" unique_id=1770023403]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("2_chart")
+Kind = 9
+Title = "Per-mark defaults + hit test"

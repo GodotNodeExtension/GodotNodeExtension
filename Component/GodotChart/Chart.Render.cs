@@ -85,9 +85,108 @@ public partial class Chart
         // has to survive both the auto-fit and whatever the marks decided afterwards.
         ApplyDomainLocks();
 
+        // Four steps, in the order the reservations and the plot depend on each other: what the decorations
+        // ask for, the plot and the legend settling into each other, the content minimum that sums the
+        // reservations up, and the rectangle the chart really drew. Each one is a method of its own (see
+        // LayerFrame): the frame used to be one 300-line method that did all four in sequence, with the values
+        // they share passed from hand to hand as locals.
+        var frame = _layerFrame;
+        ReserveDecorations(frame);
+        SettlePlotAndLegend(frame);
+        ComposeContentMinimum(frame);
+        ComputeDrawnBounds(frame);
+
+        var renderCtx = BuildRenderContext(frame.Plot, renderData);
+
+        RenderStageSafely("background renderer", () => BackgroundRenderer?.Invoke(renderCtx));
+
+        if (Title != null)
+            RenderStageSafely("title renderer", () => TitleRenderer?.Invoke(renderCtx));
+
+        if (frame.Cartesian)
+        {
+            RenderStageSafely("grid renderer", () => GridRenderer?.Invoke(renderCtx));
+            RenderStageSafely("axis renderer", () => AxisRenderer?.Invoke(renderCtx));
+        }
+
+        var ctx = BuildMarkContext(stateInOverlay);
+
+        // Marks are clipped to the plot rectangle: an element outside the visible window (what a zoom or a
+        // pan creates, and also a domain the host pinned) maps outside the plot, and without the clip those
+        // elements are painted over the axis labels - the series look like they run past the Y axis. The clip
+        // is the plot itself, so nothing a mark draws inside the window changes.
+        using (new CanvasSaveScope(_canvas))
+        {
+            _canvas.ClipRect(ctx.Plot.X, ctx.Plot.Y, ctx.Plot.Width, ctx.Plot.Height);
+
+            foreach (var mark in _marks)
+            {
+                if (skipped.Contains(mark)) continue;
+                var markCtx = mark.BindEncodes(
+                    mark.Data != null ? ctx.WithData(mark.Data) : ctx, _encodes, ctx.LayoutVersion);
+                var markToRender = mark;
+                RenderStageSafely($"{mark.GetType().Name}.Render", () => markToRender.Render(markCtx));
+            }
+        }
+
+        if (frame.Cartesian)
+            RenderStageSafely("axis label renderer", () => AxisLabelRenderer?.Invoke(renderCtx));
+
+        // Legend
+        if (CachedLegendLayout != null)
+            RenderStageSafely("legend renderer", () => LegendRenderer?.Invoke(renderCtx));
+    }
+
+    /// <summary>
+    /// The layout one data layer is built with: the two plot rectangles plus the reservations the decorations
+    /// asked for. Reused between frames (one instance per chart), and read only by the four steps below - the
+    /// values were locals scattered through a single 300-line method before, which is what made the order they
+    /// move in invisible.
+    /// </summary>
+    private sealed class LayerFrame
+    {
+        /// <summary>Height of one line of themed label text, the unit the title bands are built from.</summary>
+        public float LabelLine;
+
+        /// <summary>Room the Y axis title and the label column need beyond the chart's padding.</summary>
+        public float ExtraLeftPad;
+
+        /// <summary>Room the Y2 axis needs beyond the chart's padding.</summary>
+        public float ExtraRightPad;
+
+        /// <summary>Room the X axis title needs beyond the chart's padding.</summary>
+        public float ExtraBottomPad;
+
+        /// <summary>Whether the chart has a second Y axis, which reserves a column on the right.</summary>
+        public bool HasY2;
+
+        /// <summary>Height reserved for a top/bottom legend - the frame's own value once the legend settled.</summary>
+        public float LegendHeight;
+
+        /// <summary>The rectangle the decorations were laid out against.</summary>
+        public PlotArea FullPlot;
+
+        /// <summary>The box the content (grid, axes, marks, the clip, hit testing) got.</summary>
+        public PlotArea Plot;
+
+        /// <summary>Whether the Cartesian grid and axes are drawn at all this frame.</summary>
+        public bool Cartesian;
+    }
+
+    private readonly LayerFrame _layerFrame = new();
+
+    /// <summary>
+    /// Reserve what the decorations need before the plot exists: the axis title bands, the room the tick labels
+    /// ask for (<see cref="AutoPadding"/>), the Y2 column, a side legend's width and a first guess at a
+    /// top/bottom legend's height.
+    /// </summary>
+    /// <param name="f">Frame state to fill the reservations into.</param>
+    private void ReserveDecorations(LayerFrame f)
+    {
         // Extra padding for axis titles: the line height of the *themed* label font plus the shared
         // margin, so a larger themed font size cannot overlap the axis title.
         float labelLine = LabelLineHeight(ThemedLabelFontSize(_theme));
+        f.LabelLine = labelLine;
 
         // Left extra pad: the axis title *and* the tick label column, which add up - the title is drawn in its
         // own line of height next to the labels. Taking the larger of the two (what this did) left the title
@@ -99,14 +198,15 @@ public partial class Chart
         float titleLeftPad = _yAxisConfig?.Title != null
             ? AxisTitleBand(labelLine, _theme, withLabelClearance: true)
             : 0f;
-        float extraLeftPad = titleLeftPad;
-        float extraBottomPad = _xAxisConfig?.Title != null ? AxisTitleBand(labelLine, _theme) : 0f;
+        f.ExtraLeftPad = titleLeftPad;
+        f.ExtraBottomPad = _xAxisConfig?.Title != null ? AxisTitleBand(labelLine, _theme) : 0f;
         // Reserve right padding when a Y2 axis is present: the theme's Y2LabelReservedWidth for the
         // labels plus the optional title space that mirrors the left side.
-        bool hasY2 = _scales.Has(Channel.Y2);
-        float extraRightPad = hasY2
+        f.HasY2 = _scales.Has(Channel.Y2);
+        f.ExtraRightPad = f.HasY2
             ? _theme.Y2LabelReservedWidth + (_y2AxisConfig?.Title != null ? AxisTitleBand(labelLine, _theme) : 0f)
             : 0f;
+
         // M34: widen the plot when the axis labels need more room than the configured padding.
         if (AutoPadding)
         {
@@ -116,15 +216,16 @@ public partial class Chart
             // enough to cover the labels by itself, which is why the title kept sitting on them - so the title
             // band stays a floor of its own.
             float both = neededLeft + titleLeftPad - PaddingLeft;
-            if (both > extraLeftPad) extraLeftPad = both;
+            if (both > f.ExtraLeftPad) f.ExtraLeftPad = both;
 
-            if (hasY2)
+            if (f.HasY2)
             {
                 float neededRight = MeasureAxisLabelWidth(Channel.Y2, TextAlign.Left);
                 if (neededRight > _theme.Y2LabelReservedWidth)
-                    extraRightPad = MathF.Max(extraRightPad, neededRight - _theme.Y2LabelReservedWidth);
+                    f.ExtraRightPad = MathF.Max(f.ExtraRightPad, neededRight - _theme.Y2LabelReservedWidth);
             }
         }
+
         // A legend on the left/right needs horizontal space: without it the legend was drawn on top
         // of the axis labels (and could run past the chart edge).
         if (_legendConfig is { Position: LegendPosition.Left or LegendPosition.Right } sideCfg &&
@@ -138,9 +239,9 @@ public partial class Chart
                 LegendLayoutHelper.EstimateWidth(sideCfg, sideScale, _canvas, _theme) + sideCfg.Padding * 2f
                 + (sideCfg.Position == LegendPosition.Right ? _theme.LegendRightOffset : 0f);
             if (sideCfg.Position == LegendPosition.Left)
-                extraLeftPad = MathF.Max(extraLeftPad, sideLegendWidth);
+                f.ExtraLeftPad = MathF.Max(f.ExtraLeftPad, sideLegendWidth);
             else
-                extraRightPad = MathF.Max(extraRightPad, sideLegendWidth);
+                f.ExtraRightPad = MathF.Max(f.ExtraRightPad, sideLegendWidth);
         }
 
         // Reserve space for a horizontal legend. The first estimate is a single row; after the plot
@@ -148,20 +249,30 @@ public partial class Chart
         // the legend needs more room than estimated.
         // Start from the height the legend actually needed last frame: with a single-row estimate the
         // first layout pass would use a different plot and the legend layout cache could never hit.
-        float legendHeight = _lastLegendReservedHeight;
-        if (legendHeight <= 0f && _legendConfig is { Position: LegendPosition.Top or LegendPosition.Bottom })
-            legendHeight = MathF.Max(_legendConfig.SwatchSize, labelLine) + _legendConfig.Padding * 2f;
+        f.LegendHeight = _lastLegendReservedHeight;
+        if (f.LegendHeight <= 0f && _legendConfig is { Position: LegendPosition.Top or LegendPosition.Bottom })
+            f.LegendHeight = MathF.Max(_legendConfig.SwatchSize, labelLine) + _legendConfig.Padding * 2f;
+    }
 
+    /// <summary>
+    /// Lay the plot out and let the legend settle into it: the legend is measured against the whole plot area,
+    /// and a legend that needs more room than the first estimate (a wrapping horizontal one, or a vertical one
+    /// whose labels are wider than the theme's reservation) gets one more pass - the plot is rebuilt once, so
+    /// the legend never sees a width it did not cause.
+    /// </summary>
+    /// <param name="f">Frame state, updated with the plot the content gets.</param>
+    private void SettlePlotAndLegend(LayerFrame f)
+    {
         PlotArea BuildPlot(float legendSpace) => new(
-            OffsetX + PaddingLeft + extraLeftPad,
+            OffsetX + PaddingLeft + f.ExtraLeftPad,
             OffsetY + PaddingTop + (Title != null ? _theme.TitleReservedHeight : 0f)
                 + (_legendConfig?.Position == LegendPosition.Top ? legendSpace : 0f),
             // A node smaller than its own decorations would make these negative, and a plot rectangle with a
             // negative size draws nothing sensible: it collapses to one pixel instead (the chart is already
             // warning that it is below its content minimum).
-            MathF.Max(1f, Width  - PaddingLeft - PaddingRight - extraLeftPad - extraRightPad),
+            MathF.Max(1f, Width  - PaddingLeft - PaddingRight - f.ExtraLeftPad - f.ExtraRightPad),
             MathF.Max(1f, Height - PaddingTop  - PaddingBottom - (Title != null ? _theme.TitleReservedHeight : 0f)
-                - extraBottomPad
+                - f.ExtraBottomPad
                 - (_legendConfig?.Position == LegendPosition.Top ? legendSpace : 0f)
                 - (_legendConfig?.Position == LegendPosition.Bottom ? legendSpace : 0f)));
 
@@ -169,16 +280,17 @@ public partial class Chart
         // handed) are laid out against the whole plot area, while the content - grid, axes, marks, the clip
         // they draw under and hit testing - gets the box ContentBox carves out of it. Nothing shaping the
         // content leaves the two identical.
-        var fullPlot = BuildPlot(legendHeight);
-        var plot = ContentBox(fullPlot);
-        _lastPlot = plot;
-        _fullPlot = fullPlot;
+        f.FullPlot = BuildPlot(f.LegendHeight);
+        f.Plot = ContentBox(f.FullPlot);
+        _lastPlot = f.Plot;
+        _fullPlot = f.FullPlot;
 
         // Skip the Cartesian grid/axes when no mark draws against them: either every mark lives in
         // another coordinate system, or the marks declare that they need no axes at all (a waffle is
         // laid out inside the plot rectangle but has no scale to show).
         _skipCartesianDecorations ??= _marks.Count > 0
             && _marks.TrueForAll(m => m.Coordinate != MarkCoordinate.Cartesian || !m.UsesAxes);
+        f.Cartesian = !(_skipCartesianDecorations ?? false);
 
         // Legend — compute once and cache for the interaction layer + renderer
         ICategoricalColorScale? legendScale =
@@ -215,22 +327,22 @@ public partial class Chart
 
         // Measured against the whole plot area, not the content box: the legend wraps to the width it is given,
         // and a shaped (square) content box would break a one-row legend into four.
-        _cachedLegendLayout = ComputeLegend(fullPlot);
+        _cachedLegendLayout = ComputeLegend(f.FullPlot);
 
         if (CachedLegendLayout is { } measured &&
             _legendConfig is { Position: LegendPosition.Top or LegendPosition.Bottom } legendCfg)
         {
             float needed = measured.Height + legendCfg.Padding * 2f;
-            if (needed > legendHeight + 0.5f || needed < legendHeight - 0.5f)
+            if (needed > f.LegendHeight + 0.5f || needed < f.LegendHeight - 0.5f)
             {
-                legendHeight = needed;
-                fullPlot = BuildPlot(legendHeight);
-                plot = ContentBox(fullPlot);
-                _lastPlot = plot;
-                _fullPlot = fullPlot;
-                _cachedLegendLayout = ComputeLegend(fullPlot);
+                f.LegendHeight = needed;
+                f.FullPlot = BuildPlot(f.LegendHeight);
+                f.Plot = ContentBox(f.FullPlot);
+                _lastPlot = f.Plot;
+                _fullPlot = f.FullPlot;
+                _cachedLegendLayout = ComputeLegend(f.FullPlot);
             }
-            _lastLegendReservedHeight = legendHeight;
+            _lastLegendReservedHeight = f.LegendHeight;
         }
 
         // A vertical legend reserved its width from an estimate before the plot existed (see above).
@@ -244,44 +356,75 @@ public partial class Chart
             float neededSide = sideMeasured.Width + sideLegend.Padding * 2f
                 + (sideLegend.Position == LegendPosition.Right ? _theme.LegendRightOffset : 0f);
             bool leftSide = sideLegend.Position == LegendPosition.Left;
-            if (neededSide > (leftSide ? extraLeftPad : extraRightPad) + 0.5f)
+            if (neededSide > (leftSide ? f.ExtraLeftPad : f.ExtraRightPad) + 0.5f)
             {
                 // The estimate was too small (a theme with a wide swatch-to-text gap, for example):
                 // give the legend the room it really needs and lay the plot out again.
-                if (leftSide) extraLeftPad = neededSide;
-                else extraRightPad = neededSide;
-                fullPlot = BuildPlot(legendHeight);
-                plot = ContentBox(fullPlot);
-                _lastPlot = plot;
-                _fullPlot = fullPlot;
-                _cachedLegendLayout = ComputeLegend(fullPlot);
+                if (leftSide) f.ExtraLeftPad = neededSide;
+                else f.ExtraRightPad = neededSide;
+                f.FullPlot = BuildPlot(f.LegendHeight);
+                f.Plot = ContentBox(f.FullPlot);
+                _lastPlot = f.Plot;
+                _fullPlot = f.FullPlot;
+                _cachedLegendLayout = ComputeLegend(f.FullPlot);
             }
         }
+    }
 
-        // Build render context for renderer slots
-        // Content minimum, measured from the same reservations BuildPlot used (the extra pads are what the
-        // axis labels and titles needed beyond the theme's padding, the label widths are cached per channel, and
-        // the legend height is the value the second pass settled on). The sum lives in ComposeMinimumSize, which
-        // the estimate used before the first frame shares - see Chart.MinimumSize.
+    /// <summary>
+    /// The content minimum, measured from the same reservations the plot was built with (the extra pads are what
+    /// the axis labels and titles needed beyond the theme's padding, the label widths are cached per channel, and
+    /// the legend height is the value the second pass settled on), plus the one-time warning when the node is
+    /// below it. The sum lives in <see cref="ComposeMinimumSize"/>, which the estimate used before the first
+    /// frame shares - see <see cref="MinimumSize"/>.
+    /// </summary>
+    /// <param name="f">Frame state as it was laid out.</param>
+    private void ComposeContentMinimum(LayerFrame f)
+    {
         float yLabelColumn = _labelWidths.TryGetValue(Channel.Y, out float measuredY) ? measuredY : 0f;
-        float y2Column = hasY2 ? _theme.Y2LabelReservedWidth : 0f;
+        float y2Column = f.HasY2 ? _theme.Y2LabelReservedWidth : 0f;
         _minimumSize = ComposeMinimumSize(
             PaddingLeft, PaddingRight, PaddingTop, PaddingBottom,
-            extraLeftPad, extraRightPad, extraBottomPad,
+            f.ExtraLeftPad, f.ExtraRightPad, f.ExtraBottomPad,
             yLabelColumn, y2Column,
             Title != null ? _theme.TitleReservedHeight : 0f,
-            _legendConfig?.Position is LegendPosition.Top or LegendPosition.Bottom ? legendHeight : 0f,
-            labelLine, _xAxisConfig?.Title != null);
+            _legendConfig?.Position is LegendPosition.Top or LegendPosition.Bottom ? f.LegendHeight : 0f,
+            f.LabelLine, _xAxisConfig?.Title != null);
 
-        // Where the chart really drew: the content box plus every decoration band this frame reserved (see
-        // Chart.DrawnBounds). The legend speaks for itself - its layout carries the item rectangles - while the
-        // axis bands are the reservations BuildPlot worked with, so a side without a decoration is not included.
-        bool cartesian = !(_skipCartesianDecorations ?? false);
+        // Too small to stay readable: say so once, not once per frame (a per-frame warning would flood the log).
+        // The chart keeps drawing - the axis thins its own labels - so this is a hint, not an error.
+        if (_minimumSize.X > 0f && (Width < _minimumSize.X || Height < _minimumSize.Y))
+        {
+            if (!_warnedAboutMinimumSize)
+            {
+                _warnedAboutMinimumSize = true;
+                GD.PushWarning(
+                    $"{nameof(Chart)}: {Width:F0}x{Height:F0} is below the content minimum " +
+                    $"{_minimumSize.X:F0}x{_minimumSize.Y:F0} (title, legend, axis labels and axis titles). " +
+                    "Labels will be thinned - give the chart more room, or accept it on purpose.");
+            }
+        }
+        else
+        {
+            _warnedAboutMinimumSize = false;    // it fits again, so a later shrink warns again
+        }
+    }
+
+    /// <summary>
+    /// Where the chart really drew: the content box plus every decoration band this frame reserved (see
+    /// <see cref="DrawnBounds"/>). The legend speaks for itself - its layout carries the item rectangles - while
+    /// the axis bands are the reservations the plot was built with, so a side without a decoration is not
+    /// included.
+    /// </summary>
+    /// <param name="f">Frame state as it was laid out.</param>
+    private void ComputeDrawnBounds(LayerFrame f)
+    {
+        PlotArea plot = f.Plot;
         Rect2 drawn = new(plot.X, plot.Y, plot.Width, plot.Height);
-        float leftBand = cartesian ? PaddingLeft + extraLeftPad : Title != null ? PaddingLeft : 0f;
-        float rightBand = cartesian && hasY2 ? PaddingRight + extraRightPad : 0f;
+        float leftBand = f.Cartesian ? PaddingLeft + f.ExtraLeftPad : Title != null ? PaddingLeft : 0f;
+        float rightBand = f.Cartesian && f.HasY2 ? PaddingRight + f.ExtraRightPad : 0f;
         float topBand = Title != null ? PaddingTop + _theme.TitleReservedHeight : 0f;
-        float bottomBand = cartesian ? PaddingBottom + extraBottomPad : 0f;
+        float bottomBand = f.Cartesian ? PaddingBottom + f.ExtraBottomPad : 0f;
         if (leftBand > 0f) drawn = drawn.Merge(new Rect2(OffsetX, plot.Y, leftBand, plot.Height));
         if (rightBand > 0f)
             drawn = drawn.Merge(new Rect2(plot.X + plot.Width, plot.Y, rightBand, plot.Height));
@@ -301,65 +444,8 @@ public partial class Chart
             drawn = drawn.Merge(legendBox);
         }
         _drawnBounds = drawn;
-
-        // Too small to stay readable: say so once, not once per frame (a per-frame warning would flood the log).
-        // The chart keeps drawing - the axis thins its own labels - so this is a hint, not an error.
-        if (_minimumSize.X > 0f && (Width < _minimumSize.X || Height < _minimumSize.Y))
-        {
-            if (!_warnedAboutMinimumSize)
-            {
-                _warnedAboutMinimumSize = true;
-                GD.PushWarning(
-                    $"{nameof(Chart)}: {Width:F0}x{Height:F0} is below the content minimum " +
-                    $"{_minimumSize.X:F0}x{_minimumSize.Y:F0} (title, legend, axis labels and axis titles). " +
-                    "Labels will be thinned - give the chart more room, or accept it on purpose.");
-            }
-        }
-        else
-        {
-            _warnedAboutMinimumSize = false;    // it fits again, so a later shrink warns again
-        }
-
-        var renderCtx = BuildRenderContext(plot, renderData);
-
-        RenderStageSafely("background renderer", () => BackgroundRenderer?.Invoke(renderCtx));
-
-        if (Title != null)
-            RenderStageSafely("title renderer", () => TitleRenderer?.Invoke(renderCtx));
-
-        if (cartesian)
-        {
-            RenderStageSafely("grid renderer", () => GridRenderer?.Invoke(renderCtx));
-            RenderStageSafely("axis renderer", () => AxisRenderer?.Invoke(renderCtx));
-        }
-
-        var ctx = BuildMarkContext(stateInOverlay);
-
-        // Marks are clipped to the plot rectangle: an element outside the visible window (what a zoom or a
-        // pan creates, and also a domain the host pinned) maps outside the plot, and without the clip those
-        // elements are painted over the axis labels - the series look like they run past the Y axis. The clip
-        // is the plot itself, so nothing a mark draws inside the window changes.
-        using (new CanvasSaveScope(_canvas))
-        {
-            _canvas.ClipRect(ctx.Plot.X, ctx.Plot.Y, ctx.Plot.Width, ctx.Plot.Height);
-
-            foreach (var mark in _marks)
-            {
-                if (skipped.Contains(mark)) continue;
-                var markCtx = mark.BindEncodes(
-                    mark.Data != null ? ctx.WithData(mark.Data) : ctx, _encodes, ctx.LayoutVersion);
-                var markToRender = mark;
-                RenderStageSafely($"{mark.GetType().Name}.Render", () => markToRender.Render(markCtx));
-            }
-        }
-
-        if (cartesian)
-            RenderStageSafely("axis label renderer", () => AxisLabelRenderer?.Invoke(renderCtx));
-
-        // Legend
-        if (CachedLegendLayout != null)
-            RenderStageSafely("legend renderer", () => LegendRenderer?.Invoke(renderCtx));
     }
+
 
     /// <summary>
     /// Draw the second half of a frame: the marks' interaction-state visuals and the crosshair. Runs on
@@ -642,11 +728,6 @@ public partial class Chart
         if (_layerKey != CurrentLayerKey()) return false;
 
         _canvas.DrawImage(_layerImage, _layerRect.Position.X, _layerRect.Position.Y,
-            _layerRect.Size.X, _layerRect.Size.Y);
-
-        // The blit rewrote that whole rectangle: reporting it is exact (and what a backend that uploads only
-        // the reported region needs in order to stay correct).
-        _canvas.InvalidateRegion(_layerRect.Position.X, _layerRect.Position.Y,
             _layerRect.Size.X, _layerRect.Size.Y);
 
         RenderOverlayLayer(stateInOverlay: true);

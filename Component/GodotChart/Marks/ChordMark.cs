@@ -221,11 +221,11 @@ public class ChordMark : Mark
         float anim = ComputeAnimProgress(ctx);
         if (anim <= 0f) return null;
 
-        var (cxP, cyP, radius) = PolarGeometry.CenterAndRadius(ctx.Plot, RadiusFactor);
+        var (cx, cyP, radius) = PolarGeometry.CenterAndRadius(ctx.Plot, RadiusFactor);
         float innerR = radius - radius * ArcWidthRatio;
 
-        float dist = PolarGeometry.Distance(cxP, cyP, screenPos.X, screenPos.Y);
-        float hitAngle = PolarGeometry.AngleOf(cxP, cyP, screenPos.X, screenPos.Y);
+        float dist = PolarGeometry.Distance(cx, cyP, screenPos.X, screenPos.Y);
+        float hitAngle = PolarGeometry.AngleOf(cx, cyP, screenPos.X, screenPos.Y);
 
         // Check node arcs (outer ring)
         if (dist >= innerR && dist <= radius)
@@ -239,7 +239,7 @@ public class ChordMark : Mark
                     return new HitResult
                     {
                         Hit = true, Row = ctx.Data[0], RowIndex = -1,
-                        ScreenX = cxP, ScreenY = cyP,
+                        ScreenX = cx, ScreenY = cyP,
                         Label = node.Label,
                         MarkType = nameof(ChordMark),
                     };
@@ -267,7 +267,7 @@ public class ChordMark : Mark
                     Hit = true,
                     Row = row,
                     RowIndex = chord.RowIndex,
-                    ScreenX = cxP,
+                    ScreenX = cx,
                     ScreenY = cyP,
                     Label = $"{chord.Source} → {chord.Target}: {chord.Value:G4}",
                     // Same key Render resolves for the chord's row, so hover/focus behaves identically.

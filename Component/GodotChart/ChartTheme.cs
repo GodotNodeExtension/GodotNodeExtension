@@ -80,7 +80,17 @@ public partial class ChartTheme : Resource
     [ExportGroup("Chart Frame")]
     [Export] public Color BackgroundColor { get => _backgroundColor; set => Set(ref _backgroundColor, value); }
 
-    private Color _backgroundColor = new(0.08f, 0.08f, 0.12f);
+    // The four colours several properties share. Writing them out once per property hid the intent:
+    // SegmentBorderColor follows the frame's background, the radar grid and the gauge track follow the grid
+    // colour, and the tooltip's text, a box's outline and a gauge's label follow the data-label colour. Each
+    // property still owns its own value (editing one in the Inspector does not move the others), but the
+    // default now says which property it belongs beside.
+    private static readonly Color DefaultBackground = new(0.08f, 0.08f, 0.12f);
+    private static readonly Color DefaultGrid = new(1f, 1f, 1f, 0.08f);
+    private static readonly Color DefaultLabel = new(1f, 1f, 1f, 0.6f);
+    private static readonly Color DefaultDataLabel = new(1f, 1f, 1f, 0.9f);
+
+    private Color _backgroundColor = DefaultBackground;
 
     /// <summary>Background rectangle corner radius in pixels.</summary>
     [Export] public float BackgroundCornerRadius { get => _backgroundCornerRadius; set => Set(ref _backgroundCornerRadius, value); }
@@ -90,7 +100,7 @@ public partial class ChartTheme : Resource
     /// <summary>Grid line color.</summary>
     [Export] public Color GridColor { get => _gridColor; set => Set(ref _gridColor, value); }
 
-    private Color _gridColor = new(1f, 1f, 1f, 0.08f);
+    private Color _gridColor = DefaultGrid;
 
     /// <summary>Grid line stroke width in pixels.</summary>
     [Export] public float GridLineWidth { get => _gridLineWidth; set => Set(ref _gridLineWidth, value); }
@@ -211,7 +221,7 @@ public partial class ChartTheme : Resource
     /// <summary>Axis label text color.</summary>
     [Export] public Color LabelColor { get => _labelColor; set => Set(ref _labelColor, value); }
 
-    private Color _labelColor = new(1f, 1f, 1f, 0.6f);
+    private Color _labelColor = DefaultLabel;
 
     /// <summary>Axis label font size in pixels.</summary>
     [Export] public float LabelFontSize { get => _labelFontSize; set => Set(ref _labelFontSize, value); }
@@ -221,7 +231,7 @@ public partial class ChartTheme : Resource
     /// <summary>Data label color drawn on marks (pie slices, treemap cells, etc.).</summary>
     [Export] public Color DataLabelColor { get => _dataLabelColor; set => Set(ref _dataLabelColor, value); }
 
-    private Color _dataLabelColor = new(1f, 1f, 1f, 0.9f);
+    private Color _dataLabelColor = DefaultDataLabel;
 
     // ═══════════════════════════════════════════════════════
     //  Mark Defaults
@@ -290,7 +300,7 @@ public partial class ChartTheme : Resource
     [ExportGroup("Polar / Segment")]
     [Export] public Color SegmentBorderColor { get => _segmentBorderColor; set => Set(ref _segmentBorderColor, value); }
 
-    private Color _segmentBorderColor = new(0.08f, 0.08f, 0.12f);
+    private Color _segmentBorderColor = DefaultBackground;
 
     /// <summary>Border stroke width between segments. Set 0 to hide borders.</summary>
     [Export] public float SegmentBorderWidth { get => _segmentBorderWidth; set => Set(ref _segmentBorderWidth, value); }
@@ -322,7 +332,7 @@ public partial class ChartTheme : Resource
     /// <summary>Tooltip text color.</summary>
     [Export] public Color TooltipTextColor { get => _tooltipTextColor; set => Set(ref _tooltipTextColor, value); }
 
-    private Color _tooltipTextColor = new(1f, 1f, 1f, 0.9f);
+    private Color _tooltipTextColor = DefaultDataLabel;
 
     /// <summary>Tooltip border color.</summary>
     [Export] public Color TooltipBorderColor { get => _tooltipBorderColor; set => Set(ref _tooltipBorderColor, value); }
@@ -451,7 +461,7 @@ public partial class ChartTheme : Resource
     [ExportGroup("Line Mark")]
     [Export] public Color LineHoverRingColor { get => _lineHoverRingColor; set => Set(ref _lineHoverRingColor, value); }
 
-    private Color _lineHoverRingColor = new(1f, 1f, 1f, 0.6f);
+    private Color _lineHoverRingColor = DefaultLabel;
 
     /// <summary>Hover ring stroke width for LineMark data points.</summary>
     [Export] public float LineHoverRingStrokeWidth { get => _lineHoverRingStrokeWidth; set => Set(ref _lineHoverRingStrokeWidth, value); }
@@ -496,7 +506,7 @@ public partial class ChartTheme : Resource
     [ExportGroup("Radar Mark")]
     [Export] public Color RadarGridColor { get => _radarGridColor; set => Set(ref _radarGridColor, value); }
 
-    private Color _radarGridColor = new(1f, 1f, 1f, 0.08f);
+    private Color _radarGridColor = DefaultGrid;
 
     /// <summary>Radar chart axis spoke color.</summary>
     [Export] public Color RadarAxisColor { get => _radarAxisColor; set => Set(ref _radarAxisColor, value); }
@@ -506,7 +516,7 @@ public partial class ChartTheme : Resource
     /// <summary>Radar chart axis label color.</summary>
     [Export] public Color RadarLabelColor { get => _radarLabelColor; set => Set(ref _radarLabelColor, value); }
 
-    private Color _radarLabelColor = new(1f, 1f, 1f, 0.6f);
+    private Color _radarLabelColor = DefaultLabel;
 
     /// <summary>Radar chart tick value color.</summary>
     [Export] public Color RadarTickColor { get => _radarTickColor; set => Set(ref _radarTickColor, value); }
@@ -531,7 +541,7 @@ public partial class ChartTheme : Resource
     /// <summary>Box plot whisker and median line color.</summary>
     [Export] public Color BoxLineColor { get => _boxLineColor; set => Set(ref _boxLineColor, value); }
 
-    private Color _boxLineColor = new(1f, 1f, 1f, 0.9f);
+    private Color _boxLineColor = DefaultDataLabel;
 
     // ═══════════════════════════════════════════════════════
     //  Violin Mark
@@ -566,12 +576,12 @@ public partial class ChartTheme : Resource
     [ExportGroup("Gauge Mark")]
     [Export] public Color GaugeTrackColor { get => _gaugeTrackColor; set => Set(ref _gaugeTrackColor, value); }
 
-    private Color _gaugeTrackColor = new(1f, 1f, 1f, 0.08f);
+    private Color _gaugeTrackColor = DefaultGrid;
 
     /// <summary>Gauge center label color.</summary>
     [Export] public Color GaugeLabelColor { get => _gaugeLabelColor; set => Set(ref _gaugeLabelColor, value); }
 
-    private Color _gaugeLabelColor = new(1f, 1f, 1f, 0.9f);
+    private Color _gaugeLabelColor = DefaultDataLabel;
 
     /// <summary>Gauge min/max boundary label color.</summary>
     [Export] public Color GaugeMinMaxLabelColor { get => _gaugeMinMaxLabelColor; set => Set(ref _gaugeMinMaxLabelColor, value); }

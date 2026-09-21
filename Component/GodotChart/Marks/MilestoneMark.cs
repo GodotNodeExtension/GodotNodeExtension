@@ -39,11 +39,11 @@ public class MilestoneMark : Mark
     /// <summary>Whether to draw the horizontal line the markers sit on (one per lane).</summary>
     public bool ShowAxisLine { get; set; } = true;
 
-    /// <summary>Stroke width of that line.</summary>
-    public float AxisLineWidth { get; } = 1f;
+    /// <summary>Stroke width of that line, in pixels.</summary>
+    public float AxisLineWidth { get; set; } = 1f;
 
     /// <summary>Gap between a marker and its label, in pixels.</summary>
-    public float LabelOffset { get; } = 8f;
+    public float LabelOffset { get; set; } = 8f;
 
     /// <summary>
     /// Alternate the labels above and below the marker. Neighbouring events on one lane are usually close
@@ -240,11 +240,7 @@ public class MilestoneMark : Mark
     public override void RenderOverlay(MarkContext ctx)
     {
         // Only while the chart keeps the data layer in an image: with the cache off Render painted the state.
-        if (!ctx.StateInOverlay) return;
-
-        int hovered = ctx.HoveredRowIndex;
-        int selected = ctx.SelectedRowIndex;
-        if (hovered < 0 && selected < 0) return;
+        if (!OverlayRows(ctx, out int hovered, out int selected)) return;
 
         // The placed events are the ones the data layer drew this frame (Place ran there, and the layer
         // cache is only hit while the layout and the data are unchanged), so the marker is redrawn where

@@ -52,9 +52,15 @@ public static class Canvas2DFactory
     /// exception.</returns>
     /// <exception cref="InvalidOperationException">The engine has no rendering device (headless run, or
     /// <c>--rendering-driver dummy</c>), so no surface can be created.</exception>
+    /// <param name="maxPoolSize">
+    /// Upper bound on the backend's pooled paint/path objects (default 64), for a host that draws very complex
+    /// charts and wants a bigger pool. It is a parameter of the factory because the pool belongs to the surface
+    /// the factory builds: the property used to sit on the backend with no way to reach it from a page.
+    /// </param>
     public static ICanvas2D Create(
         int width, int height,
-        CanvasBackendType backend = CanvasBackendType.Auto)
+        CanvasBackendType backend = CanvasBackendType.Auto,
+        int maxPoolSize = 64)
     {
         // Auto currently means Skia. When the engine grows native vector graphics, this one line is what
         // has to learn about it - the old DetectBestBackend() helper only ever returned the same value.
@@ -68,10 +74,10 @@ public static class Canvas2DFactory
                 $"{nameof(Canvas2DFactory)}: backend '{resolved}' is not implemented yet; " +
                 $"using '{CanvasBackendType.Skia}' instead.");
 
-        return CreateSkia(width, height);
+        return CreateSkia(width, height, maxPoolSize);
     }
 
-    private static SkiaCanvas2DBackend CreateSkia(int w, int h)
+    private static SkiaCanvas2DBackend CreateSkia(int w, int h, int maxPoolSize)
     {
         // A surface needs a rendering device. Without one (a headless run, or --rendering-driver dummy)
         // the low-level failure would reach the caller with no hint about what to do, so it is reported
@@ -83,7 +89,7 @@ public static class Canvas2DFactory
                 "--rendering-driver dummy), so no canvas can be created. A Canvas2DControl node logs " +
                 "this as a warning and stays usable; a direct Create call has to handle it.");
 
-        var backend = new SkiaCanvas2DBackend();
+        var backend = new SkiaCanvas2DBackend { MaxPoolSize = Math.Max(1, maxPoolSize) };
         try
         {
             backend.Initialize(w, h);

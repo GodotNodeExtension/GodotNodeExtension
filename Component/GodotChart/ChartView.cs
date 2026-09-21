@@ -760,7 +760,6 @@ public partial class ChartView : Control
     private ChartTheme? _watchedTheme;
     private Action<Mark>? _configureMark;
     private bool _dirty = true;
-    private Snapshot _snapshot;
 
     /// <summary>
     /// The minimum this node last reported to the engine. A container only re-sorts its children when a child
@@ -771,6 +770,13 @@ public partial class ChartView : Control
 
     /// <summary>Signature of the exported row array, so inspector edits of it are noticed.</summary>
     private string _rowsSignature = "";
+
+    /// <summary>
+    /// Size of the drawing surface the current chart was built for (see the per-frame comparison in
+    /// <see cref="_Process"/>): the surface resizes the canvas when the node is resized, and nothing on this node
+    /// is told about it.
+    /// </summary>
+    private Vector2I _builtSurfaceSize;
 
     /// <summary>Signature of the exported symbol array, for the same reason.</summary>
     private string _shapeSymbolsSignature = "";
@@ -993,6 +999,8 @@ public partial class ChartView : Control
         // The editor without preview, or a run without a rendering device: the node still knows what it is
         // configured to show, so the estimate stands in for the chart.
         var theme = EffectiveTheme;
+        // No legend padding is handed over: the chart this node builds takes its legend config from the node
+        // itself (see ApplyAxesAndLegend), and that config keeps LegendConfig's default padding.
         return Chart.EstimateMinimumSize(theme, !string.IsNullOrEmpty(_title),
             !string.IsNullOrEmpty(_xAxisTitle), !string.IsNullOrEmpty(_yAxisTitle), _legend,
             Chart.ThemedLabelFontSize(theme));
@@ -1023,9 +1031,13 @@ public partial class ChartView : Control
         // own Resized signal) keeps the chart correct whatever the order of layout and process is.
         SyncSurfaceSize();
 
-        // Exported values can also change from the inspector. Scalars are compared every frame; the
-        // row array is compared only in the editor, where edits arrive without a setter call.
-        if (_snapshot != Snapshot.Of(this)) Invalidate();
+        // One detector per kind of edit, and no second one for the same change. Every scalar export invalidates
+        // from its own setter (the node used to *also* compare a snapshot of all of them every frame, which could
+        // only ever agree with the setter or fight it), the two exported arrays are compared in the editor, where
+        // an inspector edit in place happens - and what is left here is the surface size: the canvas is resized
+        // by the surface the node hosts, which no setter of this node sees, so a frame that finds another size
+        // rebuilds the chart for it.
+        if (_canvas is { } surface && surface.CanvasSize != _builtSurfaceSize) Invalidate();
         if (Engine.IsEditorHint()) CheckVariantRows();
 
         // Tooltip fade / follow needs a frame even when nothing else changed. The theme's
@@ -1281,7 +1293,7 @@ public partial class ChartView : Control
     private void Rebuild()
     {
         _dirty = false;
-        _snapshot = Snapshot.Of(this);
+        _builtSurfaceSize = _canvas?.CanvasSize ?? Vector2I.Zero;
         WatchTheme(_customTheme);
 
         if (_canvas?.Canvas is not { } canvas) return;
@@ -1379,13 +1391,13 @@ public partial class ChartView : Control
             pointMark.MinRadius = _sizeRange.X;
             pointMark.RadiusRange = Math.Max(0f, _sizeRange.Y - _sizeRange.X);
         }
-        if (_opacityRange != Vector2.Zero && IsFieldBound(_opacityField))
+        if (_opacityRange != Vector2.Zero && RowsCarryField(_opacityField))
         {
             var rangeScale = new OutputRangeScale(new LinearScale(), _opacityRange.X, _opacityRange.Y);
             rangeScale.Fit(FieldValues(_opacityField));
             chart.Scale(Channel.Opacity, rangeScale);
         }
-        if (_shapeSymbols.Count > 0 && IsFieldBound(_shapeField))
+        if (_shapeSymbols.Count > 0 && RowsCarryField(_shapeField))
         {
             ShapeKind[] array = new ShapeKind[_shapeSymbols.Count];
             for (int i = 0; i < array.Length; i++)
@@ -1402,7 +1414,14 @@ public partial class ChartView : Control
     }
 
     /// <summary>A field name that is bound to rows (as opposed to empty or a <c>constant:</c> value).</summary>
-    private bool IsFieldBound(string field)
+    /// <summary>
+    /// Whether the rows carry this field at all - the question a channel *range* asks, because a range needs
+    /// values to look at. <see cref="IsBound"/> is the wider one (a field counts as bound when the rows carry
+    /// it or when it is a <c>constant:</c> pin), and a constant has no range to fit: the two are deliberately
+    /// different questions, which is why they no longer share a near-identical name.
+    /// </summary>
+    /// <param name="field">Field name to look for.</param>
+    private bool RowsCarryField(string field)
     {
         return !string.IsNullOrEmpty(field) && RowsCarry(field);
     }
@@ -1543,6 +1562,7 @@ public partial class ChartView : Control
             case FunnelMark funnel:          funnel.CornerRadius    = _theme.CornerRadius;  break;
             case HeatmapMark heatmap:        heatmap.CornerRadius   = _theme.CornerRadius;  break;
             case TimelineMark timeline:      timeline.CornerRadius  = _theme.CornerRadius;  break;
+            case WaffleMark waffle:          waffle.CornerRadius    = _theme.CornerRadius;  break;
             case TreemapMark treemap:        treemap.CornerRadius   = _theme.CornerRadius;  break;
             case LineMark line:
                 line.StrokeWidth = _theme.StrokeWidth;
@@ -2091,12 +2111,4 @@ public partial class ChartView : Control
         _ => value.ToString(),
     };
 
-    /// <summary>The exported values, used to notice inspector edits between frames.</summary>
-    private readonly record struct Snapshot(ChartKind Kind, string Title, ChartThemeKind Theme, ChartTheme? CustomTheme, bool EditorPreview, ColorMappingKind ColorMapping, bool GroupedBars, StackMode Stack, Vector2 XRange, Vector2 YRange, Vector2 SizeRange, Vector2 OpacityRange, string X, string Y, string Color, string Size, string Opacity, string Shape, string XTitle, string XUnit, string YTitle, string YUnit, LegendPosition Legend, bool Tooltip, bool Crosshair, bool Layered, Vector2I SurfaceSize)
-    {
-        public static Snapshot Of(ChartView view)
-        {
-            return new Snapshot(view._kind, view._title, view._themeKind, view._customTheme, view._editorPreview, view._colorMapping, view._groupedBars, view._stack, view._xAxisRange, view._yAxisRange, view._sizeRange, view._opacityRange, view._xField, view._yField, view._colorField, view._sizeField, view._opacityField, view._shapeField, view._xAxisTitle, view._xAxisUnit, view._yAxisTitle, view._yAxisUnit, view._legend, view._showTooltip, view._showCrosshair, view._layeredRendering, view._canvas?.CanvasSize ?? Vector2I.Zero);
-        }
-    }
 }

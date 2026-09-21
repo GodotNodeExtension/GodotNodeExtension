@@ -158,6 +158,13 @@ Lollipop Mark, Range Area Mark, Chord Mark, Sunburst Mark, Treemap Mark** (plus 
 Funnel, Waffle, Milestone and Timeline read the shared defaults above.
 The tables above list the main properties only; the Inspector shows the full set under these group names.
 
+The example page `ChartThemeDemo` walks the groups cell by cell: the two built-in themes, `Clone`, the frame,
+typography, the line widths and tooltip metrics, the feature toggles, a resource edited while the page runs,
+chart-level overrides, the **Layout** reservations (the title band and the Y2 column) and one per-mark group
+(the violin's, together with the **Hit Test** knobs). The groups without a cell of their own - the other
+per-mark ones, and the tooltip offsets and legend spacing inside the tables above - are configured exactly
+like the ones that have one: same theme resource, same groups in the Inspector.
+
 ---
 
 ## Custom Theme Resource (ChartView)
