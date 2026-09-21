@@ -64,4 +64,4 @@ suite) and refreshes this file. Doing it by hand works too:
 This file is automatically updated when component_info.json files are modified.
 
 ---
-*Last updated: 2026-09-21 12:58:20 UTC*
+*Last updated: 2026-09-21 13:18:49 UTC*
