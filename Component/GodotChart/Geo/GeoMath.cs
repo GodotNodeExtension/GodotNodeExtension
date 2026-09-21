@@ -1,6 +1,7 @@
 namespace GodotNodeExtension.Component.GodotChart;
 
 using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// An axis-aligned rectangle in frame coordinates (longitude/latitude for a WGS84 frame, world units
@@ -116,4 +117,108 @@ public static class GeoMath
     /// <param name="zoom">Zoom level as computed.</param>
     public static double ClampZoom(double zoom)
         => double.IsNaN(zoom) ? 0.0 : Math.Clamp(zoom, MinZoomLevel, MaxZoomLevel);
+
+    /// <summary>
+    /// Whether a point is inside a ring, by the even-odd rule (a ray is cast to the right and its crossings
+    /// are counted). This is what a geographic mark hit-tests a region with: the projected ring, once, and
+    /// then one call per pointer position.
+    /// </summary>
+    /// <param name="point">Point to test, in the ring's own coordinates.</param>
+    /// <param name="ring">The ring; a closed ring (last point repeated) is fine, as is an open one.</param>
+    /// <returns>
+    /// True when the point is inside. A point exactly on the boundary may be reported either way, which is
+    /// what a mark that wants a tolerant hit test adds its own margin for.
+    /// </returns>
+    public static bool PointInPolygon(GeoPoint point, IReadOnlyList<GeoPoint> ring)
+    {
+        ArgumentNullException.ThrowIfNull(ring);
+        if (ring.Count < 3) return false;
+
+        bool inside = false;
+        for (int i = 0, j = ring.Count - 1; i < ring.Count; j = i++)
+        {
+            GeoPoint a = ring[i];
+            GeoPoint b = ring[j];
+            // Count the edges the horizontal ray from the point towards +X crosses. The comparison is
+            // written so a vertex exactly at the ray's height counts once, not twice.
+            if (a.Y > point.Y != b.Y > point.Y &&
+                point.X < (b.X - a.X) * (point.Y - a.Y) / (b.Y - a.Y) + a.X)
+            {
+                inside = !inside;
+            }
+        }
+        return inside;
+    }
+
+    /// <summary>
+    /// Whether a ring winds clockwise, by the sign of its signed area (the shoelace formula).
+    /// <para>
+    /// Frames are y-up, so a clockwise ring has a negative area. Real map data is not consistent about it
+    /// - the GeoJSON specification asks for counterclockwise outer rings and field data ignores that
+    /// regularly - which is why a mark that fills polygons reads this instead of trusting the file, and why
+    /// the geometry builder documents that a hole with the wrong winding is corrected rather than filled.
+    /// </para>
+    /// </summary>
+    /// <param name="ring">The ring; a closed ring (last point repeated) is fine.</param>
+    /// <returns>True for a clockwise ring; false for a counterclockwise or degenerate one.</returns>
+    public static bool RingIsClockwise(IReadOnlyList<GeoPoint> ring)
+    {
+        ArgumentNullException.ThrowIfNull(ring);
+        if (ring.Count < 3) return false;
+
+        double twiceArea = 0;
+        for (int i = 0, j = ring.Count - 1; i < ring.Count; j = i++)
+            twiceArea += (ring[j].X * ring[i].Y) - (ring[i].X * ring[j].Y);
+
+        return twiceArea < 0;
+    }
+
+    /// <summary>
+    /// Distance from a point to a line segment - the measurement a mark hit-testing a line (a route, a flow,
+    /// a metro edge) compares against its own tolerance.
+    /// </summary>
+    /// <param name="point">The point.</param>
+    /// <param name="a">Start of the segment.</param>
+    /// <param name="b">End of the segment; equal to <paramref name="a"/> is a degenerate segment and the
+    /// distance to that point is returned.</param>
+    public static double DistanceToSegment(GeoPoint point, GeoPoint a, GeoPoint b)
+    {
+        double dx = b.X - a.X;
+        double dy = b.Y - a.Y;
+        double lengthSquared = (dx * dx) + (dy * dy);
+        if (!(lengthSquared > 0)) return Distance(point, a);
+
+        double t = (((point.X - a.X) * dx) + ((point.Y - a.Y) * dy)) / lengthSquared;
+        t = Math.Clamp(t, 0.0, 1.0);
+        return Distance(point, new GeoPoint(a.X + (t * dx), a.Y + (t * dy)));
+    }
+
+    /// <summary>
+    /// Bounding rectangle of a set of features, in frame coordinates: the union of the geometries, or null
+    /// when nothing has a coordinate. What a chart fits its viewport to when the data itself should decide
+    /// how far the map is zoomed out.
+    /// </summary>
+    /// <param name="features">The features to measure.</param>
+    public static GeoBounds? BoundsOf(IEnumerable<GeoFeature> features)
+    {
+        ArgumentNullException.ThrowIfNull(features);
+
+        GeoBounds? bounds = null;
+        foreach (var feature in features)
+        {
+            if (feature.Geometry.Bounds is not { } geometry) continue;
+            bounds = bounds is { } current
+                ? new GeoBounds(Math.Min(current.MinX, geometry.MinX), Math.Min(current.MinY, geometry.MinY),
+                                Math.Max(current.MaxX, geometry.MaxX), Math.Max(current.MaxY, geometry.MaxY))
+                : geometry;
+        }
+        return bounds;
+    }
+
+    private static double Distance(GeoPoint a, GeoPoint b)
+    {
+        double dx = a.X - b.X;
+        double dy = a.Y - b.Y;
+        return Math.Sqrt((dx * dx) + (dy * dy));
+    }
 }
