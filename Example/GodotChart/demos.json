@@ -84,6 +84,11 @@
       "scene": "ChartMarksHierarchyDemo.tscn",
       "title": "Mark knobs: hierarchy and flow (code)",
       "description": "The hierarchy and flow marks: [b]Treemap[/b] with both layout modes (binary split versus squarify), [b]Sunburst[/b] rings from parent rows, [b]Sankey[/b] column/node geometry and [b]Chord[/b] arcs - the field names are knobs here, not conventions."
+    },
+    {
+      "scene": "ChartGeoDemo.tscn",
+      "title": "Geographic",
+      "description": "[b]A map file, drawn twice[/b]. Assets/geo-regions.geojson - eight provinces read with [code]GeoJsonReader[/code] at runtime, no network - is joined to a small value table by name and shaded with a [code]SequentialColorScale[/code] on the left. On the right the [b]same[/b] mark draws the [b]same[/b] features with [code]Shade = false[/code]: the outline-only base map a bubble or flow layer would be laid on. Both cells are one [code]GeoAreaMark[/code] over one [code]GeoFeature[/code] list."
     }
   ]
 }

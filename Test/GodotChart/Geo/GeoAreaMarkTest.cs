@@ -215,6 +215,20 @@ public class GeoAreaMarkTest
         AssertThat(chart.HitTest(InsideA()) is null).IsTrue();
     }
 
+    [TestCase]
+    public void ShadeOffDrawsOutlinesEvenWhenAColourChannelIsBound()
+    {
+        var mark = new GeoAreaMark { Features = TwoAreas(), RowField = "cat", Shade = false };
+
+        var (fills, strokes, canvas) = Draw(mark, TwoRows());
+
+        // The geometry layer of a two-stage map: the colour channel is bound (the legend has something to
+        // show) and the mark still paints only the outlines.
+        AssertThat(fills).IsEqual(0);
+        AssertThat(strokes).IsEqual(2);
+        AssertThat(canvas.StrokeColors.Any(c => c == mark.OutlineColor)).IsTrue();
+    }
+
     // ── What the join left behind ──────────────────────────────────────────
 
     [TestCase]

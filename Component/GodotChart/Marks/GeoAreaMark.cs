@@ -64,6 +64,14 @@ public sealed class GeoAreaMark : GeoMark
     public Color OutlineColor { get; set; } = new(0.55f, 0.58f, 0.62f);
 
     /// <summary>
+    /// Whether regions are filled with their row's colour (true, the default) or drawn as outlines only.
+    /// The second setting is the geometry layer of a two-stage map - a base map under a bubble or flow layer -
+    /// and it wins over a bound colour channel, so a page can draw the same map twice without wiring a second
+    /// chart differently.
+    /// </summary>
+    public bool Shade { get; set; } = true;
+
+    /// <summary>
     /// Border width of a region. In data mode the border is a darkened version of the fill, so it reads on
     /// any palette; 0 draws no border at all.
     /// </summary>
@@ -150,8 +158,9 @@ public sealed class GeoAreaMark : GeoMark
     /// </summary>
     private RegionLayer Projected(MarkContext ctx)
     {
-        int config = HashCode.Combine(Features, RowField, FeatureKey, KeyComparer, Missing,
-                                      NoDataColor, OutlineColor, StrokeWidth);
+        int config = HashCode.Combine(
+            HashCode.Combine(Features, RowField, FeatureKey, KeyComparer),
+            HashCode.Combine(Missing, NoDataColor, OutlineColor, StrokeWidth, Shade));
         if (config != _configHash)
         {
             _projection = default;
@@ -165,7 +174,7 @@ public sealed class GeoAreaMark : GeoMark
         if (ctx.GeoViewport is not { } viewport || Features.Count == 0)
             return new RegionLayer([]);
 
-        bool shades = HasEncode(ctx, Channel.Color);
+        bool shades = Shade && HasEncode(ctx, Channel.Color);
         var join = new GeoDataJoiner(RowField, FeatureKey, GeoJoinMissing.Silent, KeyComparer)
             .Join(ctx.Data, Features);
         ReportJoin(join);

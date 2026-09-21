@@ -1,0 +1,80 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/GodotChart/ChartGeoDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/ChartView.cs" id="2_chart"]
+
+[node name="ChartGeoDemo" type="Control" node_paths=PackedStringArray("Choropleth", "BaseMap")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_minimum_size = Vector2(900, 640)
+script = ExtResource("1_demo")
+Choropleth = NodePath("Layout/Columns/Choropleth/Map")
+BaseMap = NodePath("Layout/Columns/BaseMap/Map")
+
+[node name="Layout" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Columns" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Choropleth" type="VBoxContainer" parent="Layout/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Columns/Choropleth"]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Choropleth[/b] · GeoAreaMark · geo-regions.geojson joined to a value table by name · SequentialColorScale"
+fit_content = true
+scroll_active = false
+
+[node name="Map" type="Control" parent="Layout/Columns/Choropleth"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("2_chart")
+Kind = 23
+Title = "Value by region"
+XField = "category"
+YField = "value"
+ColorField = "value"
+Legend = 1
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
+
+[node name="BaseMap" type="VBoxContainer" parent="Layout/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Columns/BaseMap"]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Base map[/b] · the same mark over the same features · Shade = false (outlines only, no legend)"
+fit_content = true
+scroll_active = false
+
+[node name="Map" type="Control" parent="Layout/Columns/BaseMap"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("2_chart")
+Kind = 23
+Title = "Outlines only"
+XField = "category"
+YField = "value"
+ColorField = ""
+Legend = 4
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
