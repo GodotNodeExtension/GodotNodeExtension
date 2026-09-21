@@ -242,6 +242,17 @@ public static class MarkCases
         // A geographic mark draws the geometry it was handed, not the rows: the rows are joined to the
         // features by the value of their category field (the three lettered areas below), and the value
         // column shades them. "value" therefore feeds the colour channel, not a position.
+        // The bubble layer places the rows themselves: the position channel carries the coordinate, the
+        // size channel the magnitude, and a row with a broken coordinate is skipped without taking the rest
+        // of the layer down.
+        new("GeoBubbleMark",   () => new GeoBubbleMark(),   Cities(),       "lon", "lat", "value",
+            PerRowSkipContract: true,
+            DirtyFields:
+            [
+                new("lon",   Numeric: true),
+                new("lat",   Numeric: true),
+                new("value", Numeric: true),
+            ]),
         new("GeoAreaMark",     () => new GeoAreaMark { Features = LetteredAreas() },
             Simple(), "cat", "value", "value",
             DirtyFields:
@@ -250,6 +261,14 @@ public static class MarkCases
                 new("value", Numeric: true),
             ]),
     };
+
+    /// <summary>Three cities as longitude/latitude pairs with a magnitude - the bubble layer's table.</summary>
+    public static List<DataRow> Cities() =>
+    [
+        D(("lon", 8.5), ("lat", 47.4), ("value", 30.0)),
+        D(("lon", 2.3), ("lat", 48.9), ("value", 60.0)),
+        D(("lon", 13.4), ("lat", 52.5), ("value", 45.0)),
+    ];
 
     /// <summary>
     /// Three lettered square regions in the frame's own units, sized so they are visible in the default

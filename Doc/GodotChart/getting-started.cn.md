@@ -172,9 +172,9 @@ view.YField = "revenue";     // 这一列会被逐行读取
 
 某一行没有这个字段时，只是那个通道没有值（不会报错）——所以同一张图里的行可以带不同的字段集合。
 
-`ChartKind` 覆盖全部 23 种内置类型（`Bar`、`Line`、`Area`、`Scatter`、`RangeArea`、`Pie`、`Donut`、
+`ChartKind` 覆盖全部 24 种内置类型（`Bar`、`Line`、`Area`、`Scatter`、`RangeArea`、`Pie`、`Donut`、
 `Radar`、`Violin`、`Box`、`Candlestick`、`Heatmap`、`Treemap`、`Sunburst`、`Sankey`、`Chord`、`Gauge`、
-`Funnel`、`Waffle`、`Timeline`、`Lollipop`、`Milestone`、`GeoArea`）——23 种类型由 21 个 `Mark` 类实现
+`Funnel`、`Waffle`、`Timeline`、`Lollipop`、`Milestone`、`GeoArea`、`GeoBubble`）——24 种类型由 22 个 `Mark` 类实现
 （`Line` 与 `Area` 共用 `LineMark`，`Pie` 与 `Donut` 共用 `PieMark`；注解 mark `SectionMark` 是第 21 个子类，
 不承载任何类型）。类型始终显式指定，没有自动判断。
 字段名默认沿用库内约定（`category`、`value`、`series`）；需要额外数据的类型读 `lower`、
@@ -371,6 +371,6 @@ public override void _Process(double delta)
 ## 下一步
 
 - [需要更多控制](#需要更多控制)（上一节）—— `ChartView` 不够用时的画布层走法
-- [图表类型](chart-types.cn.md) — 了解全部 23 种图表类型的构造方法
+- [图表类型](chart-types.cn.md) — 了解全部 24 种图表类型的构造方法
 - [定制与主题](customization.cn.md) — 深入主题、标度、坐标轴配置
 - [高级功能](advanced.cn.md) — 动画、交互事件、实时数据流

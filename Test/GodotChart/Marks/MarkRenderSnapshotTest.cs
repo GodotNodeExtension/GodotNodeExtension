@@ -82,6 +82,7 @@ public class MarkRenderSnapshotTest
         ["MilestoneMark"] = "5AEF214ED028D18E",
         // An annotation mark: the reference lines and the band it draws from its levels.
         ["SectionMark"] = "C52FFB5630D326B7",
+        ["GeoBubbleMark"] = "68ADCACF21223029",
         ["GeoAreaMark"] = "7026907D9F6A1B43",
     };
 

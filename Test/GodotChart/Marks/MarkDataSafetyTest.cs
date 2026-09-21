@@ -243,6 +243,7 @@ public class MarkDataSafetyTest
     {
         "BoxMark", "CandlestickMark", "GaugeMark", "IntervalMark",
         "LineMark", "LollipopMark", "PointMark", "ViolinMark",
+        "GeoBubbleMark",
     };
 
     /// <summary>The cases that declared the per-row skip contract in <see cref="MarkCases.All"/>.</summary>

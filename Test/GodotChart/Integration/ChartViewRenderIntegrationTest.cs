@@ -380,6 +380,7 @@ public class ChartViewRenderIntegrationTest
                     ChartKind.Lollipop    => CheckLollipop(probe, c),
                     ChartKind.Milestone   => CheckMilestone(probe, c),
                     ChartKind.GeoArea     => CheckGeoArea(probe),
+                    ChartKind.GeoBubble   => CheckGeoBubble(probe),
                     _ => Unprobed(probe),
                 };
                 report.Add($"{c.Label,-12} {summary}");
@@ -1220,6 +1221,39 @@ public class ChartViewRenderIntegrationTest
     /// Milestone: every lane carries at least one marker, and the markers are small symbols - probed four
     /// pixels above the lane's axis line, where only a marker reaches and the line itself does not.
     /// </summary>
+    /// <summary>
+    /// A geographic bubble chart: round marks at the coordinates the rows carry, so the middle band of the
+    /// plot holds several separate blobs of content rather than one continuous area.
+    /// </summary>
+    private static string CheckGeoBubble(KindProbe p)
+    {
+        // Bubbles are small: instead of counting runs along one line, mark the cells of a coarse grid that hold
+        // any strong content, which is what tells "several separate marks are drawn" from "one shape is drawn".
+        const int Columns = 6, Rows = 4;
+        var filled = new bool[Columns * Rows];
+        int cells = 0;
+        for (float x = p.Plot.X + 1f; x < p.Plot.X + p.Plot.Width - 1f; x += 3f)
+        {
+            for (float y = p.Plot.Y + 1f; y < p.Plot.Y + p.Plot.Height - 1f; y += 3f)
+            {
+                if (!p.IsStrongAt(x, y)) continue;
+                int column = Math.Min(Columns - 1, (int)((x - p.Plot.X) / p.Plot.Width * Columns));
+                int row = Math.Min(Rows - 1, (int)((y - p.Plot.Y) / p.Plot.Height * Rows));
+                int cell = (row * Columns) + column;
+                if (filled[cell]) continue;
+                filled[cell] = true;
+                cells++;
+            }
+        }
+
+        if (cells < 3)
+        {
+            p.Fail("bubbles", $"only {cells} cell(s) of the plot hold a bubble");
+            return "no bubbles";
+        }
+        return $"{cells} cell(s) hold a bubble";
+    }
+
     /// <summary>
     /// A geographic area chart: the rows became a grid of regions shaded by their value, so across the
     /// middle of the plot there are at least two distinctly shaded regions.

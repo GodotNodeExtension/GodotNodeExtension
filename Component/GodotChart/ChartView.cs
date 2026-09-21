@@ -84,6 +84,9 @@ public enum ChartKind
 
     /// <summary>Geographic areas shaded by a value: one region (or one grid cell) per row.</summary>
     GeoArea = 23,
+
+    /// <summary>Geographic bubbles at the coordinate each row carries, sized by its value.</summary>
+    GeoBubble = 24,
 }
 
 /// <summary>
@@ -1526,6 +1529,7 @@ public partial class ChartView : Control
             ChartKind.Lollipop => new LollipopMark(),
             ChartKind.Milestone => new MilestoneMark(),
             ChartKind.GeoArea => new GeoAreaMark(),
+            ChartKind.GeoBubble => new GeoBubbleMark(),
             _ => new IntervalMark(),
         };
         if (mark is LineMark decimated) decimated.Decimate = _decimate;
@@ -1595,6 +1599,12 @@ public partial class ChartView : Control
     /// </remarks>
     private void ApplyRowGeometry(Chart chart, Mark mark)
     {
+        if (mark is GeoBubbleMark)
+        {
+            FrameRowCoordinates(chart);
+            return;
+        }
+
         if (mark is not GeoAreaMark area) return;
         if (area.Features.Count > 0) return; // the caller brought geometry: it wins
 
@@ -1632,6 +1642,65 @@ public partial class ChartView : Control
         double worldPixels = surfaceWidth / columns;
         chart.SetGeoViewport(columns / 2.0, rows / 2.0, Math.Log2(worldPixels / GeoMath.WorldSizeAtZoomZero));
     }
+
+    /// <summary>
+    /// Frame the coordinates the rows themselves carry, for a kind that places them geographically (bubbles):
+    /// a table of longitudes and latitudes should show its points, not a corner of the world map.
+    /// </summary>
+    /// <remarks>
+    /// Nothing happens when the page already has a view (a viewport it set, or a page that runs later through
+    /// <see cref="ConfigureChart"/> and frames the map itself): the scene wins.
+    /// </remarks>
+    private void FrameRowCoordinates(Chart chart)
+    {
+        if (chart.GeoViewport is not null) return;
+
+        string xField = XFieldName();
+        string yField = YFieldName();
+        double minX = double.MaxValue, minY = double.MaxValue, maxX = double.MinValue, maxY = double.MinValue;
+        foreach (var row in _rowsData)
+        {
+            if (!TryCoordinate(row, xField, out double x) || !TryCoordinate(row, yField, out double y)) continue;
+            minX = Math.Min(minX, x); maxX = Math.Max(maxX, x);
+            minY = Math.Min(minY, y); maxY = Math.Max(maxY, y);
+        }
+        if (minX > maxX) return;
+
+        chart.SetGeoFrame(GeoFrames.Wgs84());
+        chart.FitGeoBounds(minX, minY, maxX, maxY, EstimatedPlot(chart), 0.15f);
+    }
+
+    /// <summary>A row's field as a finite number, in the units the frame works in.</summary>
+    private static bool TryCoordinate(DataRow row, string field, out double value)
+    {
+        value = 0;
+        if (!row.Has(field)) return false;
+        object? raw = row.Get(field);
+        switch (raw)
+        {
+            case double number:
+                value = number;
+                break;
+            case null:
+                return false;
+            default:
+                if (!double.TryParse(Convert.ToString(raw, CultureInfo.InvariantCulture),
+                                     NumberStyles.Float, CultureInfo.InvariantCulture, out value))
+                    return false;
+                break;
+        }
+        return double.IsFinite(value);
+    }
+
+    /// <summary>
+    /// The plot rectangle a chart of this size will lay itself out with, near enough for a default view (this
+    /// runs while the chart is still being built, so there is no layout to read yet).
+    /// </summary>
+    private static PlotArea EstimatedPlot(Chart chart) => new(
+        chart.PaddingLeft,
+        chart.PaddingTop,
+        MathF.Max(1f, chart.Width - chart.PaddingLeft - chart.PaddingRight),
+        MathF.Max(1f, chart.Height - chart.PaddingTop - chart.PaddingBottom));
 
     /// <summary>Wire the channels. Explicit field names win; otherwise the kind's convention is used.</summary>
     private void ApplyEncodes(Chart chart, ChartKind kind)

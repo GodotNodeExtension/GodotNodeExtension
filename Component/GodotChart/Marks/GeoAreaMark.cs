@@ -94,7 +94,6 @@ public sealed class GeoAreaMark : GeoMark
         if (layer.Regions.Count == 0) return;
 
         float animation = ComputeAnimProgress(ctx);
-        var path = ShapePath(ctx);
         var paint = ShapePaint(ctx);
 
         foreach (var region in layer.Regions)
@@ -105,6 +104,9 @@ public sealed class GeoAreaMark : GeoMark
             opacity = Mathf.Clamp(opacity * animation, 0f, 1f);
             if (opacity <= 0f) continue;
 
+            // A Fill does not consume the path, so each region starts from a reset one: reusing it would paint
+            // every earlier region again in this region's colour.
+            var path = ShapePath(ctx);
             BuildPath(path, region);
             if (region.Fill is { } fill)
             {

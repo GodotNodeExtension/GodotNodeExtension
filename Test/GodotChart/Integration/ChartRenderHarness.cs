@@ -49,6 +49,7 @@ internal static class ChartRenderHarness
             XField = c.XField,
             YField = c.YField,
             ColorField = c.ColorField,
+            SizeField = c.SizeField,
             Size = size,
         };
         ((SceneTree)Engine.GetMainLoop()).Root.AddChild(view);

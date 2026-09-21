@@ -14,6 +14,20 @@ public static class TestContexts
     public static PlotArea DefaultPlot => new(0, 0, 400, 300);
 
     /// <summary>
+    /// The map view a chart hands a geographic mark: a WGS84 view centred on Europe, wide enough that the
+    /// cases' coordinates land inside the plot. Marks that are not geographic ignore it, and a case that needs
+    /// its own view passes one.
+    /// </summary>
+    public static GeoViewport DefaultGeoViewport { get; } = CreateDefaultGeoViewport();
+
+    private static GeoViewport CreateDefaultGeoViewport()
+    {
+        var viewport = new GeoViewport(GeoFrames.Wgs84());
+        viewport.SetView(5.0, 48.0, 3.0);
+        return viewport;
+    }
+
+    /// <summary>
     /// Create a mark context for the given mark data.
     /// <paramref name="theme"/> stays null by default so tests do not depend on theme values
     /// (marks fall back to their own defaults).
@@ -25,6 +39,7 @@ public static class TestContexts
         ScaleSet scales,
         ChartTheme? theme = null,
         PlotArea? plot = null,
+        GeoViewport? geoViewport = null,
         int hoveredRowIndex = -1,
         int dataVersion = 1,
         int layoutVersion = 1,
@@ -37,6 +52,7 @@ public static class TestContexts
             Canvas = canvas,
             Plot = plot ?? DefaultPlot,
             Mapper = new PlanarMapper { Plot = plot ?? DefaultPlot },
+            GeoViewport = geoViewport ?? DefaultGeoViewport,
             Scales = scales,
             Encodes = encodes,
             Data = data,

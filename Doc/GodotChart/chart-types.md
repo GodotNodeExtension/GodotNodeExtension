@@ -2,7 +2,7 @@
 
 # Chart Types
 
-GodotChart supports 23 chart kinds (`ChartKind`) backed by 21 `Mark` classes (the annotation mark
+GodotChart supports 24 chart kinds (`ChartKind`) backed by 22 `Mark` classes (the annotation mark
 `SectionMark` is the 21st subclass and backs no kind), grouped below by
 coordinate system. The last group holds the waffle, which is a **Cartesian** mark that only turns the axes
 off (`UsesAxes => false`) - it is listed separately because it draws a grid instead of a scale. This guide
@@ -43,6 +43,7 @@ they can be renamed through the matching property, not through a channel.
 | Chord | one chord | `source` `target` + `Y` weight |
 | Waffle | one category's share of the grid | `Y` weight, `Color` |
 | Geographic areas (`GeoAreaMark`) | one region (or one grid cell) | the region's key field + `Color` value |
+| Geographic bubbles (`GeoBubbleMark`) | one bubble at a coordinate | `X` longitude, `Y` latitude, `Size`, `Color` |
 
 ---
 
@@ -1071,6 +1072,13 @@ so a table with no coordinates still draws a map.
 **Two layers, one mark.** With a colour channel bound the mark is the data layer. With `Shade = false` it draws
 outlines only - no fill, no legend entry - which is the base map a bubble or flow layer is laid on. The geographic demo page (`Example/GodotChart/ChartGeoDemo.tscn`) draws exactly that: one GeoJSON file,
 read at runtime, rendered once shaded and once as outlines.
+
+**Bubbles carry their own coordinates.** `GeoBubbleMark` places one bubble per row at the coordinate the row
+carries - the position channels hold the longitude and the latitude (`X` and `Y`, with a linear scale that does
+not force a zero baseline), `Size` drives the radius and `Color` the fill, exactly like the scatter marks do
+over a pair of axes. A row whose coordinate is missing or not a number is skipped, and the remaining rows keep
+drawing. In a `ChartView` of kind `GeoBubble` the rows are framed automatically, so a table of longitudes and
+latitudes shows its points without a page to set the view.
 
 ---
 

@@ -225,6 +225,7 @@ public partial class ChartViewTest
         (ChartKind.Lollipop, typeof(LollipopMark)),
         (ChartKind.Milestone, typeof(MilestoneMark)),
         (ChartKind.GeoArea, typeof(GeoAreaMark)),
+        (ChartKind.GeoBubble, typeof(GeoBubbleMark)),
     ];
 
     [TestCase]

@@ -2,7 +2,7 @@
 
 # GodotChart Documentation
 
-GodotChart is a declarative chart library for Godot built on **Grammar of Graphics** principles, using C# and SkiaSharp. It provides a fluent API for creating rich, interactive charts: 23 `ChartKind` values backed by 21 `Mark` classes (the annotation mark `SectionMark` is the 22nd subclass), an animation system, theme customization, and full user interaction support.
+GodotChart is a declarative chart library for Godot built on **Grammar of Graphics** principles, using C# and SkiaSharp. It provides a fluent API for creating rich, interactive charts: 24 `ChartKind` values backed by 22 `Mark` classes (the annotation mark `SectionMark` is the 23rd subclass), an animation system, theme customization, and full user interaction support.
 
 ## Chart gallery
 
@@ -76,7 +76,7 @@ new Chart(canvas)
 | Document | Content |
 |----------|---------|
 | [Getting Started](getting-started.md) | Setup, first chart, core concepts |
-| [Chart Types](chart-types.md) | Detailed guide for all 23 chart kinds with examples |
+| [Chart Types](chart-types.md) | Detailed guide for all 24 chart kinds with examples |
 | [Customization & Theming](customization.md) | Theme system, scales, axes, legends, custom renderers |
 | [Advanced Features](advanced.md) | Animation, interaction events, tooltips, real-time streaming, data transforms, composite charts |
 | [API Reference](api-reference.md) | Complete public class, method, and property listing |

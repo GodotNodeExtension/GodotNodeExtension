@@ -19,7 +19,8 @@ public sealed record ChartRenderCase(
     string XField,
     string YField,
     string ColorField,
-    IReadOnlyList<DataRow> Rows)
+    IReadOnlyList<DataRow> Rows,
+    string SizeField = "")
 {
     /// <summary>Name used in test messages and in the PNG file name.</summary>
     public string Label => Kind.ToString();
@@ -210,6 +211,22 @@ public sealed record ChartRenderCase(
         }),
         // Geographic areas: the rows are the regions (one grid cell each, named by the category field) and
         // the value column shades them, so this case needs no map file to be a map.
+        // Bubbles: the rows carry the coordinate themselves, so this kind places the table, not a map file.
+        new ChartRenderCase(ChartKind.GeoBubble, "lon", "lat", "value", new[]
+        {
+            Row(("city", "Lisbon"), ("lon", -9.1), ("lat", 38.7), ("value", 42.0)),
+            Row(("city", "Paris"), ("lon", 2.35), ("lat", 48.85), ("value", 78.0)),
+            Row(("city", "Berlin"), ("lon", 13.4), ("lat", 52.5), ("value", 55.0)),
+            Row(("city", "Rome"), ("lon", 12.5), ("lat", 41.9), ("value", 61.0)),
+            Row(("city", "Dublin"), ("lon", -6.26), ("lat", 53.35), ("value", 33.0)),
+            Row(("city", "Madrid"), ("lon", -3.7), ("lat", 40.42), ("value", 66.0)),
+            Row(("city", "Warsaw"), ("lon", 21.0), ("lat", 52.23), ("value", 38.0)),
+            Row(("city", "Vienna"), ("lon", 16.37), ("lat", 48.21), ("value", 51.0)),
+            Row(("city", "Amsterdam"), ("lon", 4.9), ("lat", 52.37), ("value", 44.0)),
+            Row(("city", "Copenhagen"), ("lon", 12.57), ("lat", 55.68), ("value", 29.0)),
+            Row(("city", "Prague"), ("lon", 14.42), ("lat", 50.09), ("value", 47.0)),
+            Row(("city", "Zurich"), ("lon", 8.54), ("lat", 47.37), ("value", 36.0)),
+        }, SizeField: "value"),
         new ChartRenderCase(ChartKind.GeoArea, "zone", "value", "value", new[]
         {
             Row(("zone", "North"), ("value", 42.0)),

@@ -16,7 +16,6 @@ layout_mode = 2
 theme_override_constants/separation = 6
 
 [node name="Header" type="Label" parent="Layout" unique_id=892339675]
-visible = false
 custom_minimum_size = Vector2(1, 0)
 layout_mode = 2
 text = "Basics - every chart kind the library ships, one cell at least each (bar fills four of them and area two, as variants of one kind), and every mark of the library is shown here, the reference-line mark included. Each cell is a ChartView node: its Kind, Rows (typed key/value dictionaries) and channel fields are set right here in the scene, so you can copy one and edit it. Knobs that need code live in the three mark-knob pages, and data transforms (a histogram, for instance) in the custom-charts page."
@@ -1414,6 +1413,60 @@ YAxisTitle = "Lane"
 YAxisMinLimit = nan
 YAxisMaxLimit = nan
 
+[node name="Geo bubble" type="VBoxContainer" parent="Layout/Grid" unique_id=1650427821]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Geo bubble" unique_id=1650427822]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Geo bubble[/b] · GeoBubbleMark · a row per bubble: lon, lat and a value for the size"
+fit_content = true
+scroll_active = false
+
+[node name="GeoBubbleChart" type="Control" parent="Layout/Grid/Geo bubble" unique_id=1650427823]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("1_chart")
+Kind = 24
+Title = "Cities sized by value"
+Rows = Array[Dictionary]([{
+"city": "Lisbon",
+"lat": 38.7,
+"lon": -9.1,
+"value": 42
+}, {
+"city": "Paris",
+"lat": 48.85,
+"lon": 2.35,
+"value": 78
+}, {
+"city": "Berlin",
+"lat": 52.5,
+"lon": 13.4,
+"value": 55
+}, {
+"city": "Rome",
+"lat": 41.9,
+"lon": 12.5,
+"value": 61
+}, {
+"city": "Dublin",
+"lat": 53.35,
+"lon": -6.26,
+"value": 33
+}])
+XField = "lon"
+YField = "lat"
+ColorField = "value"
+SizeField = "value"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
+
 [node name="Geo area" type="VBoxContainer" parent="Layout/Grid" unique_id=1650427813]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -1436,20 +1489,20 @@ script = ExtResource("1_chart")
 Kind = 23
 Title = "Regions by value"
 Rows = Array[Dictionary]([{
-"zone": "North",
-"value": 42
+"value": 42,
+"zone": "North"
 }, {
-"zone": "East",
-"value": 18
+"value": 18,
+"zone": "East"
 }, {
-"zone": "South",
-"value": 63
+"value": 63,
+"zone": "South"
 }, {
-"zone": "West",
-"value": 27
+"value": 27,
+"zone": "West"
 }, {
-"zone": "Centre",
-"value": 35
+"value": 35,
+"zone": "Centre"
 }])
 XField = "zone"
 YField = "value"

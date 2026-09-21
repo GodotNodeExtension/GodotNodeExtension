@@ -288,6 +288,7 @@ public class MarkOverlayTest
         ("ChordMark", "a chord is drawn at 0.4 alpha and hovers in its own colour, same double blend"),
         ("SunburstMark", "an arc is drawn at 0.85 alpha and its angles come from a recursive ring walk"),
         ("GeoAreaMark", "a region hovers by brightening its own fill, and the overlay would need the polygon walk again for every region"),
+        ("GeoBubbleMark", "a bubble hovers by brightening its own fill and the overlay would project the table again for a fade over a few pixels"),
     ];
 
     /// <summary>
