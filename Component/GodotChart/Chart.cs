@@ -637,6 +637,7 @@ public partial class Chart : IDisposable
     {
         ArgumentNullException.ThrowIfNull(mark);
         _marks.Add(mark);
+        OnMarkAdded(mark);
         InvalidateLayout();
         return this;
     }
@@ -644,7 +645,9 @@ public partial class Chart : IDisposable
     /// <summary>Add a mark of the given type (created with its default settings).</summary>
     public Chart Mark<T>() where T : Mark, new()
     {
-        _marks.Add(new T());
+        var mark = new T();
+        _marks.Add(mark);
+        OnMarkAdded(mark);
         InvalidateLayout();
         return this;
     }

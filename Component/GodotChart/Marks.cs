@@ -26,6 +26,13 @@ public class MarkContext
     /// </summary>
     public ICoordinateMapper Mapper        { get; internal set; } = null!;
 
+    /// <summary>
+    /// The chart's map viewport, or null when the chart has no geographic layer. A geographic mark reads it
+    /// here: it is what turns a coordinate of the frame into pixels of <see cref="Plot"/>, and its frame is
+    /// what the mark's own geometry is expressed in.
+    /// </summary>
+    public GeoViewport? GeoViewport        { get; internal set; }
+
     /// <summary>All resolved scales (X, Y, Color, etc.).</summary>
     public ScaleSet      Scales            { get; internal set; } = null!;
 
@@ -117,6 +124,7 @@ public class MarkContext
             Canvas            = Canvas,
             Plot              = Plot,
             Mapper            = Mapper,
+            GeoViewport       = GeoViewport,
             Scales            = Scales,
             Encodes           = Encodes,
             Data              = data,

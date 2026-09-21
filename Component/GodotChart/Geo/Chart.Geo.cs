@@ -13,6 +13,9 @@ public partial class Chart
     private IGeoFrame _geoFrame = GeoFrames.Wgs84();
     private GeoViewport? _geoViewport;
 
+    /// <summary>Whether the geographic source check already spoke about this chart's marks.</summary>
+    private bool _geoSourceWarningReported;
+
     /// <summary>
     /// The coordinate frame geographic layers are placed in: what their coordinates mean and how they
     /// are projected. WGS84 with Web Mercator until the host says otherwise, so longitude/latitude data
@@ -141,5 +144,28 @@ public partial class Chart
         viewport.Changed += InvalidateLayout;
         _geoViewport = viewport;
         return viewport;
+    }
+
+    /// <summary>
+    /// Called when a mark enters the chart: a geographic mark needs a viewport to project through, and any
+    /// new mark changes which combinations the source check has to speak about.
+    /// </summary>
+    /// <param name="mark">The mark that was just added.</param>
+    private void OnMarkAdded(Mark mark)
+    {
+        if (mark is not GeoMark) return;
+        EnsureGeoViewport();
+        _geoSourceWarningReported = false;
+    }
+
+    /// <summary>
+    /// Report the geographic mark combination problems, once per chart. The compatibility pass runs again
+    /// on every layout change - and panning a map changes the layout on every frame - so a warning that
+    /// repeats per frame would be console noise rather than information. Adding a mark lets it speak again.
+    /// </summary>
+    private void ReportGeoSourceProblems()
+    {
+        if (_geoSourceWarningReported) return;
+        if (GeoSourceCheck.Report(_marks)) _geoSourceWarningReported = true;
     }
 }

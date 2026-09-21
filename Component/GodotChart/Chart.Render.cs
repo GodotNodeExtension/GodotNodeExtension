@@ -588,6 +588,7 @@ public partial class Chart
         ctx.Plot              = _lastPlot.Value;
         _planarMapper.Plot    = ctx.Plot;
         ctx.Mapper            = _planarMapper;
+        ctx.GeoViewport       = _geoViewport;
         ctx.Scales            = _scales;
         ctx.Encodes           = _encodes;
         ctx.Data              = GetRenderData();
@@ -823,6 +824,9 @@ public partial class Chart
                 _skippedMarks.Add(_marks[i]);
             }
         }
+
+        // The geographic half of the pass: which geometry sources a mark list makes sense in.
+        ReportGeoSourceProblems();
 
         return _skippedMarks;
     }
