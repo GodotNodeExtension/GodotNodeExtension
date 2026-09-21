@@ -45,6 +45,57 @@ public enum MarkCoordinate
     Hierarchical,
     /// <summary>Relational flow layout (Sankey, Chord).</summary>
     Flow,
+    /// <summary>Geographic layout: data placed in a coordinate frame and projected through it.</summary>
+    Geographic,
+}
+
+// ── Channel roles ────────────────────────────────────────────────────────────
+/// <summary>
+/// What each <see cref="Channel"/> is used for, declared once instead of being restated at every call
+/// site: which channels take part in the automatic fit, whether their fitted domain keeps the zero
+/// baseline, and which axis (and axis configuration) they are drawn on. A new dimension or channel is
+/// added here, not in the places that consume the answers.
+/// </summary>
+internal static class ChannelRoles
+{
+    /// <summary>
+    /// Channels whose fitted domain is recorded, re-clamped and restored by the interactive window:
+    /// the two positions the plot is laid out from and the three encodings driven by a magnitude.
+    /// </summary>
+    internal static ReadOnlySpan<Channel> DomainChannels =>
+        [Channel.X, Channel.Y, Channel.Y2, Channel.Size, Channel.Opacity];
+
+    /// <summary>
+    /// Channels drawn on a value axis, in the order the renderers draw them.
+    /// </summary>
+    internal static ReadOnlySpan<Channel> ValueAxisChannels => [Channel.Y, Channel.Y2];
+
+    /// <summary>
+    /// Whether the automatically fitted domain of a channel keeps the zero baseline: the value and
+    /// opacity axes do (0 value is the baseline, 0 opacity is invisible), while a numeric category axis
+    /// (a sample index, a timestamp, a frequency) and the size channel do not - forcing zero would
+    /// squeeze a rolling window into one corner of the plot, and a bubble's radius encodes the
+    /// magnitude *inside* the column, so with zero included every bubble would sit near the top of the
+    /// range and <c>PointSizeMin</c> would never be reached.
+    /// </summary>
+    internal static bool KeepsZeroBaseline(Channel channel) => channel is not (Channel.X or Channel.Size);
+
+    /// <summary>
+    /// The axis configuration a channel's axis reads. The secondary Y axis is the fallback because it
+    /// is the only axis whose channel is not implied by its position; the X axis is the only other
+    /// channel with an axis of its own.
+    /// </summary>
+    /// <param name="channel">Channel whose axis is asked for.</param>
+    /// <param name="x">Configuration of the X axis.</param>
+    /// <param name="y">Configuration of the primary Y axis.</param>
+    /// <param name="secondary">Configuration of the secondary (Y2) axis.</param>
+    internal static AxisConfig? AxisConfigOf(Channel channel, AxisConfig? x, AxisConfig? y, AxisConfig? secondary)
+        => channel switch
+        {
+            Channel.X => x,
+            Channel.Y => y,
+            _ => secondary,
+        };
 }
 
 // ── Data row (a single record) ────────────────────────────────────

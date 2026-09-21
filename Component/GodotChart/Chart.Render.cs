@@ -586,6 +586,8 @@ public partial class Chart
         var ctx = _markContext;
         ctx.Canvas            = _canvas;
         ctx.Plot              = _lastPlot.Value;
+        _planarMapper.Plot    = ctx.Plot;
+        ctx.Mapper            = _planarMapper;
         ctx.Scales            = _scales;
         ctx.Encodes           = _encodes;
         ctx.Data              = GetRenderData();

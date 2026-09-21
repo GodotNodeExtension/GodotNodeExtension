@@ -174,12 +174,7 @@ public partial class Chart : IDisposable
         float axisLength = channel == Channel.X ? Width : Height;
         int maxTicks = (int)Math.Clamp(axisLength / MathF.Max(1f, _theme.TickLabelSpacing),
             _theme.MinTickCount, _theme.MaxTickCount);
-        var axisConfig = channel switch
-        {
-            Channel.X => _xAxisConfig,
-            Channel.Y => _yAxisConfig,
-            _ => _y2AxisConfig,
-        };
+        var axisConfig = ChannelRoles.AxisConfigOf(channel, _xAxisConfig, _yAxisConfig, _y2AxisConfig);
         float widest = 0f;
         foreach (var (_, text) in DefaultRenderers.ComputeTicks(
                      scale, maxTicks: axisConfig?.TickCount ?? maxTicks,
@@ -297,6 +292,10 @@ public partial class Chart : IDisposable
     // a freshly allocated one.
     private readonly RenderContext _renderContext = new();
     private readonly MarkContext _markContext = new();
+
+    // The 2D projection, handed to every mark through MarkContext.Mapper. One instance per chart: the
+    // plot rectangle it projects into is rewritten in place on each frame.
+    private readonly PlanarMapper _planarMapper = new();
 
     // Layout — the defaults live in one place (see ChartDefaults). Every member is writable: the plot
     // rectangle is recomputed from them on each frame and EffectiveLayoutVersion hashes them, so the

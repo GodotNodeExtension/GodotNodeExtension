@@ -35,12 +35,9 @@ public partial class Chart
                 _ => numericChannel
                     // A numeric category axis (sample index, timestamp, frequency...) describes where the
                     // data sits, not how far it is from zero: forcing zero would squeeze a rolling window
-                    // into one corner of the plot. The same goes for the size channel, where a bubble's
-                    // radius encodes the magnitude *inside the column* - with zero included every bubble
-                    // would sit near the top of the range and `PointSizeMin` would never be reached. The
-                    // value and opacity axes keep the zero baseline (0 value = baseline, 0 opacity =
-                    // invisible).
-                    ? new LinearScale { IncludeZero = channel is not (Channel.X or Channel.Size) }
+                    // into one corner of the plot. `ChannelRoles.KeepsZeroBaseline` holds the rule; the
+                    // long version of it is in the helper.
+                    ? new LinearScale { IncludeZero = ChannelRoles.KeepsZeroBaseline(channel) }
                     : new OrdinalScale(),
             };
 
@@ -311,7 +308,7 @@ public partial class Chart
     /// </summary>
     private void RememberBaseDomains()
     {
-        foreach (var channel in new[] { Channel.X, Channel.Y, Channel.Y2, Channel.Size, Channel.Opacity })
+        foreach (var channel in ChannelRoles.DomainChannels)
         {
             if (_baseDomains.ContainsKey(channel)) continue;
             RecordBaseDomain(channel, _scales.TryGet(channel));
@@ -364,8 +361,10 @@ public partial class Chart
     /// </summary>
     private void ApplyStickyAutoScale()
     {
-        ApplyStickyAutoScale(Channel.Y, _yAxisConfig);
-        ApplyStickyAutoScale(Channel.Y2, _y2AxisConfig);
+        // The value axes and the configuration they read come from one declaration (ChannelRoles): no X
+        // axis is among them, so its configuration is not part of the lookup.
+        foreach (var channel in ChannelRoles.ValueAxisChannels)
+            ApplyStickyAutoScale(channel, ChannelRoles.AxisConfigOf(channel, null, _yAxisConfig, _y2AxisConfig));
     }
 
     /// <summary>Sticky auto-scaling for one value axis; see <see cref="ApplyStickyAutoScale()"/>.</summary>
@@ -442,8 +441,9 @@ public partial class Chart
     /// </summary>
     private void ApplyOneSidedLimits()
     {
-        ApplyOneSidedLimit(Channel.Y, _yAxisConfig);
-        ApplyOneSidedLimit(Channel.Y2, _y2AxisConfig);
+        // Same declaration as the sticky pass: the value axes with the configuration each one reads.
+        foreach (var channel in ChannelRoles.ValueAxisChannels)
+            ApplyOneSidedLimit(channel, ChannelRoles.AxisConfigOf(channel, null, _yAxisConfig, _y2AxisConfig));
     }
 
     /// <summary>One value axis' one-sided pins; see <see cref="ApplyOneSidedLimits()"/>.</summary>

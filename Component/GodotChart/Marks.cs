@@ -19,6 +19,13 @@ public class MarkContext
     /// <summary>The computed plot area rectangle with coordinate mapping.</summary>
     public PlotArea      Plot              { get; internal set; }
 
+    /// <summary>
+    /// The projection of this frame's coordinate system. The value a Cartesian chart hands out is a
+    /// <see cref="PlanarMapper"/> over <see cref="Plot"/>; a mark that brings a coordinate system of
+    /// its own (a map viewport, a camera) reads it from here.
+    /// </summary>
+    public ICoordinateMapper Mapper        { get; internal set; } = null!;
+
     /// <summary>All resolved scales (X, Y, Color, etc.).</summary>
     public ScaleSet      Scales            { get; internal set; } = null!;
 
@@ -109,6 +116,7 @@ public class MarkContext
         {
             Canvas            = Canvas,
             Plot              = Plot,
+            Mapper            = Mapper,
             Scales            = Scales,
             Encodes           = Encodes,
             Data              = data,

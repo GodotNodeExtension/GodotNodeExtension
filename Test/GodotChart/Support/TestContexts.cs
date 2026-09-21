@@ -36,6 +36,7 @@ public static class TestContexts
         {
             Canvas = canvas,
             Plot = plot ?? DefaultPlot,
+            Mapper = new PlanarMapper { Plot = plot ?? DefaultPlot },
             Scales = scales,
             Encodes = encodes,
             Data = data,

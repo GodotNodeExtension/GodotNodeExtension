@@ -438,12 +438,7 @@ public static class DefaultRenderers
     /// </summary>
     private static List<(double Norm, string Text)> BuildTicks(RenderContext ctx, Channel channel)
     {
-        var config = channel switch
-        {
-            Channel.X => ctx.XAxisConfig,
-            Channel.Y => ctx.YAxisConfig,
-            _ => ctx.Y2AxisConfig,
-        };
+        var config = ChannelRoles.AxisConfigOf(channel, ctx.XAxisConfig, ctx.YAxisConfig, ctx.Y2AxisConfig);
 
         float length = channel == Channel.X ? ctx.Plot.Width : ctx.Plot.Height;
         var theme = ctx.Theme;
