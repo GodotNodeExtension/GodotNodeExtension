@@ -148,6 +148,71 @@ public class GeoMarkTest
         AssertThat(mark.Builds).IsEqual(3);
     }
 
+    // ── The position channels of a geographic layer ────────────────────────
+
+    [TestCase]
+    public void AGeographicLayerMayBindItsOwnPositionFields()
+    {
+        var log = EngineMessageLog.Attach();
+        try
+        {
+            var canvas = new FakeCanvas2D();
+            using var chart = new Chart(canvas) { Width = 400f, Height = 300f };
+            chart.Data(CoordinatesAsWellAsCategories());
+            chart.Encode(Channel.X, "category");
+            chart.Encode(Channel.Y, "value");
+            var mark = new CountingGeoMark();
+            mark.Encode(Channel.X, "lon");
+            mark.Encode(Channel.Y, "lat");
+            chart.Mark(mark);
+
+            chart.Render();
+
+            // The mark projects the coordinates itself: the chart's position scale is not what it reads, so a
+            // second layer with its own coordinate fields is not a shared scale.
+            AssertThat(log.WarningsContaining("share one scale").Length).IsEqual(0);
+        }
+        finally
+        {
+            log.Detach();
+        }
+    }
+
+    [TestCase]
+    public void ACartesianLayerStillWarnsAboutASharedPositionScale()
+    {
+        var log = EngineMessageLog.Attach();
+        try
+        {
+            var canvas = new FakeCanvas2D();
+            using var chart = new Chart(canvas) { Width = 400f, Height = 300f };
+            chart.Data(CoordinatesAsWellAsCategories());
+            chart.Encode(Channel.X, "category");
+            chart.Encode(Channel.Y, "value");
+            var mark = new CartesianProbe();
+            mark.Encode(Channel.X, "lon");
+            mark.Encode(Channel.Y, "lat");
+            chart.Mark(mark);
+
+            chart.Render();
+
+            // The exemption is the geographic mark's own: over a pair of axes the two fields really do share
+            // one scale, and the warning is the point.
+            AssertThat(log.WarningsContaining("share one scale").Length).IsEqual(2);
+        }
+        finally
+        {
+            log.Detach();
+        }
+    }
+
+    /// <summary>Rows that carry a category and a value as well as a coordinate.</summary>
+    private static List<DataRow> CoordinatesAsWellAsCategories() =>
+    [
+        TestContexts.Row(("category", "A"), ("value", 10.0), ("lon", 2.35), ("lat", 48.85)),
+        TestContexts.Row(("category", "B"), ("value", 20.0), ("lon", 13.4), ("lat", 52.5)),
+    ];
+
     // ── The geometry source check ──────────────────────────────────────────
 
     [TestCase]

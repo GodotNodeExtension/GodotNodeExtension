@@ -501,8 +501,13 @@ public abstract class Mark
                 overlay ??= new EncodeSet();
                 overlay.Set(channel, encode);
 
+                // A geographic mark is exempt: it reads the position channels as *coordinates* it projects
+                // through the frame, never through the position scale, so a chart whose regions are bound to
+                // one field and whose bubble layer carries lon/lat in another is not two values sharing one
+                // scale - it is two layers that do not use the scale at all.
                 if (chartEncodes.Has(channel) && chartEncodes.FieldOf(channel) is { } chartField
                     && encode is FieldEncode localField && localField.FieldName != chartField
+                    && Coordinate != MarkCoordinate.Geographic
                     && _warnedScaleConflicts.Add(channel))
                 {
                     GD.PushWarning(
