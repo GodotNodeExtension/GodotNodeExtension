@@ -11,6 +11,8 @@ This file lists the contributors to the GodotNodeExtension project.
 
 ## Component Contributors
 
+<!-- generated from Component/*/component_info.json by `python Tools/components.py publish` - do not edit this section by hand -->
+
 ### DynamicNumberLabel
 - **[shitake2333](mailto:z1522716486@hotmail.com)**
 

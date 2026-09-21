@@ -10,7 +10,7 @@ This file contains all available components in the GodotNodeExtension project.
 | [GodotChart](Doc/GodotChart/README.md) | 0.2.0 | shitake2333 | A declarative chart library for Godot with a SkiaSharp backend: 22 chart kinds (20 Mark classes, plus the SectionMark annotation mark) across Cartesian, polar, hierarchical and flow layouts with auto-inferred scales, theming, animation and hit testing. | ✅ Complete |
 | [GodotMapsui](Doc/GodotMapsui/README.md) | 0.1.0 | shitake2333 | Interactive map control for Godot using Mapsui and SkiaSharp, with Vulkan GPU accelerated rendering via GodotSkia. | ✅ Complete |
 | [GodotSkia](Doc/GodotSkia/README.md) | 0.9.0 | shitake2333 | A 2D rendering bridge between SkiaSharp and Godot. Shares the engine's Vulkan surface with Skia's GRContext (with a CPU fallback for every other renderer, including the OpenGL compatibility renderer), and provides bidirectional Godot/Skia type converters, an image interop layer and diagnostics for the shared GPU context. | ✅ Complete |
-| [Typography](Doc/Typography/README.md) | 0.4.1 | shitake2333 | Multi-language typography server: language profiles (clreq/jlreq/klreq parameters, prohibition class sets, right-to-left languages), Unicode line breaking and bidirectional text (UAX #9 through Unicode.Bidi, with P2/P3, L1, L2 and mirroring done here), a boundary model that carries break and spacing decisions, HarfBuzz shaping with language-aware glyph-level output, display-form substitution (quotation marks, ellipsis, sentence marks), automatic hyphenation from TeX patterns, ruby and emphasis marks, image-text mixed layout with polygon wrapping, and an async server architecture | ✅ Complete |
+| [Typography](Doc/Typography/README.md) | 0.4.1-dev | shitake2333 | Multi-language typography server: language profiles (clreq/jlreq/klreq parameters, prohibition class sets, right-to-left languages), Unicode line breaking and bidirectional text (UAX #9 through Unicode.Bidi, with P2/P3, L1, L2 and mirroring done here), a boundary model that carries break and spacing decisions, HarfBuzz shaping with language-aware glyph-level output, display-form substitution (quotation marks, ellipsis, sentence marks), automatic hyphenation from TeX patterns, ruby and emphasis marks, image-text mixed layout with polygon wrapping, and an async server architecture | 🚧 In Progress |
 
 
 ## Contributing
@@ -64,4 +64,4 @@ suite) and refreshes this file. Doing it by hand works too:
 This file is automatically updated when component_info.json files are modified.
 
 ---
-*Last updated: 2026-09-21 12:47:05 UTC*
+*Last updated: 2026-09-21 12:58:20 UTC*
