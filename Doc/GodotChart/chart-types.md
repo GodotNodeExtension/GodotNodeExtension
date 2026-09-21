@@ -2,7 +2,7 @@
 
 # Chart Types
 
-GodotChart supports 24 chart kinds (`ChartKind`) backed by 22 `Mark` classes (the annotation mark
+GodotChart supports 25 chart kinds (`ChartKind`) backed by 23 `Mark` classes (the annotation mark
 `SectionMark` is the 21st subclass and backs no kind), grouped below by
 coordinate system. The last group holds the waffle, which is a **Cartesian** mark that only turns the axes
 off (`UsesAxes => false`) - it is listed separately because it draws a grid instead of a scale. This guide
@@ -44,6 +44,7 @@ they can be renamed through the matching property, not through a channel.
 | Waffle | one category's share of the grid | `Y` weight, `Color` |
 | Geographic areas (`GeoAreaMark`) | one region (or one grid cell) | the region's key field + `Color` value |
 | Geographic bubbles (`GeoBubbleMark`) | one bubble at a coordinate | `X` longitude, `Y` latitude, `Size`, `Color` |
+| Geographic flows (`GeoFlowMark`) | one curve between two coordinates | `start_lon` `start_lat` `end_lon` `end_lat` + `Size`, `Color` |
 
 ---
 
@@ -1068,6 +1069,12 @@ that half loaded says so instead of going blank.
 polygons with holes); `GeoGeometryBuilder` writes the same features in code, including a tile grid; and a
 `ChartView` of kind `GeoArea` with no geometry at all turns the categories of its X field into a grid of cells,
 so a table with no coordinates still draws a map.
+
+**Flows carry two coordinates.** `GeoFlowMark` draws one curve per row from where it starts to where it ends -
+the four ends are the fields `start_lon` `start_lat` `end_lon` `end_lat` (renameable), the weight rides `Size`
+and `Color`, and the curve bulges away from the straight line by `Curvature` times its length, which is what
+keeps a dozen routes over one map readable instead of one thick line. A row with a broken end is skipped on its
+own. Like every geographic mark, its layer is hit-tested through the same projected geometry it drew.
 
 **Two layers, one mark.** With a colour channel bound the mark is the data layer. With `Shade = false` it draws
 outlines only - no fill, no legend entry - which is the base map a bubble or flow layer is laid on. The geographic demo page (`Example/GodotChart/ChartGeoDemo.tscn`) draws exactly that: one GeoJSON file,

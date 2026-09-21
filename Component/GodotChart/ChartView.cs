@@ -87,6 +87,9 @@ public enum ChartKind
 
     /// <summary>Geographic bubbles at the coordinate each row carries, sized by its value.</summary>
     GeoBubble = 24,
+
+    /// <summary>Geographic flows: a curve from where each row starts to where it ends, weighted by its value.</summary>
+    GeoFlow = 25,
 }
 
 /// <summary>
@@ -1530,6 +1533,7 @@ public partial class ChartView : Control
             ChartKind.Milestone => new MilestoneMark(),
             ChartKind.GeoArea => new GeoAreaMark(),
             ChartKind.GeoBubble => new GeoBubbleMark(),
+            ChartKind.GeoFlow => new GeoFlowMark(),
             _ => new IntervalMark(),
         };
         if (mark is LineMark decimated) decimated.Decimate = _decimate;
@@ -1605,6 +1609,12 @@ public partial class ChartView : Control
             return;
         }
 
+        if (mark is GeoFlowMark flow)
+        {
+            FrameFlowCoordinates(chart, flow);
+            return;
+        }
+
         if (mark is not GeoAreaMark area) return;
         if (area.Features.Count > 0) return; // the caller brought geometry: it wins
 
@@ -1668,6 +1678,33 @@ public partial class ChartView : Control
 
         chart.SetGeoFrame(GeoFrames.Wgs84());
         chart.FitGeoBounds(minX, minY, maxX, maxY, EstimatedPlot(chart), 0.15f);
+    }
+
+    /// <summary>
+    /// Frame the four ends of the flows the rows carry: a table of routes should show its routes, not a corner
+    /// of the world map. Nothing happens when the page already has a view.
+    /// </summary>
+    private void FrameFlowCoordinates(Chart chart, GeoFlowMark flow)
+    {
+        if (chart.GeoViewport is not null) return;
+
+        double minX = double.MaxValue, minY = double.MaxValue, maxX = double.MinValue, maxY = double.MinValue;
+        foreach (var row in _rowsData)
+        {
+            Accumulate(row, flow.SourceLonField, flow.SourceLatField);
+            Accumulate(row, flow.TargetLonField, flow.TargetLatField);
+        }
+        if (minX > maxX) return;
+
+        chart.SetGeoFrame(GeoFrames.Wgs84());
+        chart.FitGeoBounds(minX, minY, maxX, maxY, EstimatedPlot(chart), 0.15f);
+
+        void Accumulate(DataRow row, string lonField, string latField)
+        {
+            if (!TryCoordinate(row, lonField, out double x) || !TryCoordinate(row, latField, out double y)) return;
+            minX = Math.Min(minX, x); maxX = Math.Max(maxX, x);
+            minY = Math.Min(minY, y); maxY = Math.Max(maxY, y);
+        }
     }
 
     /// <summary>A row's field as a finite number, in the units the frame works in.</summary>
@@ -2084,7 +2121,9 @@ public partial class ChartView : Control
             return "series";
         }
         // A geographic area chart shades each region by the value it carries: the colour *is* the data.
-        if (kind == ChartKind.GeoArea)
+        // A geographic area chart shades each region by the value it carries, and a flow layer colours its
+        // curves with the same value that sets their width: the colour *is* the data for both.
+        if (kind is ChartKind.GeoArea or ChartKind.GeoFlow)
         {
             return YFieldName();
         }

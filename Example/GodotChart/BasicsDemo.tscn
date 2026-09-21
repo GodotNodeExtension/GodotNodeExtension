@@ -1413,6 +1413,70 @@ YAxisTitle = "Lane"
 YAxisMinLimit = nan
 YAxisMaxLimit = nan
 
+[node name="Geo flow" type="VBoxContainer" parent="Layout/Grid" unique_id=1650427831]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Geo flow"]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Geo flow[/b] · GeoFlowMark · a row per route: start/end lon & lat, value for width and colour"
+fit_content = true
+scroll_active = false
+
+[node name="GeoFlowChart" type="Control" parent="Layout/Grid/Geo flow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("1_chart")
+Kind = 25
+Title = "Routes by volume"
+Rows = Array[Dictionary]([{
+"route": "LIS-CDG",
+"start_lon": -9.1,
+"start_lat": 38.7,
+"end_lon": 2.35,
+"end_lat": 48.85,
+"value": 60
+}, {
+"route": "CDG-BER",
+"start_lon": 2.35,
+"start_lat": 48.85,
+"end_lon": 13.4,
+"end_lat": 52.5,
+"value": 45
+}, {
+"route": "FCO-CDG",
+"start_lon": 12.5,
+"start_lat": 41.9,
+"end_lon": 2.35,
+"end_lat": 48.85,
+"value": 30
+}, {
+"route": "MAD-BER",
+"start_lon": -3.7,
+"start_lat": 40.42,
+"end_lon": 13.4,
+"end_lat": 52.5,
+"value": 38
+}, {
+"route": "DUB-AMS",
+"start_lon": -6.26,
+"start_lat": 53.35,
+"end_lon": 4.9,
+"end_lat": 52.37,
+"value": 22
+}])
+XField = "start_lon"
+YField = "start_lat"
+ColorField = "value"
+SizeField = "value"
+YAxisMinLimit = nan
+YAxisMaxLimit = nan
+
 [node name="Geo bubble" type="VBoxContainer" parent="Layout/Grid" unique_id=1650427821]
 layout_mode = 2
 size_flags_horizontal = 3

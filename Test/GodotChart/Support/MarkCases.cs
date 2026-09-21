@@ -253,6 +253,18 @@ public static class MarkCases
                 new("lat",   Numeric: true),
                 new("value", Numeric: true),
             ]),
+        // A flow carries two coordinates, so its four ends are fields rather than the position channels; the
+        // weight rides the size channel and the colour. A row with a broken end is skipped on its own.
+        new("GeoFlowMark",     () => new GeoFlowMark(),     Routes(),       "start_lon", "start_lat", "value",
+            PerRowSkipContract: true,
+            DirtyFields:
+            [
+                new("start_lon", Numeric: true),
+                new("start_lat", Numeric: true),
+                new("end_lon",   Numeric: true),
+                new("end_lat",   Numeric: true),
+                new("value",     Numeric: true),
+            ]),
         new("GeoAreaMark",     () => new GeoAreaMark { Features = LetteredAreas() },
             Simple(), "cat", "value", "value",
             DirtyFields:
@@ -261,6 +273,14 @@ public static class MarkCases
                 new("value", Numeric: true),
             ]),
     };
+
+    /// <summary>Three routes as start/end longitude/latitude pairs with a magnitude - the flow layer's table.</summary>
+    public static List<DataRow> Routes() =>
+    [
+        D(("start_lon", 2.35), ("start_lat", 48.85), ("end_lon", 13.4), ("end_lat", 52.5), ("value", 30.0)),
+        D(("start_lon", -9.1), ("start_lat", 38.7), ("end_lon", 4.9), ("end_lat", 52.37), ("value", 60.0)),
+        D(("start_lon", 12.5), ("start_lat", 41.9), ("end_lon", 2.35), ("end_lat", 48.85), ("value", 45.0)),
+    ];
 
     /// <summary>Three cities as longitude/latitude pairs with a magnitude - the bubble layer's table.</summary>
     public static List<DataRow> Cities() =>

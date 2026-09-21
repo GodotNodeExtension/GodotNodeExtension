@@ -100,6 +100,12 @@ public partial class ChartGeoDemo : Control
                    .Encode(Channel.Size, "value")
                    .Encode(Channel.Color, "value");
             chart.Mark(bubbles);
+
+            // The flow layer reads a third table: two coordinates per row, the value as the curve's width and
+            // colour. Three layers, three tables, one frame.
+            var flows = new GeoFlowMark { Data = RouteRows(), MinWidth = 1.5f, MaxWidth = 7f };
+            flows.Encode(Channel.Size, "value").Encode(Channel.Color, "value");
+            chart.Mark(flows);
         };
     }
 
@@ -119,6 +125,33 @@ public partial class ChartGeoDemo : Control
 
         static DataRow Row(string city, double lon, double lat, double value)
             => new DataRow(4).Set("city", city).Set("lon", lon).Set("lat", lat).Set("value", value);
+    }
+
+    /// <summary>Routes between the cities above, as the flow layer's table.</summary>
+    private static List<DataRow> RouteRows()
+    {
+        var rows = new List<DataRow>
+        {
+            Route("Harbourwatch", "Silverport", 64.0),
+            Route("Silverport", "Valesend", 38.0),
+            Route("Oldkeep", "Farrow", 52.0),
+            Route("Farrow", "Southgate", 41.0),
+            Route("Valesend", "Oldkeep", 27.0),
+            Route("Southgate", "Harbourwatch", 33.0),
+        };
+        return rows;
+
+        static DataRow Route(string from, string to, double value)
+            => new DataRow(5)
+                .Set("route", $"{from}-{to}")
+                .Set("start_lon", Coordinate(from).Lon).Set("start_lat", Coordinate(from).Lat)
+                .Set("end_lon", Coordinate(to).Lon).Set("end_lat", Coordinate(to).Lat)
+                .Set("value", value);
+
+        static (double Lon, double Lat) Coordinate(string city)
+            => CityRows().Find(row => row.Get<string>("city") == city) is { } found
+                ? (found.Get<double>("lon"), found.Get<double>("lat"))
+                : (0.0, 0.0);
     }
 
     /// <summary>The plot rectangle a chart of this size lays out, near enough to frame a map from a page.</summary>

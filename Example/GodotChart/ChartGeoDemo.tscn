@@ -89,7 +89,7 @@ theme_override_constants/separation = 4
 custom_minimum_size = Vector2(1, 0)
 layout_mode = 2
 bbcode_enabled = true
-text = "[b]Two stages[/b] · the base map of the middle cell plus a GeoBubbleMark over it · two data sets, one frame"
+text = "[b]Layers[/b] · the base map of the middle cell + GeoBubbleMark + GeoFlowMark · three data sets, one frame"
 fit_content = true
 scroll_active = false
 
@@ -100,7 +100,7 @@ size_flags_vertical = 3
 mouse_filter = 1
 script = ExtResource("2_chart")
 Kind = 23
-Title = "Base map + bubbles"
+Title = "Base map, bubbles and routes"
 XField = "category"
 YField = "value"
 ColorField = ""

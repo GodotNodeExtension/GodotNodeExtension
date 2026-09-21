@@ -2,7 +2,7 @@
 
 # 图表类型
 
-GodotChart 支持 24 种图表类型（`ChartKind`，由 22 个 `Mark` 类实现；另有不承载任何类型、只画参考线的注解 mark `SectionMark`，它是第 23 个子类），按坐标系分为四大类。本文档为每种图表提供属性说明和完整的构造示例。
+GodotChart 支持 25 种图表类型（`ChartKind`，由 23 个 `Mark` 类实现；另有不承载任何类型、只画参考线的注解 mark `SectionMark`，它是第 24 个子类），按坐标系分为四大类。本文档为每种图表提供属性说明和完整的构造示例。
 
 ## 数据结构一览
 
@@ -37,6 +37,7 @@ GodotChart 支持 24 种图表类型（`ChartKind`，由 22 个 `Mark` 类实现
 | 华夫饼图 | 某个类目在网格中占的份额 | `Y` 权重、`Color` |
 | 地理区域（`GeoAreaMark`） | 一个区域（或一个网格单元） | 区域的关键字段 + `Color` 数值 |
 | 地理气泡（`GeoBubbleMark`） | 某个坐标上的一个气泡 | `X` 经度、`Y` 纬度、`Size`、`Color` |
+| 地理流动（`GeoFlowMark`） | 两个坐标之间的一条曲线 | `start_lon` `start_lat` `end_lon` `end_lat` + `Size`、`Color` |
 
 ---
 
@@ -989,6 +990,11 @@ chart.Scale(Channel.Color, new SequentialColorScale(0.0, 100.0));   // 色阶，
 **几何可以来自任何地方。** `GeoJsonReader.ParseFile` 读 `FeatureCollection`（点、线、带洞的多边形）；
 `GeoGeometryBuilder` 用代码造同样的要素（含瓦片网格）；而 `ChartView` 的 `GeoArea` 类型在完全没有几何时，会把
 X 字段的各个类目排成一张网格 —— 所以只有表格、没有任何坐标也能画出地图。
+
+**流动有两个坐标。** `GeoFlowMark` 为每一行画一条从起点到终点的曲线 —— 两端来自 `start_lon` `start_lat`
+`end_lon` `end_lat` 四个字段（可改名），权重走 `Size` 与 `Color`，曲线按 `Curvature` × 两端距离向外弯出去，
+这正是十几条航线叠在同一张图上仍然读得出来（而不是糊成一条粗线）的原因。某一端坏掉的行只跳过自己。
+和每个地理 mark 一样，这一层用自己画出来的同一份投影几何做命中测试。
 
 **两层，一个 mark。** 绑了颜色通道时它是表达层；`Shade = false` 时它只画轮廓（不填色、不进图例），那就是气泡层
 或飞线层要铺在其上的底图。地理示例页（`Example/GodotChart/ChartGeoDemo.tscn`）画的正是这件事：一份 GeoJSON

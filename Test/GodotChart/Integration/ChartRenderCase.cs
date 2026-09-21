@@ -227,6 +227,17 @@ public sealed record ChartRenderCase(
             Row(("city", "Prague"), ("lon", 14.42), ("lat", 50.09), ("value", 47.0)),
             Row(("city", "Zurich"), ("lon", 8.54), ("lat", 47.37), ("value", 36.0)),
         }, SizeField: "value"),
+        // Flows: two coordinates per row, a curve between them and the value as its width.
+        new ChartRenderCase(ChartKind.GeoFlow, "start_lon", "start_lat", "value", new[]
+        {
+            Row(("route", "LIS-CDG"), ("start_lon", -9.1), ("start_lat", 38.7), ("end_lon", 2.35), ("end_lat", 48.85), ("value", 60.0)),
+            Row(("route", "CDG-BER"), ("start_lon", 2.35), ("start_lat", 48.85), ("end_lon", 13.4), ("end_lat", 52.5), ("value", 45.0)),
+            Row(("route", "FCO-CDG"), ("start_lon", 12.5), ("start_lat", 41.9), ("end_lon", 2.35), ("end_lat", 48.85), ("value", 30.0)),
+            Row(("route", "MAD-BER"), ("start_lon", -3.7), ("start_lat", 40.42), ("end_lon", 13.4), ("end_lat", 52.5), ("value", 38.0)),
+            Row(("route", "DUB-AMS"), ("start_lon", -6.26), ("start_lat", 53.35), ("end_lon", 4.9), ("end_lat", 52.37), ("value", 22.0)),
+            Row(("route", "AMS-FCO"), ("start_lon", 4.9), ("start_lat", 52.37), ("end_lon", 12.5), ("end_lat", 41.9), ("value", 34.0)),
+            Row(("route", "VIE-DUB"), ("start_lon", 16.37), ("start_lat", 48.21), ("end_lon", -6.26), ("end_lat", 53.35), ("value", 27.0)),
+        }, SizeField: "value"),
         new ChartRenderCase(ChartKind.GeoArea, "zone", "value", "value", new[]
         {
             Row(("zone", "North"), ("value", 42.0)),

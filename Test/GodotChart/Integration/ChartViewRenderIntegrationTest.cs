@@ -381,6 +381,7 @@ public class ChartViewRenderIntegrationTest
                     ChartKind.Milestone   => CheckMilestone(probe, c),
                     ChartKind.GeoArea     => CheckGeoArea(probe),
                     ChartKind.GeoBubble   => CheckGeoBubble(probe),
+                    ChartKind.GeoFlow     => CheckGeoFlow(probe),
                     _ => Unprobed(probe),
                 };
                 report.Add($"{c.Label,-12} {summary}");
@@ -398,6 +399,37 @@ public class ChartViewRenderIntegrationTest
 
         GD.Print($"{name}: {ChartRenderCase.All.Count} kinds\n" + string.Join("\n", report));
         AssertThat(string.Join("; ", problems)).IsEqual("");
+    }
+
+    /// <summary>
+    /// A geographic flow chart: curves that span the plot, so a coarse grid over the plot holds content in
+    /// several cells spread over more than one row and one column (a single straight line would not).
+    /// </summary>
+    private static string CheckGeoFlow(KindProbe p)
+    {
+        const int Columns = 4, Rows = 3;
+        var filled = new bool[Columns * Rows];
+        int cells = 0;
+        for (float x = p.Plot.X + 1f; x < p.Plot.X + p.Plot.Width - 1f; x += 3f)
+        {
+            for (float y = p.Plot.Y + 1f; y < p.Plot.Y + p.Plot.Height - 1f; y += 3f)
+            {
+                if (!p.IsStrongAt(x, y)) continue;
+                int column = Math.Min(Columns - 1, (int)((x - p.Plot.X) / p.Plot.Width * Columns));
+                int row = Math.Min(Rows - 1, (int)((y - p.Plot.Y) / p.Plot.Height * Rows));
+                int cell = (row * Columns) + column;
+                if (filled[cell]) continue;
+                filled[cell] = true;
+                cells++;
+            }
+        }
+
+        if (cells < 5)
+        {
+            p.Fail("flows", $"only {cells} cell(s) of the plot hold a curve");
+            return "no flows";
+        }
+        return $"{cells} cell(s) hold a curve";
     }
 
     private static string Unprobed(KindProbe p)
