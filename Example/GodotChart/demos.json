@@ -88,7 +88,7 @@
     {
       "scene": "ChartGeoDemo.tscn",
       "title": "Geographic",
-      "description": "[b]A map file, drawn twice[/b]. Assets/geo-regions.geojson - eight provinces read with [code]GeoJsonReader[/code] at runtime, no network - is joined to a small value table by name and shaded with a [code]SequentialColorScale[/code] on the left. On the right the [b]same[/b] mark draws the [b]same[/b] features with [code]Shade = false[/code]: the outline-only base map a bubble or flow layer would be laid on. Both cells are one [code]GeoAreaMark[/code] over one [code]GeoFeature[/code] list."
+      "description": "[b]A map file, drawn three ways[/b]. Assets/geo-regions.geojson - eight provinces read with [code]GeoJsonReader[/code] at runtime, no network - is joined to a small value table by name and shaded with a [code]SequentialColorScale[/code] in the first cell; the [b]same[/b] mark draws the [b]same[/b] features with [code]Shade = false[/code] as an outline-only base map in the second; and the third cell is the two-stage picture those two are for - that base map with a [code]GeoBubbleMark[/code] over it, each layer reading its own table in one coordinate frame."
     }
   ]
 }

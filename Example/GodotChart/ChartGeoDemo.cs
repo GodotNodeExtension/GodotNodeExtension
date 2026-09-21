@@ -5,8 +5,9 @@ using GodotNodeExtension.Component.GodotChart;
 namespace GodotNodeExtension.Example.GodotChart;
 
 /// <summary>
-/// Geographic page: one map file read at runtime and drawn twice - a choropleth (a value per region) and the
-/// same geometry as the outline-only base map a data layer is laid on top of.
+/// Geographic page: one map file read at runtime and drawn three ways - a choropleth (a value per region), the
+/// same geometry as an outline-only base map, and the two-stage picture that design is for: that base map with
+/// a bubble layer on top of it.
 /// <para>
 /// The file is <c>Example/GodotChart/Assets/geo-regions.geojson</c>, read with
 /// <see cref="GeoJsonReader.ParseFile(string, ICollection{string})"/> and never fetched from the network.
@@ -29,6 +30,9 @@ public partial class ChartGeoDemo : Control
 
     /// <summary>The same regions as an outline-only base map.</summary>
     [Export] public ChartView BaseMap { get; set; } = null!;
+
+    /// <summary>Base map and bubble layer in one chart - the two-stage picture.</summary>
+    [Export] public ChartView TwoStage { get; set; } = null!;
 
     /// <summary>The map file this page reads.</summary>
     private const string MapPath = "res://Example/GodotChart/Assets/geo-regions.geojson";
@@ -62,7 +66,67 @@ public partial class ChartGeoDemo : Control
         var values = RegionValues();
         Configure(Choropleth, values, shade: true);
         Configure(BaseMap, values, shade: false);
+        ConfigureTwoStage(TwoStage);
     }
+
+    /// <summary>
+    /// The two-stage picture: the base map is the <b>view's own</b> mark (outlines, no colour channel bound), so
+    /// the bubble layer added afterwards lands on top of it - the order the marks are added in is the order they
+    /// are painted, and a chart draws no Cartesian axes for either of them.
+    /// </summary>
+    /// <remarks>
+    /// The two layers read different tables: the regions come from the map file's names, the bubbles from the
+    /// city table below. That is what a mark's own <see cref="Mark.Data"/> and its own encodes are for - one
+    /// chart, two data sets, one coordinate frame.
+    /// </remarks>
+    private void ConfigureTwoStage(ChartView view)
+    {
+        view.SetValues(RegionValues()); // what a bubble layout would fall back on; the bubbles bring their own
+        view.ConfigureMark(mark =>
+        {
+            if (mark is not GeoAreaMark area) return;
+            area.Features = _regions;
+            area.RowField = JoinField;
+            area.Shade = false;         // the base map of this cell
+        });
+        view.ConfigureChart = chart =>
+        {
+            chart.SetGeoFrame(GeoFrames.Wgs84());
+            chart.FitGeoBounds(_bounds.MinX, _bounds.MinY, _bounds.MaxX, _bounds.MaxY, EstimatedPlot(chart), 0.06f);
+
+            var bubbles = new GeoBubbleMark { Data = CityRows(), MinRadius = 5f, MaxRadius = 20f };
+            bubbles.Encode(Channel.X, "lon")
+                   .Encode(Channel.Y, "lat")
+                   .Encode(Channel.Size, "value")
+                   .Encode(Channel.Color, "value");
+            chart.Mark(bubbles);
+        };
+    }
+
+    /// <summary>A handful of cities inside the mapped landmass, with the value that sizes their bubble.</summary>
+    private static List<DataRow> CityRows()
+    {
+        var rows = new List<DataRow>
+        {
+            Row("Harbourwatch", 12.4, 47.2, 62.0),
+            Row("Silverport", 8.1, 52.6, 88.0),
+            Row("Oldkeep", 22.7, 44.9, 41.0),
+            Row("Farrow", 30.5, 49.8, 73.0),
+            Row("Valesend", 16.2, 55.1, 35.0),
+            Row("Southgate", 26.9, 39.4, 54.0),
+        };
+        return rows;
+
+        static DataRow Row(string city, double lon, double lat, double value)
+            => new DataRow(4).Set("city", city).Set("lon", lon).Set("lat", lat).Set("value", value);
+    }
+
+    /// <summary>The plot rectangle a chart of this size lays out, near enough to frame a map from a page.</summary>
+    private static PlotArea EstimatedPlot(Chart chart) => new(
+        chart.PaddingLeft,
+        chart.PaddingTop,
+        Mathf.Max(1f, chart.Width - chart.PaddingLeft - chart.PaddingRight),
+        Mathf.Max(1f, chart.Height - chart.PaddingTop - chart.PaddingBottom));
 
     /// <summary>The table the map is joined to: one value per province of the file.</summary>
     private static List<(string Category, double Value)> RegionValues() =>
@@ -93,12 +157,8 @@ public partial class ChartGeoDemo : Control
             // The grid the view builds when a geographic mark has no geometry of its own is not what this page
             // draws: the frame comes from the map file's coordinates.
             chart.SetGeoFrame(GeoFrames.Wgs84());
-            var plot = new PlotArea(
-                chart.PaddingLeft,
-                chart.PaddingTop,
-                Mathf.Max(1f, chart.Width - chart.PaddingLeft - chart.PaddingRight),
-                Mathf.Max(1f, chart.Height - chart.PaddingTop - chart.PaddingBottom));
-            chart.FitGeoBounds(_bounds.MinX, _bounds.MinY, _bounds.MaxX, _bounds.MaxY, plot, 0.06f);
+            chart.FitGeoBounds(_bounds.MinX, _bounds.MinY, _bounds.MaxX, _bounds.MaxY,
+                               EstimatedPlot(chart), 0.06f);
             if (!shade) return;
             // A value per region reads as a ramp, not as one category colour per shade: the colour scale is
             // the host's call, which is what makes "area" and "choropleth" one mark in this library.
