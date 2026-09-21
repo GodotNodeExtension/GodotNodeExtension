@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://dku7jugrf6xkj"]
+
+[ext_resource type="Script" uid="uid://dc6acvddaalih" path="res://Example/GodotMapsui/MapsuiDemo.cs" id="1"]
+[ext_resource type="Script" uid="uid://d2pxvaxsymh2t" path="res://Component/GodotMapsui/MapsuiControl.cs" id="2"]
+
+[node name="MapsuiDemo" type="Control" unique_id=1889647309 node_paths=PackedStringArray("MapControl", "CoordinateLabel", "ZoomInButton", "ZoomOutButton", "ResetButton")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1")
+MapControl = NodePath("VBoxContainer/MapControl")
+CoordinateLabel = NodePath("VBoxContainer/TopBar/CoordinateLabel")
+ZoomInButton = NodePath("VBoxContainer/TopBar/ZoomInButton")
+ZoomOutButton = NodePath("VBoxContainer/TopBar/ZoomOutButton")
+ResetButton = NodePath("VBoxContainer/TopBar/ResetButton")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=351431748]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TopBar" type="HBoxContainer" parent="VBoxContainer" unique_id=1376894315]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="ZoomInButton" type="Button" parent="VBoxContainer/TopBar" unique_id=653621278]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Zoom In"
+
+[node name="ZoomOutButton" type="Button" parent="VBoxContainer/TopBar" unique_id=1665996335]
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+text = "Zoom Out"
+
+[node name="ResetButton" type="Button" parent="VBoxContainer/TopBar" unique_id=1107972670]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+text = "Next Location"
+
+[node name="CoordinateLabel" type="Label" parent="VBoxContainer/TopBar" unique_id=936185714]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Center: (0.0000, 0.0000)"
+
+[node name="MapControl" type="Control" parent="VBoxContainer" unique_id=287487490]
+custom_minimum_size = Vector2(0, 480)
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("2")
+metadata/_custom_type_script = "uid://d2pxvaxsymh2t"

@@ -17,6 +17,9 @@ This file lists the contributors to the GodotNodeExtension project.
 ### GodotChart
 - **[shitake2333](mailto:z1522716486@hotmail.com)**
 
+### GodotMapsui
+- **[shitake2333](mailto:z1522716486@hotmail.com)**
+
 ### GodotSkia
 - **[shitake2333](mailto:z1522716486@hotmail.com)**
 

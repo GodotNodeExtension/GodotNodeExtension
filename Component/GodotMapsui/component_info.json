@@ -1,0 +1,34 @@
+{
+  "name": "GodotMapsui",
+  "version": "0.1.0",
+  "description": "Interactive map control for Godot using Mapsui and SkiaSharp, with Vulkan GPU accelerated rendering via GodotSkia.",
+  "author": "shitake2333",
+  "license": "MIT",
+  "requirements": {
+    "godot": ">=4.0.0",
+    "dotnet": ">=10.0"
+  },
+  "dependencies": {
+    "nuget": [
+      {
+        "name": "Mapsui",
+        "version": ">=5.0.2"
+      },
+      {
+        "name": "Mapsui.Rendering.Skia",
+        "version": ">=5.0.2"
+      },
+      {
+        "name": "Mapsui.Tiling",
+        "version": ">=5.0.2"
+      }
+    ],
+    "components": [
+      "GodotSkia"
+    ]
+  },
+  "compatibility": {
+    "godot_versions": ["4.0", "4.1", "4.2", "4.3"],
+    "dotnet_versions": ["10.0"]
+  }
+}
