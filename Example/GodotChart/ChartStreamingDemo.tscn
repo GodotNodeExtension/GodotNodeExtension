@@ -1,0 +1,91 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/GodotChart/ChartStreamingDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/ChartView.cs" id="2_chart"]
+
+[node name="ChartStreamingDemo" type="Control" node_paths=PackedStringArray("Scope", "Quotes", "Gauge", "Readout", "PauseButton", "SlowerButton", "FasterButton", "ClearButton")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_minimum_size = Vector2(880, 720)
+script = ExtResource("1_demo")
+Scope = NodePath("Layout/Scope")
+Quotes = NodePath("Layout/Quotes")
+Gauge = NodePath("Layout/GaugeRow/Gauge")
+Readout = NodePath("Layout/Controls/Readout")
+PauseButton = NodePath("Layout/Controls/PauseButton")
+SlowerButton = NodePath("Layout/Controls/SlowerButton")
+FasterButton = NodePath("Layout/Controls/FasterButton")
+ClearButton = NodePath("Layout/Controls/ClearButton")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+theme_override_constants/separation = 6
+
+[node name="Controls" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+
+[node name="PauseButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "Run / Pause (Space)"
+
+[node name="SlowerButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "Slower (1)"
+
+[node name="FasterButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "Faster (2)"
+
+[node name="ClearButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "Clear (C)"
+
+[node name="Readout" type="Label" parent="Layout/Controls"]
+layout_mode = 2
+text = "starting..."
+
+[node name="Scope" type="Control" parent="Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("2_chart")
+Kind = 2
+Title = "Scope screen · 240 samples (ring buffer + SetData)"
+XField = "t"
+YField = "value"
+XAxisTitle = "sample"
+YAxisTitle = "amplitude"
+YAxisRange = Vector2(10, 90)
+
+[node name="Quotes" type="Control" parent="Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("2_chart")
+Kind = 11
+Title = "Price feed · one 10 s candle every 10 s (AddRow + WindowSize = 60)"
+ZoomMode = 10
+XField = "time"
+XAxisTitle = "time"
+YAxisTitle = "price"
+YAxisAutoScaleMargin = 0.08
+YAxisNiceDomain = true
+WindowSize = 60
+
+[node name="GaugeRow" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+
+[node name="GaugeLabel" type="Label" parent="Layout/GaugeRow"]
+layout_mode = 2
+text = "Latest sample:"
+
+[node name="Gauge" type="Control" parent="Layout/GaugeRow"]
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 17
+Title = "Live value"
+XField = "label"
+YField = "value"

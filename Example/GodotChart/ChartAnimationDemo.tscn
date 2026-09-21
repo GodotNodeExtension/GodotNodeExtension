@@ -1,0 +1,169 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" uid="uid://ixl02tcjqt1" path="res://Example/GodotChart/ChartAnimationDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/ChartView.cs" id="2_chart"]
+
+[node name="ChartAnimationDemo" type="MarginContainer" node_paths=PackedStringArray("EntryChart", "EaseChart", "ThemeChart", "ReplayButton", "HoverButton", "TransitionButton", "ExitButton", "EntrySlider", "StaggerSlider", "ThemeSwitch", "Status")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+script = ExtResource("1_demo")
+EntryChart = NodePath("Layout/Grid/Entry/EntryChart")
+EaseChart = NodePath("Layout/Grid/Ease/EaseChart")
+ThemeChart = NodePath("Layout/Grid/Theme/ThemeChart")
+ReplayButton = NodePath("Layout/Controls/ReplayButton")
+HoverButton = NodePath("Layout/Controls/HoverButton")
+TransitionButton = NodePath("Layout/Controls/TransitionButton")
+ExitButton = NodePath("Layout/Controls/ExitButton")
+EntrySlider = NodePath("Layout/Controls/EntrySlider")
+StaggerSlider = NodePath("Layout/Controls/StaggerSlider")
+ThemeSwitch = NodePath("Layout/Controls/ThemeSwitch")
+Status = NodePath("Layout/Status")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="RichTextLabel" parent="Layout"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b][font_size=19]Host-driven animation[/font_size][/b]\n[color=#93a1b5]The controller owns the tweens; every frame the script feeds AnimationContext to chart.Animate(ctx) + Repaint(). Buttons: entry / hover / data / exit.[/color]"
+
+[node name="HeaderRule" type="HSeparator" parent="Layout"]
+layout_mode = 2
+
+[node name="Controls" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ReplayButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "Replay entry"
+
+[node name="HoverButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "Hover"
+
+[node name="TransitionButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "Data transition"
+
+[node name="ExitButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "Exit"
+
+[node name="EntrySlider" type="HSlider" parent="Layout/Controls"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+tooltip_text = "AnimationController.EntryDuration in seconds - read when the next entry tween is created"
+min_value = 0.1
+max_value = 2.0
+step = 0.05
+value = 0.6
+
+[node name="StaggerSlider" type="HSlider" parent="Layout/Controls"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+tooltip_text = "AnimationController.SeriesStagger in seconds - gives every curve on the ease panel its own delayed progress"
+max_value = 0.4
+step = 0.01
+value = 0.1
+
+[node name="ThemeSwitch" type="CheckButton" parent="Layout/Controls"]
+layout_mode = 2
+tooltip_text = "The contrast panel's ChartTheme.EnableAnimation - the host is the only reader of that flag"
+text = "theme anim"
+
+[node name="Status" type="Label" parent="Layout"]
+layout_mode = 2
+autowrap_mode = 3
+custom_minimum_size = Vector2(1, 0)
+text = "ready"
+
+[node name="Grid" type="GridContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="Entry" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Entry"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Entry / hover / data / exit[/b] · AnimationController feeds an AnimationContext every frame"
+
+[node name="EntryChart" type="Control" parent="Layout/Grid/Entry"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 4
+Title = "Entry grows, exit shrinks, hover scales"
+
+[node name="Ease" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Ease"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Seven EaseType curves[/b] · bar = Ease.Apply(SeriesProgress[i], type), drawn by a custom Mark"
+
+[node name="EaseChart" type="Control" parent="Layout/Grid/Ease"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 1
+Title = "Seven EaseType curves through one progress"
+
+[node name="Theme" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Theme"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Theme.EnableAnimation = false[/b] · same rows; the flag has no consumer, so the host decides"
+
+[node name="ThemeChart" type="Control" parent="Layout/Grid/Theme"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 4
+Title = "Theme.EnableAnimation = false, held by the host"
+
+[node name="Notes" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Notes"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Where to go next[/b] · [b]ChartViewFieldsDemo[/b] for the exports and Refresh() vs Repaint(), [b]ChartThemeDemo[/b] for the theme the host reads, [b]ChartCallbacksDemo[/b] for the pointer events."

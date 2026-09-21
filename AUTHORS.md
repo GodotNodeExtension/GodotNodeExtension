@@ -14,6 +14,9 @@ This file lists the contributors to the GodotNodeExtension project.
 ### DynamicNumberLabel
 - **[shitake2333](mailto:z1522716486@hotmail.com)**
 
+### GodotChart
+- **[shitake2333](mailto:z1522716486@hotmail.com)**
+
 ### GodotSkia
 - **[shitake2333](mailto:z1522716486@hotmail.com)**
 

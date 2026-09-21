@@ -1,0 +1,81 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/GodotChart/ChartBigDataDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/ChartView.cs" id="2_chart"]
+
+[node name="ChartBigDataDemo" type="Control" node_paths=PackedStringArray("Chart", "Readout")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_minimum_size = Vector2(900, 640)
+script = ExtResource("1_demo")
+Chart = NodePath("Layout/Column/Cell/Chart")
+Readout = NodePath("Layout/Column/Readout")
+
+[node name="Layout" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Column" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="RichTextLabel" parent="Layout/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b][font_size=19]A real data set, 1296 points[/font_size][/b]\n[color=#93a1b5]World Bank [code]SP.POP.GROW[/code] (population growth, annual %), 24 countries, every year from 1970 to 2023, loaded from a CSV with [code]SetCsv[/code]. One series per country, one colour per series. [b]Wheel[/b] zooms the X axis around the pointer, [b]drag[/b] pans it and a [b]double click[/b] resets - a click on a [b]legend[/b] entry hides or shows that country. The Y axis shows percent, so the series are comparable across countries of very different size.[/color]"
+
+[node name="HeaderRule" type="HSeparator" parent="Layout/Column"]
+layout_mode = 2
+
+[node name="Cell" type="VBoxContainer" parent="Layout/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Column/Cell"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]LineMark[/b] · ColorField = country (24 series) · ZoomMode = X (wheel + drag + double-click reset) · legend click toggles a series · [b]SectionMark[/b] = the dashed 0 % reference line · [b]LayeredRendering[/b] = hover redraws only the overlay"
+
+[node name="Chart" type="Control" parent="Layout/Column/Cell"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_chart")
+Kind = 2
+Title = "Population growth, 24 countries (1970-2023)"
+XField = "year"
+YField = "growth"
+ColorField = "country"
+XAxisTitle = "Year"
+YAxisTitle = "Population growth"
+YAxisUnit = "%"
+Legend = 0
+ShowTooltip = true
+ShowCrosshair = true
+ZoomMode = 5
+SectionLevels = Array[float]([0.0])
+LayeredRendering = true
+SectionColor = Color(1, 0.78, 0.35, 0.9)
+SectionLabelFormat = "0 % (no growth)"
+
+[node name="Readout" type="RichTextLabel" parent="Layout/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "loading..."

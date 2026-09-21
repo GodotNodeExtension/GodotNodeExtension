@@ -1,0 +1,132 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/GodotChart/ChartLayeredRenderingDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/Canvas/Canvas2DControl.cs" id="2_canvas"]
+
+[node name="ChartLayeredRenderingDemo" type="Control" node_paths=PackedStringArray("PlainView", "CachedView", "PlainReadout", "CachedReadout", "Readout")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_minimum_size = Vector2(900, 780)
+script = ExtResource("1_demo")
+PlainView = NodePath("Layout/Column/Columns/Plain/View")
+CachedView = NodePath("Layout/Column/Columns/Cached/View")
+PlainReadout = NodePath("Layout/Column/Columns/Plain/Readout")
+CachedReadout = NodePath("Layout/Column/Columns/Cached/Readout")
+Readout = NodePath("Layout/Column/Readout")
+
+[node name="Layout" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Column" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="RichTextLabel" parent="Layout/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b][font_size=19]Layered rendering, measured[/font_size][/b]\n[color=#93a1b5]One table, one [b]LineMark[/b], two hand-built [code]Chart[/code] instances: the left draws every frame in a single pass, the right keeps its data layer in an image ([code]LayeredRendering = true[/code] on the canvas, [code]Chart.UseLayerCache[/code] on the chart) and repaints the overlay alone - both timed with the same rows. A frame that has to draw the layer again does the same drawing on both sides, so it is the one frame the cache cannot win (the right one even adds a surface readback); the gain is in the frames that only move the pointer, which is what [b]H[/b] measures.[/color]"
+
+[node name="HeaderRule" type="HSeparator" parent="Layout/Column"]
+layout_mode = 2
+
+[node name="Columns" type="HBoxContainer" parent="Layout/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="Plain" type="VBoxContainer" parent="Layout/Column/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Column/Columns/Plain"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Single pass[/b] · background, grid, axes and the line are drawn again every frame, the hover marker with them"
+
+[node name="View" type="Control" parent="Layout/Column/Columns/Plain"]
+custom_minimum_size = Vector2(400, 340)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_canvas")
+LayeredRendering = false
+
+[node name="Readout" type="RichTextLabel" parent="Layout/Column/Columns/Plain"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]LayeredRendering = false[/b] · single pass · the data layer is drawn again every frame
+Render(): — average / — peak
+rebuild frame: — (redraws that draw the data layer again)
+static frame: — (B: nothing changes)
+hover frame: — (H: the highlighted row moves)
+[color=#93a1b5]no layer image is kept[/color]"
+
+[node name="Cached" type="VBoxContainer" parent="Layout/Column/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Column/Columns/Cached"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Layered[/b] · the data layer is captured into an image and presented again; only the hover marker is drawn per frame"
+
+[node name="View" type="Control" parent="Layout/Column/Columns/Cached"]
+custom_minimum_size = Vector2(400, 340)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_canvas")
+LayeredRendering = true
+
+[node name="Readout" type="RichTextLabel" parent="Layout/Column/Columns/Cached"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]LayeredRendering = true[/b] · the data layer is kept in an image
+Render(): — average / — peak
+rebuild frame: — (redraws that draw the data layer again)
+static frame: — (B: the cached image is presented)
+hover frame: — (H: presented image + hover marker)
+[color=#93a1b5]layer image: width × height × 4 bytes (computed)[/color]"
+
+[node name="Readout" type="RichTextLabel" parent="Layout/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "waiting for the first frame...
+frame: — ms · — fps
+layer drawn again: left — · right —
+static frame: left — against right —
+hover frame: left — against right —
+memory, computed: layer image = width × height × 4 bytes (computed)
+memory, measured: GC.GetTotalMemory(true) before and after the table build
+[b]1[/b]/[b]2[/b]/[b]3[/b]/[b]4[/b] = 1k/10k/100k/200k rows · [b]S[/b] = toggle LineMark.Smooth · [b]B[/b] = 60 static redraws · [b]H[/b] = 60 hover redraws"

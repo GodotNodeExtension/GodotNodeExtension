@@ -1,0 +1,1415 @@
+[gd_scene load_steps=2 format=3 uid="uid://bw0jrruwfri1x"]
+
+[ext_resource type="Script" uid="uid://b0dp6p6n4upf0" path="res://Component/GodotChart/ChartView.cs" id="1_chart"]
+
+[node name="BasicsDemo" type="MarginContainer" unique_id=1423917538]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Layout" type="VBoxContainer" parent="." unique_id=1717165472]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="Label" parent="Layout" unique_id=892339675]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+text = "Basics - every chart kind, one cell each, and every mark of the library is shown here. Each cell is a ChartView node: its Kind, Rows (typed key/value dictionaries) and channel fields are set right here in the scene, so you can copy one and edit it. Knobs that need code live in the three mark-knob pages, and data transforms (a histogram, for instance) in the custom-charts page."
+autowrap_mode = 3
+
+[node name="Grid" type="GridContainer" parent="Layout" unique_id=2081446504]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 12
+columns = 3
+
+[node name="Bar" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Bar"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Bar[/b] · IntervalMark"
+
+[node name="BarChart" type="Control" parent="Layout/Grid/Bar"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 1
+Title = "Monthly revenue"
+Rows = Array[Dictionary]([{
+"month": "Jan",
+"value": 1200
+}, {
+"month": "Feb",
+"value": 1800
+}, {
+"month": "Mar",
+"value": 1500
+}, {
+"month": "Apr",
+"value": 2200
+}, {
+"month": "May",
+"value": 1900
+}, {
+"month": "Jun",
+"value": 2600
+}])
+XField = "month"
+YField = "value"
+XAxisTitle = "Month"
+YAxisTitle = "Revenue"
+
+[node name="Grouped bar" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Grouped bar"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Grouped bar[/b] · IntervalMark + GroupedBars"
+
+[node name="Grouped barChart" type="Control" parent="Layout/Grid/Grouped bar"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 1
+GroupedBars = true
+Title = "Revenue per region, side by side"
+Rows = Array[Dictionary]([{
+"month": "Jan",
+"region": "North",
+"value": 620
+}, {
+"month": "Jan",
+"region": "South",
+"value": 580
+}, {
+"month": "Feb",
+"region": "North",
+"value": 940
+}, {
+"month": "Feb",
+"region": "South",
+"value": 860
+}, {
+"month": "Mar",
+"region": "North",
+"value": 810
+}, {
+"month": "Mar",
+"region": "South",
+"value": 690
+}])
+XField = "month"
+YField = "value"
+ColorField = "region"
+XAxisTitle = "Month"
+YAxisTitle = "Revenue"
+
+[node name="Stacked bar" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Stacked bar"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Stacked bar[/b] · IntervalMark + Stack = Stack"
+
+[node name="Stacked barChart" type="Control" parent="Layout/Grid/Stacked bar"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 1
+Stack = 1
+Title = "Revenue per channel, piled up"
+Rows = Array[Dictionary]([{
+"category": "Q1",
+"value": 24,
+"series": "retail"
+}, {
+"category": "Q1",
+"value": 16,
+"series": "online"
+}, {
+"category": "Q1",
+"value": 9,
+"series": "wholesale"
+}, {
+"category": "Q2",
+"value": 28,
+"series": "retail"
+}, {
+"category": "Q2",
+"value": 12,
+"series": "online"
+}, {
+"category": "Q2",
+"value": 14,
+"series": "wholesale"
+}, {
+"category": "Q3",
+"value": 22,
+"series": "retail"
+}, {
+"category": "Q3",
+"value": 19,
+"series": "online"
+}, {
+"category": "Q3",
+"value": 8,
+"series": "wholesale"
+}, {
+"category": "Q4",
+"value": 31,
+"series": "retail"
+}, {
+"category": "Q4",
+"value": 17,
+"series": "online"
+}, {
+"category": "Q4",
+"value": 12,
+"series": "wholesale"
+}])
+XField = "category"
+YField = "value"
+ColorField = "series"
+XAxisTitle = "Quarter"
+YAxisTitle = "Revenue"
+
+[node name="Line" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Line"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Line[/b] · LineMark"
+
+[node name="LineChart" type="Control" parent="Layout/Grid/Line"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 2
+Title = "Monthly revenue"
+Rows = Array[Dictionary]([{
+"month": "Jan",
+"value": 1200
+}, {
+"month": "Feb",
+"value": 1800
+}, {
+"month": "Mar",
+"value": 1500
+}, {
+"month": "Apr",
+"value": 2200
+}, {
+"month": "May",
+"value": 1900
+}, {
+"month": "Jun",
+"value": 2600
+}])
+XField = "month"
+YField = "value"
+XAxisTitle = "Month"
+YAxisTitle = "Revenue"
+
+[node name="Area" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Area"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Area[/b] · LineMark + ShowArea"
+
+[node name="AreaChart" type="Control" parent="Layout/Grid/Area"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 3
+Title = "Monthly revenue, filled"
+Rows = Array[Dictionary]([{
+"month": "Jan",
+"value": 1200
+}, {
+"month": "Feb",
+"value": 1800
+}, {
+"month": "Mar",
+"value": 1500
+}, {
+"month": "Apr",
+"value": 2200
+}, {
+"month": "May",
+"value": 1900
+}, {
+"month": "Jun",
+"value": 2600
+}])
+XField = "month"
+YField = "value"
+XAxisTitle = "Month"
+YAxisTitle = "Revenue"
+
+[node name="Stacked area" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Stacked area"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Stacked area[/b] · LineMark + ShowArea + Stack = Stack"
+
+[node name="Stacked areaChart" type="Control" parent="Layout/Grid/Stacked area"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 3
+Stack = 1
+Title = "Product sales, piled up"
+Rows = Array[Dictionary]([{
+"category": "Jan",
+"value": 32,
+"series": "Product A"
+}, {
+"category": "Jan",
+"value": 21,
+"series": "Product B"
+}, {
+"category": "Jan",
+"value": 14,
+"series": "Product C"
+}, {
+"category": "Feb",
+"value": 38,
+"series": "Product A"
+}, {
+"category": "Feb",
+"value": 26,
+"series": "Product B"
+}, {
+"category": "Feb",
+"value": 11,
+"series": "Product C"
+}, {
+"category": "Mar",
+"value": 30,
+"series": "Product A"
+}, {
+"category": "Mar",
+"value": 24,
+"series": "Product B"
+}, {
+"category": "Mar",
+"value": 19,
+"series": "Product C"
+}, {
+"category": "Apr",
+"value": 44,
+"series": "Product A"
+}, {
+"category": "Apr",
+"value": 18,
+"series": "Product B"
+}, {
+"category": "Apr",
+"value": 22,
+"series": "Product C"
+}])
+XField = "category"
+YField = "value"
+ColorField = "series"
+XAxisTitle = "Month"
+YAxisTitle = "Units"
+
+[node name="Bubble" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Bubble"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Bubble[/b] · PointMark + SizeField"
+
+[node name="BubbleChart" type="Control" parent="Layout/Grid/Bubble"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 4
+Title = "Samples sized by weight"
+Rows = Array[Dictionary]([{
+"label": "A",
+"value": 30,
+"weight": 3
+}, {
+"label": "B",
+"value": 55,
+"weight": 9
+}, {
+"label": "C",
+"value": 44,
+"weight": 6
+}, {
+"label": "D",
+"value": 72,
+"weight": 12
+}, {
+"label": "E",
+"value": 61,
+"weight": 5
+}])
+XField = "label"
+YField = "value"
+SizeField = "weight"
+XAxisTitle = "Sample"
+YAxisTitle = "Score"
+
+[node name="Range area" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Range area"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Range area[/b] · RangeAreaMark"
+
+[node name="Range areaChart" type="Control" parent="Layout/Grid/Range area"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 5
+Title = "Temperature band per day"
+Rows = Array[Dictionary]([{
+"day": "Mon",
+"lower": 18,
+"value": 28
+}, {
+"day": "Tue",
+"lower": 20,
+"value": 30
+}, {
+"day": "Wed",
+"lower": 17,
+"value": 26
+}, {
+"day": "Thu",
+"lower": 22,
+"value": 32
+}, {
+"day": "Fri",
+"lower": 19,
+"value": 29
+}, {
+"day": "Sat",
+"lower": 24,
+"value": 34
+}])
+XField = "day"
+YField = "value"
+XAxisTitle = "Day"
+YAxisTitle = "Temperature °C"
+
+[node name="Pie" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Pie"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Pie[/b] · PieMark"
+
+[node name="PieChart" type="Control" parent="Layout/Grid/Pie"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 6
+Title = "Share of sessions by device"
+Rows = Array[Dictionary]([{
+"category": "Desktop",
+"value": 52
+}, {
+"category": "Mobile",
+"value": 34
+}, {
+"category": "Tablet",
+"value": 14
+}])
+XField = "category"
+YField = "value"
+
+[node name="Donut" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Donut"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Donut[/b] · PieMark + InnerRadius"
+
+[node name="DonutChart" type="Control" parent="Layout/Grid/Donut"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 7
+Title = "Share of sessions, ring form"
+Rows = Array[Dictionary]([{
+"category": "Direct",
+"value": 38
+}, {
+"category": "Search",
+"value": 44
+}, {
+"category": "Social",
+"value": 18
+}])
+XField = "category"
+YField = "value"
+
+[node name="Radar" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Radar"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Radar[/b] · RadarMark"
+
+[node name="RadarChart" type="Control" parent="Layout/Grid/Radar"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 8
+Title = "Two players over six stats"
+Rows = Array[Dictionary]([{
+"category": "Speed",
+"value": 82,
+"series": "Player A"
+}, {
+"category": "Speed",
+"value": 70,
+"series": "Player B"
+}, {
+"category": "Power",
+"value": 74,
+"series": "Player A"
+}, {
+"category": "Power",
+"value": 88,
+"series": "Player B"
+}, {
+"category": "Accuracy",
+"value": 91,
+"series": "Player A"
+}, {
+"category": "Accuracy",
+"value": 64,
+"series": "Player B"
+}, {
+"category": "Stamina",
+"value": 68,
+"series": "Player A"
+}, {
+"category": "Stamina",
+"value": 79,
+"series": "Player B"
+}, {
+"category": "Agility",
+"value": 77,
+"series": "Player A"
+}, {
+"category": "Agility",
+"value": 83,
+"series": "Player B"
+}, {
+"category": "Vision",
+"value": 85,
+"series": "Player A"
+}, {
+"category": "Vision",
+"value": 61,
+"series": "Player B"
+}])
+XField = "category"
+YField = "value"
+ColorField = "series"
+
+[node name="Violin" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Violin"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Violin[/b] · ViolinMark"
+
+[node name="ViolinChart" type="Control" parent="Layout/Grid/Violin"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 9
+Title = "Score distribution per group"
+Rows = Array[Dictionary]([{
+"category": "Alpha",
+"value": 8
+}, {
+"category": "Alpha",
+"value": 11
+}, {
+"category": "Alpha",
+"value": 13
+}, {
+"category": "Alpha",
+"value": 14
+}, {
+"category": "Alpha",
+"value": 15
+}, {
+"category": "Alpha",
+"value": 17
+}, {
+"category": "Alpha",
+"value": 22
+}, {
+"category": "Alpha",
+"value": 25
+}, {
+"category": "Beta",
+"value": 14
+}, {
+"category": "Beta",
+"value": 15
+}, {
+"category": "Beta",
+"value": 16
+}, {
+"category": "Beta",
+"value": 17
+}, {
+"category": "Beta",
+"value": 18
+}, {
+"category": "Beta",
+"value": 19
+}, {
+"category": "Beta",
+"value": 20
+}, {
+"category": "Beta",
+"value": 21
+}, {
+"category": "Gamma",
+"value": 5
+}, {
+"category": "Gamma",
+"value": 9
+}, {
+"category": "Gamma",
+"value": 12
+}, {
+"category": "Gamma",
+"value": 18
+}, {
+"category": "Gamma",
+"value": 24
+}, {
+"category": "Gamma",
+"value": 29
+}, {
+"category": "Gamma",
+"value": 31
+}, {
+"category": "Gamma",
+"value": 36
+}])
+XField = "category"
+YField = "value"
+XAxisTitle = "Group"
+YAxisTitle = "Score"
+
+[node name="Box" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Box"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Box[/b] · BoxMark"
+
+[node name="BoxChart" type="Control" parent="Layout/Grid/Box"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 10
+Title = "Five-number summary per team"
+Rows = Array[Dictionary]([{
+"team": "Alpha",
+"min": 8,
+"q1": 16,
+"median": 24,
+"q3": 31,
+"max": 44
+}, {
+"team": "Beta",
+"min": 18,
+"q1": 24,
+"median": 27,
+"q3": 29,
+"max": 34
+}, {
+"team": "Gamma",
+"min": 5,
+"q1": 14,
+"median": 22,
+"q3": 29,
+"max": 38
+}, {
+"team": "Delta",
+"min": 26,
+"q1": 33,
+"median": 41,
+"q3": 52,
+"max": 61
+}, {
+"team": "Epsilon",
+"min": 12,
+"q1": 19,
+"median": 20,
+"q3": 21,
+"max": 25
+}])
+XField = "team"
+XAxisTitle = "Team"
+YAxisTitle = "Score"
+
+[node name="Candlestick" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Candlestick"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Candlestick[/b] · CandlestickMark"
+
+[node name="CandlestickChart" type="Control" parent="Layout/Grid/Candlestick"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 11
+Title = "Open/high/low/close per session"
+Rows = Array[Dictionary]([{
+"session": "S1",
+"open": 100,
+"high": 104,
+"low": 98,
+"close": 103
+}, {
+"session": "S2",
+"open": 103,
+"high": 105,
+"low": 99,
+"close": 100
+}, {
+"session": "S3",
+"open": 100,
+"high": 102,
+"low": 95,
+"close": 96
+}, {
+"session": "S4",
+"open": 96,
+"high": 101,
+"low": 95,
+"close": 100
+}, {
+"session": "S5",
+"open": 100,
+"high": 107,
+"low": 100,
+"close": 106
+}, {
+"session": "S6",
+"open": 106,
+"high": 108,
+"low": 102,
+"close": 103
+}, {
+"session": "S7",
+"open": 103,
+"high": 104,
+"low": 97,
+"close": 98
+}, {
+"session": "S8",
+"open": 98,
+"high": 105,
+"low": 97,
+"close": 104
+}])
+XField = "session"
+XAxisTitle = "Session"
+YAxisTitle = "Price"
+
+[node name="Heatmap" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Heatmap"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Heatmap[/b] · HeatmapMark"
+
+[node name="HeatmapChart" type="Control" parent="Layout/Grid/Heatmap"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 12
+Title = "Load per weekday and slot"
+Rows = Array[Dictionary]([{
+"weekday": "Mon",
+"slot": "AM",
+"load": 3
+}, {
+"weekday": "Mon",
+"slot": "PM",
+"load": 7
+}, {
+"weekday": "Tue",
+"slot": "AM",
+"load": 5
+}, {
+"weekday": "Tue",
+"slot": "PM",
+"load": 9
+}, {
+"weekday": "Wed",
+"slot": "AM",
+"load": 8
+}, {
+"weekday": "Wed",
+"slot": "PM",
+"load": 6
+}, {
+"weekday": "Thu",
+"slot": "AM",
+"load": 4
+}, {
+"weekday": "Thu",
+"slot": "PM",
+"load": 10
+}, {
+"weekday": "Thu",
+"slot": "Eve",
+"load": 5
+}])
+XField = "weekday"
+YField = "slot"
+ColorField = "load"
+
+[node name="Treemap" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Treemap"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Treemap[/b] · TreemapMark"
+
+[node name="TreemapChart" type="Control" parent="Layout/Grid/Treemap"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 13
+Title = "Code size by area"
+Rows = Array[Dictionary]([{
+"label": "Root",
+"parent": "",
+"value": 0
+}, {
+"label": "Design",
+"parent": "Root",
+"value": 0
+}, {
+"label": "Shell",
+"parent": "Design",
+"value": 38
+}, {
+"label": "Icons",
+"parent": "Design",
+"value": 22
+}, {
+"label": "Engine",
+"parent": "Root",
+"value": 0
+}, {
+"label": "Render",
+"parent": "Engine",
+"value": 30
+}, {
+"label": "Physics",
+"parent": "Engine",
+"value": 18
+}, {
+"label": "Audio",
+"parent": "Engine",
+"value": 12
+}])
+XField = "label"
+YField = "value"
+
+[node name="Sunburst" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Sunburst"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Sunburst[/b] · SunburstMark"
+
+[node name="SunburstChart" type="Control" parent="Layout/Grid/Sunburst"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 14
+Title = "The same tree as rings"
+Rows = Array[Dictionary]([{
+"label": "Root",
+"parent": "",
+"value": 0
+}, {
+"label": "Design",
+"parent": "Root",
+"value": 0
+}, {
+"label": "Shell",
+"parent": "Design",
+"value": 38
+}, {
+"label": "Icons",
+"parent": "Design",
+"value": 22
+}, {
+"label": "Engine",
+"parent": "Root",
+"value": 0
+}, {
+"label": "Render",
+"parent": "Engine",
+"value": 30
+}, {
+"label": "Physics",
+"parent": "Engine",
+"value": 18
+}, {
+"label": "Audio",
+"parent": "Engine",
+"value": 12
+}])
+XField = "label"
+YField = "value"
+
+[node name="Sankey" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Sankey"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Sankey[/b] · SankeyMark"
+
+[node name="SankeyChart" type="Control" parent="Layout/Grid/Sankey"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 15
+Title = "Flow between pipeline stages"
+Rows = Array[Dictionary]([{
+"source": "Ingest",
+"target": "Model",
+"value": 42
+}, {
+"source": "Ingest",
+"target": "Archive",
+"value": 18
+}, {
+"source": "Model",
+"target": "Serving",
+"value": 34
+}, {
+"source": "Model",
+"target": "Retrain",
+"value": 12
+}, {
+"source": "Archive",
+"target": "Serving",
+"value": 10
+}, {
+"source": "Archive",
+"target": "Retrain",
+"value": 8
+}])
+YField = "value"
+
+[node name="Chord" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Chord"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Chord[/b] · ChordMark"
+
+[node name="ChordChart" type="Control" parent="Layout/Grid/Chord"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 16
+Title = "Two-way relations between teams"
+Rows = Array[Dictionary]([{
+"source": "PM",
+"target": "Design",
+"value": 12
+}, {
+"source": "Design",
+"target": "PM",
+"value": 4
+}, {
+"source": "Design",
+"target": "Backend",
+"value": 9
+}, {
+"source": "Backend",
+"target": "Design",
+"value": 6
+}, {
+"source": "Backend",
+"target": "QA",
+"value": 7
+}, {
+"source": "QA",
+"target": "PM",
+"value": 5
+}])
+YField = "value"
+
+[node name="Gauge" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Gauge"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Gauge[/b] · GaugeMark"
+
+[node name="GaugeChart" type="Control" parent="Layout/Grid/Gauge"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 17
+YAxisRange = Vector2(0, 100)
+Title = "One value on an arc"
+Rows = Array[Dictionary]([{
+"category": "Completion",
+"value": 68
+}])
+XField = "category"
+YField = "value"
+
+[node name="Funnel" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Funnel"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Funnel[/b] · FunnelMark"
+
+[node name="FunnelChart" type="Control" parent="Layout/Grid/Funnel"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 18
+Title = "Stage drop-off"
+Rows = Array[Dictionary]([{
+"category": "Visit",
+"value": 1200
+}, {
+"category": "Signup",
+"value": 620
+}, {
+"category": "Trial",
+"value": 310
+}, {
+"category": "Paid",
+"value": 140
+}])
+XField = "category"
+YField = "value"
+
+[node name="Waffle" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Waffle"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Waffle[/b] · WaffleMark"
+
+[node name="WaffleChart" type="Control" parent="Layout/Grid/Waffle"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 19
+Title = "A share of 100 cells"
+Rows = Array[Dictionary]([{
+"category": "Segment A",
+"value": 42
+}, {
+"category": "Segment B",
+"value": 28
+}, {
+"category": "Segment C",
+"value": 18
+}, {
+"category": "Segment D",
+"value": 12
+}])
+XField = "category"
+YField = "value"
+
+[node name="Timeline" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Timeline"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Timeline[/b] · TimelineMark"
+
+[node name="TimelineChart" type="Control" parent="Layout/Grid/Timeline"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 20
+Title = "Spans per lane"
+Rows = Array[Dictionary]([{
+"lane": "Shield",
+"start": 0,
+"end": 5
+}, {
+"lane": "Haste",
+"start": 2,
+"end": 8
+}, {
+"lane": "Poison",
+"start": 3,
+"end": 7
+}, {
+"lane": "Regen",
+"start": 6,
+"end": 12
+}, {
+"lane": "Stun",
+"start": 9,
+"end": 11
+}])
+XField = "lane"
+YField = "end"
+XAxisTitle = "Seconds"
+YAxisTitle = "Lane"
+
+[node name="Lollipop" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Lollipop"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Lollipop[/b] · LollipopMark"
+
+[node name="LollipopChart" type="Control" parent="Layout/Grid/Lollipop"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 21
+Title = "Orders per day"
+Rows = Array[Dictionary]([{
+"category": "Mon",
+"value": 24
+}, {
+"category": "Tue",
+"value": 38
+}, {
+"category": "Wed",
+"value": 31
+}, {
+"category": "Thu",
+"value": 47
+}, {
+"category": "Fri",
+"value": 29
+}, {
+"category": "Sat",
+"value": 52
+}])
+XField = "category"
+YField = "value"
+XAxisTitle = "Day"
+YAxisTitle = "Orders"
+
+[node name="Milestone" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Milestone"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Milestone[/b] · MilestoneMark"
+
+[node name="MilestoneChart" type="Control" parent="Layout/Grid/Milestone"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("1_chart")
+Kind = 22
+Title = "Events on lanes"
+Rows = Array[Dictionary]([{
+"week": 2,
+"lane": "Release",
+"label": "v0.9"
+}, {
+"week": 7,
+"lane": "Release",
+"label": "v1.0"
+}, {
+"week": 3,
+"lane": "Docs",
+"label": "guide"
+}, {
+"week": 9,
+"lane": "Docs",
+"label": "api ref"
+}, {
+"week": 5,
+"lane": "Infra",
+"label": "CI"
+}, {
+"week": 11,
+"lane": "Infra",
+"label": "CD"
+}])
+XField = "week"
+YField = "lane"
+XAxisTitle = "Week"
+YAxisTitle = "Lane"
+
+[node name="Reference lines" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Reference lines"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Reference lines[/b] · SectionMark · SectionLevels = 1500, 2200 · SectionBandFrom/To · SectionLabelFormat"
+
+[node name="ReferenceLinesChart" type="Control" parent="Layout/Grid/Reference lines"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("1_chart")
+Kind = 1
+Title = "Bar with a target line and a band"
+Rows = Array[Dictionary]([{
+"month": "Jan",
+"value": 1200
+}, {
+"month": "Feb",
+"value": 1800
+}, {
+"month": "Mar",
+"value": 1500
+}, {
+"month": "Apr",
+"value": 2200
+}, {
+"month": "May",
+"value": 1900
+}, {
+"month": "Jun",
+"value": 2600
+}])
+XField = "month"
+YField = "value"
+XAxisTitle = "Month"
+YAxisTitle = "Revenue"
+SectionLevels = Array[float]([1500.0, 2200.0])
+SectionBandFrom = 1800.0
+SectionBandTo = 2400.0
+SectionColor = Color(1, 0.78, 0.35, 0.9)
+SectionLabelFormat = "{0:N0}"

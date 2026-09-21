@@ -8,12 +8,19 @@ namespace GodotNodeExtension.Component.GodotChart;
 /// </summary>
 public enum EaseType
 {
+    /// <summary>Constant speed.</summary>
     Linear,
+    /// <summary>Quadratic acceleration from a standstill.</summary>
     EaseInQuad,
+    /// <summary>Quadratic deceleration into the end state.</summary>
     EaseOutQuad,
+    /// <summary>Cubic deceleration into the end state (the default for entries).</summary>
     EaseOutCubic,
+    /// <summary>Accelerate in the middle, ease at both ends.</summary>
     EaseInOutCubic,
+    /// <summary>Overshoot slightly before settling.</summary>
     EaseOutBack,
+    /// <summary>Spring-like oscillation before settling.</summary>
     EaseOutElastic,
 }
 
@@ -43,12 +50,13 @@ public static class Ease
 /// Controls all chart animation tweens: entry, exit, hover, and data transition.
 /// Uses Godot Tween API to drive animation progress values.
 /// </summary>
-public class AnimationController
+public class AnimationController : IDisposable
 {
     private Tween? _entryTween;
     private Tween? _hoverTween;
     private Tween? _dataTween;
     private Tween? _exitTween;
+    private Action? _pendingExitCallback;
 
     // ── Entry animation ──────────────────────────────────────
 
@@ -56,7 +64,7 @@ public class AnimationController
     public float EntryProgress { get; private set; } = 1f;
 
     /// <summary>Per-series entry progress, staggered by delay.</summary>
-    public float[] SeriesProgress { get; private set; } = Array.Empty<float>();
+    public float[] SeriesProgress { get; private set; } = [];
 
     /// <summary>Global opacity [0,1] for fade-in/out effect.</summary>
     public float GlobalOpacity { get; private set; } = 1f;
@@ -74,6 +82,13 @@ public class AnimationController
     /// Default: 2000 (same as ECharts default).
     /// </summary>
     public int AnimationThreshold { get; set; } = 2000;
+
+    private static float[] Filled(int count, float value)
+    {
+        var arr = new float[count];
+        Array.Fill(arr, value);
+        return arr;
+    }
 
     /// <summary>Whether any animation is currently active.</summary>
     public bool IsAnimating =>
@@ -98,30 +113,55 @@ public class AnimationController
     public float ExitProgress { get; private set; }
 
     /// <summary>Duration of the exit animation in seconds.</summary>
-    public float ExitDuration { get; set; } = 0.3f;
+    public float ExitDuration { get; init; } = 0.3f;
 
     /// <summary>
-    /// Check if animation should be enabled based on element count.
+    /// Number of elements the chart draws, so <see cref="AnimationThreshold"/> can take effect.
+    /// <para>
+    /// The controller only reads it; nothing inside the library writes it, because driving the
+    /// animation is the host's job (a <see cref="Chart"/> is told its progress, see
+    /// <see cref="Chart.Animate(float)"/>). A host that knows the count sets it once and calls
+    /// <see cref="ShouldAnimate"/> without an argument; a host that does not leaves it at -1 and passes
+    /// the count per call. Both unknown means "animate": a negative value never disables animation.
+    /// </para>
     /// </summary>
-    public bool ShouldAnimate(int elementCount) => elementCount <= AnimationThreshold;
+    public int ElementCount { get; set; } = -1;
+
+    /// <summary>
+    /// Check if animation should be enabled for the given element count.
+    /// Pass <paramref name="elementCount"/> explicitly, or set <see cref="ElementCount"/> once;
+    /// when both are unknown animations stay enabled.
+    /// </summary>
+    public bool ShouldAnimate(int elementCount = -1)
+    {
+        int count = elementCount >= 0 ? elementCount : ElementCount;
+        return count < 0 || count <= AnimationThreshold;
+    }
 
     /// <summary>
     /// Start entry animation for the given number of series.
     /// Creates staggered tweens for each series + a global opacity fade-in.
     /// If totalElementCount exceeds AnimationThreshold, skips animation.
     /// </summary>
-    public void StartEntry(Node owner, int seriesCount, int totalElementCount = 0)
+    public void StartEntry(Node owner, int seriesCount, int totalElementCount = -1)
     {
         _entryTween?.Kill();
         ExitProgress = 0f;
+
+        if (!owner.IsInsideTree())
+        {
+            // Tweens only advance inside the scene tree: settle on the final state immediately.
+            EntryProgress = 1f;
+            GlobalOpacity = 1f;
+            SeriesProgress = Filled(Math.Max(1, seriesCount), 1f);
+            return;
+        }
 
         if (!ShouldAnimate(totalElementCount))
         {
             EntryProgress = 1f;
             GlobalOpacity = 1f;
-            var arr = new float[Math.Max(1, seriesCount)];
-            Array.Fill(arr, 1f);
-            SeriesProgress = arr;
+            SeriesProgress = Filled(Math.Max(1, seriesCount), 1f);
             return;
         }
 
@@ -165,6 +205,11 @@ public class AnimationController
     public void AnimateHover(Node owner, float targetScale)
     {
         _hoverTween?.Kill();
+        if (!owner.IsInsideTree())
+        {
+            HoverScale = targetScale;
+            return;
+        }
         _hoverTween = owner.CreateTween();
         _hoverTween.TweenMethod(
             Callable.From((float v) => HoverScale = v),
@@ -180,6 +225,11 @@ public class AnimationController
     public void StartDataTransition(Node owner, float duration = 0.4f)
     {
         _dataTween?.Kill();
+        if (!owner.IsInsideTree())
+        {
+            DataTransitionProgress = 1f;
+            return;
+        }
         DataTransitionProgress = 0f;
         _dataTween = owner.CreateTween();
         _dataTween.TweenMethod(
@@ -195,8 +245,23 @@ public class AnimationController
     /// </summary>
     public void StartExit(Node owner, Action? onComplete = null)
     {
+        // A pending callback must not be lost: killing the previous tween would swallow it and
+        // leave the caller (e.g. a pending tab switch) waiting forever.
+        CompletePendingExit();
+
+        if (!owner.IsInsideTree())
+        {
+            // Not in the tree: finish immediately instead of creating a tween that never runs.
+            ExitProgress = 1f;
+            GlobalOpacity = 0f;
+            _pendingExitCallback = onComplete;
+            CompletePendingExit();
+            return;
+        }
+
         _exitTween?.Kill();
         ExitProgress = 0f;
+        _pendingExitCallback = onComplete;
 
         _exitTween = owner.CreateTween();
         _exitTween.SetParallel();
@@ -214,11 +279,61 @@ public class AnimationController
         ).SetTrans(Tween.TransitionType.Cubic)
          .SetEase(Tween.EaseType.In);
 
+        // The callback is tracked separately from the tween so it runs exactly once, whether the
+        // tween finishes or is superseded by a new StartExit/Reset.
         if (onComplete != null)
         {
             _exitTween.SetParallel(false);
-            _exitTween.TweenCallback(Callable.From(onComplete));
+            _exitTween.TweenCallback(Callable.From(CompletePendingExit));
         }
+
+        _exitTween.Finished += () =>
+        {
+            _exitTween = null;
+            CompletePendingExit();
+        };
+    }
+
+    /// <summary>Invoke the pending exit callback (if any) exactly once.</summary>
+    private void CompletePendingExit()
+    {
+        var callback = _pendingExitCallback;
+        _pendingExitCallback = null;
+        if (callback == null) return;
+
+        try
+        {
+            callback();
+        }
+        catch (Exception ex)
+        {
+            // A throwing callback must not break the tween chain or the caller's frame.
+            GD.PushError($"AnimationController exit callback failed: {ex.Message}");
+        }
+    }
+
+    /// <summary>Kill the four phase tweens (the controller holds nothing else).</summary>
+    private void KillTweens()
+    {
+        _entryTween?.Kill();
+        _hoverTween?.Kill();
+        _dataTween?.Kill();
+        _exitTween?.Kill();
+    }
+
+    /// <summary>
+    /// Kill every running tween. Call it when the owner leaves the scene tree; the controller itself
+    /// holds no native resources besides the tweens it created.
+    /// </summary>
+    public void Dispose()
+    {
+        KillTweens();
+        _entryTween = null;
+        _hoverTween = null;
+        _dataTween = null;
+        _exitTween = null;
+        _pendingExitCallback = null;
+        GC.SuppressFinalize(this);
     }
 
     /// <summary>
@@ -226,17 +341,15 @@ public class AnimationController
     /// </summary>
     public void Reset()
     {
-        _entryTween?.Kill();
-        _hoverTween?.Kill();
-        _dataTween?.Kill();
-        _exitTween?.Kill();
+        _pendingExitCallback = null;
+        KillTweens();
 
         EntryProgress = 1f;
         GlobalOpacity = 1f;
         HoverScale = 1f;
         DataTransitionProgress = 1f;
         ExitProgress = 0f;
-        SeriesProgress = Array.Empty<float>();
+        SeriesProgress = [];
     }
 }
 
@@ -246,7 +359,16 @@ public class AnimationController
 /// </summary>
 public class AnimationContext
 {
-    /// <summary>Entry progress for this specific series [0,1].</summary>
+    /// <summary>
+    /// Entry progress for this specific series [0,1].
+    /// This is the single source of truth: <c>Chart.Animate(float)</c> updates it too, so
+    /// <c>AnimationProgress</c> and <c>Animation.EntryProgress</c> can never disagree.
+    /// <para>
+    /// Every member of this class is set when the context is built (an object initializer, once per
+    /// frame) and read afterwards - the shared <see cref="Default"/> instance would otherwise be
+    /// writable, and one host writing to it would change the fallback of every chart in the process.
+    /// </para>
+    /// </summary>
     public float EntryProgress { get; init; } = 1f;
 
     /// <summary>Global opacity [0,1].</summary>
@@ -259,12 +381,29 @@ public class AnimationContext
     public float ExitProgress { get; init; }
 
     /// <summary>
-    /// Data transition progress [0,1]. If less than 1, marks should lerp
-    /// from PreviousDataRow to current DataRow.
+    /// Data transition progress [0,1].
+    /// <para>
+    /// Not wired yet: no mark consumes this value and <c>AnimationController.StartDataTransition</c>
+    /// has no caller, so a data transition currently renders as an instant change. The property is
+    /// exposed so custom marks can already implement the interpolation themselves.
+    /// </para>
     /// </summary>
     public float DataTransitionProgress { get; init; } = 1f;
 
-    /// <summary>Default instance with no animation applied.</summary>
+    /// <summary>
+    /// Per-series entry progress, staggered by series index. Empty when no stagger is running.
+    /// <para>
+    /// Not wired yet: marks receive only <see cref="EntryProgress"/>. Exposed for custom marks that
+    /// want to stagger their own series.
+    /// </para>
+    /// </summary>
+    public float[] SeriesProgress { get; init; } = [];
+
+    /// <summary>
+    /// Default instance with no animation applied (entry and transition progress 1, full opacity).
+    /// Shared by every chart whose theme has <see cref="ChartTheme.EnableAnimation"/> off; it is
+    /// immutable, so it stays that way.
+    /// </summary>
     public static AnimationContext Default { get; } = new();
 }
 

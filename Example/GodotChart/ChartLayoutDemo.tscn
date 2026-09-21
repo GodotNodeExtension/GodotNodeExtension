@@ -1,0 +1,154 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/GodotChart/ChartLayoutDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/ChartView.cs" id="2_chart"]
+
+[node name="ChartLayoutDemo" type="Control" node_paths=PackedStringArray("View", "Readout")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_minimum_size = Vector2(900, 640)
+script = ExtResource("1_demo")
+View = NodePath("Layout/Column/Columns/Left/View")
+Readout = NodePath("Layout/Column/Columns/Right/Readout")
+
+[node name="Layout" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Column" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="RichTextLabel" parent="Layout/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b][font_size=19]Layout and sizes (code)[/font_size][/b]\n[color=#93a1b5]One [b]ChartView[/b] node on the left, the numbers it lays itself out with on the right. Nothing here is estimated by the page: the minimum comes from [code]Chart.MinimumSize[/code] (title row + legend + X axis label row + axis title row + Y label column, plus [code]Chart.MinimumPlotSize[/code]), the rectangle the plot really got from [code]Chart.CurrentPlotArea[/code], and the node's own size from the layout around it. Press a key and the same numbers are read back three frames later, so every line - and the [b]Δ[/b] line under them - is a measurement.[/color]"
+
+[node name="HeaderRule" type="HSeparator" parent="Layout/Column"]
+layout_mode = 2
+
+[node name="Columns" type="HBoxContainer" parent="Layout/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="Left" type="VBoxContainer" parent="Layout/Column/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Column/Columns/Left"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]A single ChartView node[/b] · Line · 12 rows · 2 series · the scene holds the node, its kind, its fields, its axes and the table; the script holds the keys, the theme and the readout"
+
+[node name="View" type="Control" parent="Layout/Column/Columns/Left"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("2_chart")
+Kind = 2
+Title = "Revenue by month"
+XField = "month"
+YField = "value"
+ColorField = "series"
+XAxisTitle = "Month"
+YAxisTitle = "Revenue"
+YAxisUnit = "k"
+Legend = 0
+ShowTooltip = true
+ShowCrosshair = true
+Rows = Array[Dictionary]([{
+"month": "Jan",
+"series": "measured",
+"value": 120
+}, {
+"month": "Feb",
+"series": "measured",
+"value": 138
+}, {
+"month": "Mar",
+"series": "measured",
+"value": 151
+}, {
+"month": "Apr",
+"series": "measured",
+"value": 165
+}, {
+"month": "May",
+"series": "measured",
+"value": 158
+}, {
+"month": "Jun",
+"series": "measured",
+"value": 174
+}, {
+"month": "Jan",
+"series": "planned",
+"value": 110
+}, {
+"month": "Feb",
+"series": "planned",
+"value": 149
+}, {
+"month": "Mar",
+"series": "planned",
+"value": 143
+}, {
+"month": "Apr",
+"series": "planned",
+"value": 172
+}, {
+"month": "May",
+"series": "planned",
+"value": 181
+}, {
+"month": "Jun",
+"series": "planned",
+"value": 169
+}])
+
+[node name="Right" type="VBoxContainer" parent="Layout/Column/Columns"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+
+[node name="ReadoutCaption" type="RichTextLabel" parent="Layout/Column/Columns/Right"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Readout[/b] · every figure below is quoted from Chart.MinimumSize, Chart.MinimumPlotSize, Chart.CurrentPlotArea, the chart's padding, the theme's own reservations and the node's Size"
+
+[node name="Readout" type="RichTextLabel" parent="Layout/Column/Columns/Right"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+autowrap_mode = 3
+text = "measuring..."
+
+[node name="Keys" type="RichTextLabel" parent="Layout/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Keys[/b]  T title on/off · L legend Top → Bottom → Left → Right → None · A X/Y axis titles on/off · Y second Y axis on/off · F theme font size small → default → large · M size: Chart.MinimumSize → ×0.85 → ×0.70 → ×0.55 → back to the layout\n[color=#93a1b5]Below the minimum the axis thins its own labels and the chart prints one warning to the editor Output (it keeps drawing) - far enough below it the reserves alone are larger than the node and the plot rectangle comes out inside out. Chart.MinimumSize is an estimate and rarely a whole number of pixels, so pinning the node to it can still short one axis by a fraction. The Δ line compares the two states around the last key; the hint compares the legend positions you have already visited in the same content state.[/color]"

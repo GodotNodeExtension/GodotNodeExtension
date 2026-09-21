@@ -1,25 +1,30 @@
 {
   "name": "GodotChart",
-  "version": "0.1.0",
-  "description": "A declarative chart library for Godot with SkiaSharp backend. Supports bar charts, line charts, area charts, and scatter/bubble plots with auto-scaling, color mapping, and gradient fills.",
+  "version": "0.2.0",
+  "description": "A declarative chart library for Godot with a SkiaSharp backend: 22 chart kinds (20 Mark classes, plus the SectionMark annotation mark) across Cartesian, polar, hierarchical and flow layouts with auto-inferred scales, theming, animation and hit testing.",
   "author": "shitake2333",
   "license": "MIT",
   "requirements": {
-    "godot": ">=4.0.0",
-    "dotnet": ">=9.0"
+    "godot": ">=4.7.0",
+    "dotnet": ">=10.0"
   },
   "dependencies": {
     "nuget": [
       {
         "name": "SkiaSharp",
-        "version": ">=2.88.0"
+        "version": ">=3.119.0"
       }
     ],
-    "components": []
+    "components": [
+      "GodotSkia"
+    ]
   },
   "compatibility": {
-    "godot_versions": ["4.0", "4.1", "4.2", "4.3"],
-    "dotnet_versions": ["9.0"]
+    "godot_versions": [
+      "4.7"
+    ],
+    "dotnet_versions": [
+      "10.0"
+    ]
   }
 }
-

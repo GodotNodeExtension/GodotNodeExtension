@@ -1,24 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using GodotNodeExtension.Component.GodotChart.Canvas;
 
 namespace GodotNodeExtension.Component.GodotChart;
-
-/// <summary>
-/// Interaction state of a chart element.
-/// </summary>
-public enum InteractionState
-{
-    /// <summary>No interaction, rendered normally.</summary>
-    Normal,
-
-    /// <summary>Mouse is hovering over the element.</summary>
-    Hovered,
-
-    /// <summary>Element has been clicked and selected.</summary>
-    Selected,
-}
 
 // ── Tooltip RichText types ───────────────────────────────────
 
@@ -115,14 +101,14 @@ public readonly struct TooltipSpan()
 /// <summary>
 /// A single line of tooltip content, composed of styled spans.
 /// </summary>
-public struct TooltipLine
+public struct TooltipLine()
 {
-    /// <summary>The spans composing this line.</summary>
-    public TooltipSpan[] Spans { get; init; }
+    /// <summary>The spans composing this line. Never null (defaults to an empty array).</summary>
+    public TooltipSpan[] Spans { get; init; } = [];
 
-    /// <summary>Create a plain text line (convenience).</summary>
-    public static TooltipLine Plain(string text) =>
-        new() { Spans = [new TooltipSpan { Text = text }] };
+    /// <summary>Create a plain text line (convenience). Null text becomes an empty string.</summary>
+    public static TooltipLine Plain(string? text) =>
+        new() { Spans = [new TooltipSpan { Text = text ?? "" }] };
 
     /// <summary>Create a line with a colored vector icon indicator and label text.</summary>
     public static TooltipLine WithIcon(TooltipIcon icon, Color color, string text) =>
@@ -167,6 +153,12 @@ public class HitResult
     /// Null means no series is focused.
     /// </summary>
     public string? FocusedSeries { get; set; }
+
+    /// <summary>
+    /// Rich tooltip content produced by the hit mark's <see cref="Mark.TooltipContentBuilder"/>.
+    /// When set, the tooltip renderer uses it instead of building content from the label.
+    /// </summary>
+    public IReadOnlyList<TooltipLine>? TooltipLines { get; set; }
 }
 
 /// <summary>
@@ -179,6 +171,13 @@ public class ChartClickEventArgs : EventArgs
 
     /// <summary>Index of the clicked row in the dataset.</summary>
     public int RowIndex { get; init; }
+
+    /// <summary>
+    /// Mouse button that produced the click. Only <see cref="MouseButton.Left"/> changes the selection and
+    /// the focused series - a host can use the other buttons for its own gestures (a context menu, drilling
+    /// back out of a hierarchy, ...) without the chart reacting to them.
+    /// </summary>
+    public MouseButton Button { get; init; } = MouseButton.Left;
 
     /// <summary>The mark type that was clicked (e.g. "IntervalMark").</summary>
     public string? MarkType { get; init; }
@@ -222,7 +221,7 @@ public class TooltipContext
 public class LabelContext
 {
     /// <summary>All data rows relevant to this label (e.g. all rows for a pie/donut center).</summary>
-    public IReadOnlyList<DataRow> Data { get; init; } = Array.Empty<DataRow>();
+    public IReadOnlyList<DataRow> Data { get; init; } = [];
 
     /// <summary>The specific data row for single-item labels (pie slice, bar, point).</summary>
     public DataRow? Row { get; init; }
@@ -271,17 +270,17 @@ public class TooltipOptions
     /// <summary>Text color inside the tooltip. Null = use theme default.</summary>
     public Color? TextColor { get; set; }
 
-    /// <summary>Corner radius for tooltip rounded rect.</summary>
-    public float CornerRadius { get; set; } = 6f;
+    /// <summary>Corner radius for tooltip rounded rect. Null = use the theme value.</summary>
+    public float? CornerRadius { get; set; }
 
-    /// <summary>Padding inside the tooltip bubble.</summary>
-    public float Padding { get; set; } = 8f;
+    /// <summary>Padding inside the tooltip bubble. Null = use the theme value.</summary>
+    public float? Padding { get; set; }
 
     /// <summary>Border color drawn around the tooltip. Null = use theme default.</summary>
     public Color? BorderColor { get; set; }
 
-    /// <summary>Border stroke width in pixels.</summary>
-    public float BorderWidth { get; set; } = 1f;
+    /// <summary>Border width. Null = use the theme value.</summary>
+    public float? BorderWidth { get; set; }
 
     /// <summary>Font size for tooltip text. Null uses theme default (12f fallback).</summary>
     public float? FontSize { get; set; }
@@ -299,18 +298,21 @@ public class TooltipRenderer
     private HitResult? _currentHit;
 
     /// <summary>Smoothing factor for position interpolation. Lower = smoother.</summary>
-    public float SmoothSpeed { get; set; } = 12f;
+    public float SmoothSpeed { get; } = 12f;
 
     /// <summary>Fade speed in units per second.</summary>
-    public float FadeSpeed { get; set; } = 8f;
+    public float FadeSpeed { get; } = 8f;
 
     /// <summary>Whether the tooltip is currently visible (opacity > 0).</summary>
     public bool IsVisible => _opacity > 0.01f;
 
     /// <summary>Tooltip rendering options.</summary>
-    public TooltipOptions Options { get; set; } = new();
+    public TooltipOptions Options { get; } = new();
 
-    /// <summary>Chart theme for fallback colors when TooltipOptions values are null.</summary>
+    /// <summary>
+    /// Chart theme for fallback colors when <see cref="TooltipOptions"/> values are null.
+    /// Null falls back to the shared <see cref="ChartTheme.Default"/> instance.
+    /// </summary>
     public ChartTheme? Theme { get; set; }
 
     /// <summary>
@@ -347,15 +349,21 @@ public class TooltipRenderer
     {
         if (_opacity <= 0.01f || _currentHit is not { Hit: true }) return;
 
-        float fontSize = Options.FontSize ?? Theme?.TooltipFontSize ?? 12f;
-        float lineHeight = fontSize + 4f;
-        float pad = Options.Padding;
+        // The attached theme supplies every value the caller did not override; an unthemed tooltip
+        // reads the shared <see cref="ChartTheme.Default"/> instance, so the built-in bubble metrics
+        // and colors live in exactly one place (the theme's own initializers).
+        var theme = Theme ?? ChartTheme.Default;
+
+        float fontSize = Options.FontSize ?? theme.TooltipFontSize;
+        float lineHeight = fontSize + theme.TooltipLineSpacing;
+        float pad = Options.Padding ?? theme.TooltipPadding;
+        float cornerRadius = Options.CornerRadius ?? theme.TooltipCornerRadius;
+        float borderWidth = Options.BorderWidth ?? theme.TooltipBorderWidth;
         float alpha = _opacity;
 
-        // Resolve colors with theme fallback
-        var bgColor = Options.BackgroundColor ?? Theme?.TooltipBackground ?? new Color(0.12f, 0.12f, 0.18f, 0.92f);
-        var borderColor = Options.BorderColor ?? Theme?.TooltipBorderColor ?? new Color(1f, 1f, 1f, 0.2f);
-        var textColor = Options.TextColor ?? Theme?.TooltipTextColor ?? new Color(1f, 1f, 1f, 0.9f);
+        var bgColor = Options.BackgroundColor ?? theme.TooltipBackground;
+        var borderColor = Options.BorderColor ?? theme.TooltipBorderColor;
+        var textColor = Options.TextColor ?? theme.TooltipTextColor;
 
         // Resolve content: RichContentBuilder > ContentBuilder > default
         var richLines = ResolveRichLines(_currentHit);
@@ -374,25 +382,29 @@ public class TooltipRenderer
         float boxH = richLines.Count * lineHeight + pad * 2;
 
         // Position: prefer above-right of current smooth position
-        float bx = _currentPos.X + 10f;
-        float by = _currentPos.Y - boxH - 8f;
+        float offsetX = theme.TooltipOffsetX;
+        float offsetY = theme.TooltipOffsetY;
+        float flipY   = theme.TooltipFlipOffsetY;
+        float margin  = theme.TooltipEdgeMargin;
+        float bx = _currentPos.X + offsetX;
+        float by = _currentPos.Y - boxH - offsetY;
 
         // Horizontal flip: if overflows right, try left side
-        if (bx + boxW > canvasW) bx = _currentPos.X - boxW - 10f;
+        if (bx + boxW > canvasW) bx = _currentPos.X - boxW - offsetX;
         // Clamp to left edge
-        if (bx < 4f) bx = 4f;
+        if (bx < margin) bx = margin;
 
         // Vertical flip: if overflows top, place below cursor
-        if (by < 4f) by = _currentPos.Y + 12f;
+        if (by < margin) by = _currentPos.Y + flipY;
         // If also overflows bottom, clamp to bottom edge
-        if (by + boxH > canvasH) by = canvasH - boxH - 4f;
+        if (by + boxH > canvasH) by = canvasH - boxH - margin;
         // Final clamp to top edge
-        if (by < 4f) by = 4f;
+        if (by < margin) by = margin;
 
         // Background
         using var bgPath = canvas.CreatePath();
         using var bgPaint = canvas.CreatePaint();
-        bgPath.RoundRect(bx, by, boxW, boxH, Options.CornerRadius);
+        bgPath.RoundRect(bx, by, boxW, boxH, cornerRadius);
         bgPaint.SetColor(bgColor).SetOpacity(alpha);
         canvas.Fill(bgPath, bgPaint);
 
@@ -402,7 +414,7 @@ public class TooltipRenderer
             borderColor.R,
             borderColor.G,
             borderColor.B,
-            borderColor.A * alpha)).SetStrokeWidth(Options.BorderWidth);
+            borderColor.A * alpha)).SetStrokeWidth(borderWidth);
         canvas.Stroke(bgPath, borderPaint);
 
         // Draw each line with spans
@@ -414,10 +426,9 @@ public class TooltipRenderer
         }
     }
 
-    private IReadOnlyList<TooltipLine> ResolveRichLines(HitResult hit)
-    {
-        // Build context for custom builders
-        var ctx = hit.Row != null ? new TooltipContext
+    /// <summary>Context describing a hit, shared by mark-level builders and the tooltip renderer.</summary>
+    internal static TooltipContext? BuildTooltipContext(HitResult hit)
+        => hit.Row != null ? new TooltipContext
         {
             Row = hit.Row,
             RowIndex = hit.RowIndex,
@@ -427,27 +438,74 @@ public class TooltipRenderer
             Label = hit.Label,
         } : null;
 
+    private IReadOnlyList<TooltipLine> ResolveRichLines(HitResult hit)
+    {
+        // Build context for custom builders
+        var ctx = BuildTooltipContext(hit);
+
+        // 0. Per-mark content (Mark.TooltipContentBuilder), attached to the hit while hit testing
+        if (hit.TooltipLines is { Count: > 0 } markLines)
+            return SplitNewlines(markLines);
+
         // 1. RichContentBuilder
         if (Options.RichContentBuilder != null && ctx != null)
-            return Options.RichContentBuilder(ctx);
+        {
+            // One call: the builder belongs to the host, so running it twice would repeat its side
+            // effects (and pay for its work twice) just to test the result for null.
+            var lines = Options.RichContentBuilder(ctx);
+            return lines is { } built ? built : [];
+        }
 
         // 2. ContentBuilder → wrap as plain TooltipLines
         if (Options.ContentBuilder != null && ctx != null)
         {
-            var plainLines = Options.ContentBuilder(ctx);
-            var result = new TooltipLine[plainLines.Count];
-            for (int i = 0; i < plainLines.Count; i++)
-                result[i] = TooltipLine.Plain(plainLines[i]);
-            return result;
+            var content = Options.ContentBuilder(ctx);
+            return SplitNewlines((content is { } items ? items : Array.Empty<string>()).Select(TooltipLine.Plain));
         }
 
         // 3. Default from label
-        if (string.IsNullOrEmpty(hit.Label)) return Array.Empty<TooltipLine>();
-        var parts = hit.Label.Split('\n');
-        var lines = new TooltipLine[parts.Length];
-        for (int i = 0; i < parts.Length; i++)
-            lines[i] = TooltipLine.Plain(parts[i]);
-        return lines;
+        if (string.IsNullOrEmpty(hit.Label)) return [];
+        return SplitNewlines([TooltipLine.Plain(hit.Label)]);
+    }
+
+    /// <summary>
+    /// Turn each embedded newline of every span into its own line. The tooltip box height is
+    /// computed from the line count, so a richer builder that returns "a\nb" in one line used to
+    /// overflow its background; splitting here keeps measurement and drawing consistent.
+    /// </summary>
+    private static TooltipLine[] SplitNewlines(IEnumerable<TooltipLine> lines)
+    {
+        var result = new List<TooltipLine>();
+        foreach (var line in lines)
+        {
+            var spans = line.Spans;
+            if (spans.Length == 0)
+            {
+                result.Add(line with { Spans = [] });
+                continue;
+            }
+
+            var current = new List<TooltipSpan>();
+            bool wrapped = false;
+            foreach (var span in spans)
+            {
+                string[] parts = (span.Text != null ? span.Text : "").Split('\n');
+                for (int i = 0; i < parts.Length; i++)
+                {
+                    if (i > 0)
+                    {
+                        result.Add(line with { Spans = [.. current] });
+                        current.Clear();
+                        wrapped = true;
+                    }
+                    if (parts[i].Length > 0 || parts.Length == 1)
+                        current.Add(span with { Text = parts[i] });
+                }
+            }
+            if (current.Count > 0 || !wrapped)
+                result.Add(line with { Spans = [.. current] });
+        }
+        return [.. result];
     }
 
     private static float MeasureLineWidth(ICanvas2D canvas, TooltipLine line, float fontSize, float iconInset)
@@ -455,21 +513,38 @@ public class TooltipRenderer
         float width = 0f;
         foreach (var span in line.Spans)
         {
-            if (span.Image != null || span.Icon != TooltipIcon.None)
+            // Must use the same condition as DrawRichLine, otherwise the tooltip background is
+            // sized for an icon that is never drawn (or vice versa).
+            if (HasVisibleIcon(canvas, span))
                 width += iconInset;
             width += canvas.MeasureText(span.Text, span.ToFontSettings(fontSize)).Width;
         }
         return width;
     }
 
+    /// <summary>
+    /// Whether a span's icon is actually drawn by <see cref="DrawRichLine"/>: raster images require
+    /// the backend to support them, vector icons always draw.
+    /// </summary>
+    private static bool HasVisibleIcon(ICanvas2D canvas, TooltipSpan span)
+        => (span.Image != null && canvas.Capabilities.SupportsImages) || span.Icon != TooltipIcon.None;
+
     private void DrawRichLine(ICanvas2D canvas, TooltipLine line, float x, float y,
                               float fontSize, float iconInset, float alpha, Color textColor)
     {
         float cx = x;
+        // One paint for the whole line: the colour is the only thing that changes per span, and a
+        // tooltip can hold dozens of them.
+        using var paint = canvas.CreatePaint();
         foreach (var span in line.Spans)
         {
             var spanColor = span.Color ?? textColor;
-            var spanFont = span.ToFontSettings(fontSize);
+            // The theme font is the fallback for spans that do not name one, so a chart-wide font also
+            // covers tooltip text (which is why CJK tooltips used to show boxes).
+            var spanFont = span.ToFontSettings(fontSize) with
+            {
+                GodotFont = span.GodotFont ?? Theme?.Font,
+            };
 
             // Draw image icon (priority) or vector icon
             if (span.Image != null && canvas.Capabilities.SupportsImages)
@@ -486,7 +561,6 @@ public class TooltipRenderer
             }
 
             // Draw text
-            using var paint = canvas.CreatePaint();
             paint.SetColor(spanColor).SetOpacity(alpha);
             canvas.DrawText(span.Text, cx, y, spanFont, paint);
             cx += canvas.MeasureText(span.Text, spanFont).Width;
@@ -536,6 +610,10 @@ public static class ChartInteraction
     /// <summary>
     /// Draw a crosshair (dashed vertical + horizontal lines) at the mouse position.
     /// Only draws when the mouse is inside the plot area.
+    /// <para>
+    /// <see cref="DefaultRenderers.DrawCrosshair"/> is the adapter that hands this to a chart's
+    /// <see cref="Chart.CrosshairRenderer"/> slot, so a custom slot can keep the built-in look and add to it.
+    /// </para>
     /// </summary>
     public static void DrawCrosshair(
         ICanvas2D canvas, Vector2 mousePos, PlotArea plot, ChartTheme? theme = null)
@@ -544,7 +622,9 @@ public static class ChartInteraction
             mousePos.Y < plot.Y || mousePos.Y > plot.Y + plot.Height)
             return;
 
-        var t = theme ?? ChartTheme.Dark();
+        // Crosshair colours come from the theme; an unthemed call uses the shared default instance
+        // instead of allocating a fresh theme per frame.
+        var t = theme ?? ChartTheme.Default;
         using var paint = canvas.CreatePaint();
         paint.SetColor(t.CrosshairColor)
              .SetStrokeWidth(t.CrosshairStrokeWidth)
@@ -557,15 +637,43 @@ public static class ChartInteraction
     }
 
     /// <summary>
-    /// Run hit test against all marks and return the first hit result.
+    /// Run hit test against all marks and return the first hit.
+    /// Marks are tested from top-most to bottom-most (the mark drawn last wins), marks that the
+    /// renderer skipped (incompatible coordinate system) are ignored, and a mark that carries its
+    /// own data is tested against that data — exactly like the renderer does.
+    /// <para>
+    /// This is the mark-only half: <see cref="Chart.HitTest"/> adds the legend and the axis bands on
+    /// top (and is what a host normally calls); this overload exists for a caller that holds the marks
+    /// itself and wants only them.
+    /// </para>
     /// </summary>
     public static HitResult? TestAll(
-        List<Mark> marks, MarkContext ctx, Vector2 mousePos)
+        List<Mark> marks, MarkContext ctx, Vector2 mousePos, IReadOnlySet<Mark>? skipped = null)
     {
-        foreach (var mark in marks)
+        // Marks may bind channels themselves; the chart's set stays the base for every one of them.
+        var chartEncodes = ctx.Encodes;
+        int layoutVersion = ctx.LayoutVersion;
+
+        for (int i = marks.Count - 1; i >= 0; i--)
         {
-            var result = mark.HitTest(ctx, mousePos);
-            if (result is { Hit: true }) return result;
+            var mark = marks[i];
+            if (skipped != null && skipped.Contains(mark)) continue;
+
+            var markCtx = mark.BindEncodes(
+                mark.Data != null ? ctx.WithData(mark.Data) : ctx, chartEncodes, layoutVersion);
+            var result = mark.HitTest(markCtx, mousePos);
+            if (result is not { Hit: true }) continue;
+
+            // The mark's own tooltip builder travels with the hit, so the tooltip renderer can use it
+            // without knowing which mark produced the hit.
+            if (mark.TooltipContentBuilder != null && result.TooltipLines == null)
+            {
+                var tooltipCtx = TooltipRenderer.BuildTooltipContext(result);
+                if (tooltipCtx != null)
+                    result.TooltipLines = mark.TooltipContentBuilder(tooltipCtx);
+            }
+
+            return result;
         }
         return null;
     }

@@ -1,0 +1,81 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/GodotChart/ChartCanvasDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/Canvas/Canvas2DControl.cs" id="2_canvas"]
+
+[node name="ChartCanvasDemo" type="Control" node_paths=PackedStringArray("InteractiveView", "Status", "SharedPreview")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_minimum_size = Vector2(780, 1000)
+script = ExtResource("1_demo")
+InteractiveView = NodePath("Layout/Column/Interactive/View")
+Status = NodePath("Layout/Column/Status")
+SharedPreview = NodePath("Layout/Column/Shared/Preview")
+
+[node name="Layout" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Column" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="RichTextLabel" parent="Layout/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+text = "[b][font_size=19]Canvas and the host loop[/font_size][/b]\n[color=#93a1b5]Pointer feedback, click selection, H / L series visibility, A / B row appends, the read-only queries and one shared canvas. Marks: ChartCustomizationDemo; scales: ChartScaleDemo; dynamic data: ChartStreamingDemo.[/color]"
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+
+[node name="HeaderRule" type="HSeparator" parent="Layout/Column"]
+layout_mode = 2
+
+[node name="Status" type="Label" parent="Layout/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+text = "waiting for the first frame..."
+
+[node name="Interactive" type="VBoxContainer" parent="Layout/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Column/Interactive"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+text = "[b]Stacked bars[/b] · hover = Active, click = Selected, legend click = focus"
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+
+[node name="View" type="Control" parent="Layout/Column/Interactive"]
+custom_minimum_size = Vector2(420, 300)
+layout_mode = 2
+size_flags_vertical = 3
+script = ExtResource("2_canvas")
+
+[node name="Shared" type="VBoxContainer" parent="Layout/Column"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Column/Shared"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+text = "[b]One canvas, two consumers[/b] · two charts draw into it, a TextureRect presents it"
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+
+[node name="Preview" type="TextureRect" parent="Layout/Column/Shared"]
+custom_minimum_size = Vector2(720, 200)
+layout_mode = 2
+stretch_mode = 2

@@ -1,0 +1,134 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/GodotChart/ChartRendererDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/Canvas/Canvas2DControl.cs" id="2_canvas"]
+
+[node name="ChartRendererDemo" type="MarginContainer" node_paths=PackedStringArray("SlotsChart", "CanvasApiChart", "HitTestChart", "CustomSlotButton", "DefaultSlotButton", "Status")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+script = ExtResource("1_demo")
+SlotsChart = NodePath("Layout/Grid/Slots/SlotsChart")
+CanvasApiChart = NodePath("Layout/Grid/CanvasApi/CanvasApiChart")
+HitTestChart = NodePath("Layout/Grid/HitTest/HitTestChart")
+CustomSlotButton = NodePath("Layout/Controls/CustomSlotButton")
+DefaultSlotButton = NodePath("Layout/Controls/DefaultSlotButton")
+Status = NodePath("Layout/Status")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="RichTextLabel" parent="Layout"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b][font_size=19]Renderer slots and the canvas API[/font_size][/b]\n[color=#93a1b5]Hand-built charts, no ChartView: cell 1 swaps all seven slots, cell 2 draws with the canvas API, cell 3 paints a HitTest overlay itself. The buttons toggle cell 1 back to DefaultRenderers.[/color]"
+
+[node name="HeaderRule" type="HSeparator" parent="Layout"]
+layout_mode = 2
+
+[node name="Controls" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="CustomSlotButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "Custom slots"
+
+[node name="DefaultSlotButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "Defaults"
+
+[node name="Status" type="Label" parent="Layout"]
+layout_mode = 2
+autowrap_mode = 3
+custom_minimum_size = Vector2(1, 0)
+text = "ready"
+
+[node name="Grid" type="GridContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="Slots" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Slots"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]All 7 slots replaced[/b] · gradient background, title badge, dashed grid, axis ticks, axis-label unit, legend, crosshair"
+
+[node name="SlotsChart" type="Control" parent="Layout/Grid/Slots"]
+custom_minimum_size = Vector2(360, 280)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_canvas")
+BackgroundColor = Color(0.06, 0.07, 0.1, 1)
+
+[node name="CanvasApi" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/CanvasApi"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]CanvasDraw[/b] · IPath2D + IPaint2D: dashes/gradients, transforms + ClipRect, MeasureText, DrawImage, Capabilities"
+
+[node name="CanvasApiChart" type="Control" parent="Layout/Grid/CanvasApi"]
+custom_minimum_size = Vector2(360, 280)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_canvas")
+BackgroundColor = Color(0.06, 0.07, 0.1, 1)
+
+[node name="HitTest" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/HitTest"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]HitTest overlay[/b] · chart.HitTest(pointer) -> highlight ring + readout, no library hover"
+
+[node name="HitTestChart" type="Control" parent="Layout/Grid/HitTest"]
+custom_minimum_size = Vector2(360, 280)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_canvas")
+BackgroundColor = Color(0.06, 0.07, 0.1, 1)
+
+[node name="Notes" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Notes"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Where to go next[/b] · [b]ChartCustomizationDemo[/b] builds the marks and encodings these slots draw, [b]ChartCanvasDemo[/b] runs the pointer loop and the queries, [b]ChartScaleDemo[/b] covers the scales."

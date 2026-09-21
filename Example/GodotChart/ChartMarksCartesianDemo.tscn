@@ -1,0 +1,485 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/GodotChart/ChartMarksCartesianDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/ChartView.cs" id="2_chart"]
+
+[node name="ChartMarksCartesianDemo" type="MarginContainer" node_paths=PackedStringArray("IntervalChart", "IntervalStackedChart", "IntervalNormalizeChart", "IntervalHorizontalChart", "LineSmoothChart", "LineStepChart", "LineStackChart", "PointRadiusChart", "PointSizeChart", "RangeAreaChart", "BoxChart", "CandlestickChart", "HeatmapChart", "TimelineChart", "MilestoneChart", "LollipopChart", "LollipopHorizontalChart", "ViolinChart", "WaffleChart")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+script = ExtResource("1_demo")
+IntervalChart = NodePath("Layout/Grid/Interval/IntervalChart")
+IntervalStackedChart = NodePath("Layout/Grid/IntervalStacked/IntervalStackedChart")
+IntervalNormalizeChart = NodePath("Layout/Grid/IntervalNormalize/IntervalNormalizeChart")
+IntervalHorizontalChart = NodePath("Layout/Grid/IntervalHorizontal/IntervalHorizontalChart")
+LineSmoothChart = NodePath("Layout/Grid/LineSmooth/LineSmoothChart")
+LineStepChart = NodePath("Layout/Grid/LineStep/LineStepChart")
+LineStackChart = NodePath("Layout/Grid/LineStack/LineStackChart")
+PointRadiusChart = NodePath("Layout/Grid/PointRadius/PointRadiusChart")
+PointSizeChart = NodePath("Layout/Grid/PointSize/PointSizeChart")
+RangeAreaChart = NodePath("Layout/Grid/RangeArea/RangeAreaChart")
+BoxChart = NodePath("Layout/Grid/Box/BoxChart")
+CandlestickChart = NodePath("Layout/Grid/Candlestick/CandlestickChart")
+HeatmapChart = NodePath("Layout/Grid/Heatmap/HeatmapChart")
+TimelineChart = NodePath("Layout/Grid/Timeline/TimelineChart")
+MilestoneChart = NodePath("Layout/Grid/Milestone/MilestoneChart")
+LollipopChart = NodePath("Layout/Grid/Lollipop/LollipopChart")
+LollipopHorizontalChart = NodePath("Layout/Grid/LollipopHorizontal/LollipopHorizontalChart")
+ViolinChart = NodePath("Layout/Grid/Violin/ViolinChart")
+WaffleChart = NodePath("Layout/Grid/Waffle/WaffleChart")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="RichTextLabel" parent="Layout"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b][font_size=19]Cartesian mark knobs[/font_size][/b]\n[color=#93a1b5]One cell per mark, every knob set through view.ConfigureMark(...). Polar and hierarchy knobs: ChartMarksPolarDemo / ChartMarksHierarchyDemo.[/color]"
+
+[node name="HeaderRule" type="HSeparator" parent="Layout"]
+layout_mode = 2
+
+[node name="Grid" type="GridContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="Interval" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Interval"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Interval[/b] · BarPadding 0.45 (default 0.2) · CornerRadius 9 (default 3)"
+
+[node name="IntervalChart" type="Control" parent="Layout/Grid/Interval"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 1
+Title = "Bar: BarPadding + CornerRadius"
+
+[node name="IntervalStacked" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/IntervalStacked"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Interval / Stack[/b] · Stack = StackMode.Stack · BarPadding 0.3 · ColorField = series"
+
+[node name="IntervalStackedChart" type="Control" parent="Layout/Grid/IntervalStacked"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 1
+Title = "Bar: Stack = Stack"
+
+[node name="IntervalNormalize" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/IntervalNormalize"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Interval / Stack Normalize[/b] · Stack = StackMode.Normalize · every category sums to 1 · BarPadding 0.3"
+
+[node name="IntervalNormalizeChart" type="Control" parent="Layout/Grid/IntervalNormalize"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 1
+Title = "Bar: Stack = StackMode.Normalize"
+
+[node name="IntervalHorizontal" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/IntervalHorizontal"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Interval / Horizontal[/b] · Orientation = Horizontal · XField = value · YField = category"
+
+[node name="IntervalHorizontalChart" type="Control" parent="Layout/Grid/IntervalHorizontal"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 1
+Title = "Bar: Orientation = Horizontal"
+
+[node name="LineSmooth" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/LineSmooth"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Line / Smooth + Area[/b] · Smooth = true · StrokeWidth 3.5 · ShowArea = true · AreaOpacity 0.35"
+
+[node name="LineSmoothChart" type="Control" parent="Layout/Grid/LineSmooth"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 2
+Title = "Line: Smooth + ShowArea + StrokeWidth"
+
+[node name="LineStep" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/LineStep"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Line / Step[/b] · Step = StepMode.Center · Smooth = false · StrokeWidth 2 · ShowArea = false"
+
+[node name="LineStepChart" type="Control" parent="Layout/Grid/LineStep"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 2
+Title = "Line: Step = Center"
+
+[node name="LineStack" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/LineStack"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Line / Stack (stacked area)[/b] · Stack = StackMode.Stack (default None) · ShowArea = true · AreaOpacity 0.4 · ColorField = series"
+
+[node name="LineStackChart" type="Control" parent="Layout/Grid/LineStack"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 2
+Title = "Area: Stack = StackMode.Stack"
+
+[node name="PointRadius" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/PointRadius"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Point / DefaultRadius[/b] · DefaultRadius 9 · XField = t · no SizeField bound"
+
+[node name="PointRadiusChart" type="Control" parent="Layout/Grid/PointRadius"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 4
+Title = "Point: DefaultRadius"
+
+[node name="PointSize" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/PointSize"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Point / Size[/b] · SizeField = weight · MinRadius 4 · RadiusRange 26 · XField = t"
+
+[node name="PointSizeChart" type="Control" parent="Layout/Grid/PointSize"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 4
+Title = "Point: MinRadius + RadiusRange"
+
+[node name="RangeArea" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/RangeArea"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]RangeArea[/b] · LowerField = lower · FillOpacity 0.45 · Smooth/ShowBorderLines = true"
+
+[node name="RangeAreaChart" type="Control" parent="Layout/Grid/RangeArea"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 5
+Title = "RangeArea: LowerField + Smooth"
+
+[node name="Box" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Box"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Box[/b] · MinField…MaxField = low/p25/p50/p75/high · BoxWidthRatio 0.45"
+
+[node name="BoxChart" type="Control" parent="Layout/Grid/Box"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 10
+Title = "Box: custom min/q1/median/q3/max fields"
+
+[node name="Candlestick" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Candlestick"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Candlestick[/b] · OpenField…CloseField = o/h/l/c · FillBullish = false"
+
+[node name="CandlestickChart" type="Control" parent="Layout/Grid/Candlestick"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 11
+Title = "Candlestick: custom OHLC fields, hollow"
+
+[node name="Heatmap" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Heatmap"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Heatmap[/b] · XField = weekday · YField = slot · ColorField = load · CellGap 7"
+
+[node name="HeatmapChart" type="Control" parent="Layout/Grid/Heatmap"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 12
+Title = "Heatmap: CellGap + CornerRadius"
+
+[node name="Timeline" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Timeline"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Timeline[/b] · StartField = from · EndField = to · BarHeightRatio 0.45 · CornerRadius 8"
+
+[node name="TimelineChart" type="Control" parent="Layout/Grid/Timeline"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 20
+Title = "Timeline: Start/End fields + BarHeightRatio"
+
+[node name="Milestone" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Milestone"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Milestone[/b] · LabelField = event · MarkerRadius 9 · MarkerShape = Diamond"
+
+[node name="MilestoneChart" type="Control" parent="Layout/Grid/Milestone"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 22
+Title = "Milestone: LabelField + MarkerShape"
+
+[node name="Lollipop" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Lollipop"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Lollipop[/b] · DotRadius 9 · StemWidth 4 · Orientation = Vertical"
+
+[node name="LollipopChart" type="Control" parent="Layout/Grid/Lollipop"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 21
+Title = "Lollipop: DotRadius + StemWidth"
+
+[node name="LollipopHorizontal" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/LollipopHorizontal"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Lollipop / Horizontal[/b] · Orientation = Horizontal · DotRadius 7 · StemWidth 3 · XField = value"
+
+[node name="LollipopHorizontalChart" type="Control" parent="Layout/Grid/LollipopHorizontal"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 21
+Title = "Lollipop: Orientation = Horizontal"
+
+[node name="Violin" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Violin"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Violin[/b] · BinCount 48 · WidthRatio 0.85 · FillOpacity 0.4 · ShowBox = false"
+
+[node name="ViolinChart" type="Control" parent="Layout/Grid/Violin"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 9
+Title = "Violin: BinCount + WidthRatio"
+
+[node name="Waffle" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Waffle"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = "[b]Waffle[/b] · TotalCells 100 · Columns 20 · CellGap 4 · CellRadius 6"
+
+[node name="WaffleChart" type="Control" parent="Layout/Grid/Waffle"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 19
+Title = "Waffle: TotalCells + Columns"
+
+[node name="Notes" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Notes"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Where to go next[/b] · pie / donut / gauge / radar / funnel knobs live in [b]ChartMarksPolarDemo[/b], treemap / sunburst / sankey / chord in [b]ChartMarksHierarchyDemo[/b]. The full knob list and the library defaults are in the class comment of ChartMarksCartesianDemo.cs."

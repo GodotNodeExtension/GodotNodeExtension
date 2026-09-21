@@ -1,0 +1,10 @@
+[remap]
+
+importer="keep"
+type=""
+
+[deps]
+
+source_file="res://Example/GodotChart/Assets/worldbank_population_growth.csv"
+
+[params]

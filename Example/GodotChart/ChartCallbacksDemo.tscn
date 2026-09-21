@@ -1,0 +1,284 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Example/GodotChart/ChartCallbacksDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/ChartView.cs" id="2_chart"]
+[ext_resource type="Script" path="res://Component/GodotChart/Canvas/Canvas2DControl.cs" id="3_canvas"]
+
+[node name="ChartCallbacksDemo" type="MarginContainer" node_paths=PackedStringArray("EventsChart", "EventLog", "ButtonsChart", "SelectButton", "FocusNorthButton", "ClearFocusButton", "HideButton", "ShowButton", "ToggleButton", "ShowAllButton", "IsHiddenButton", "Status", "LegendChart", "LegendList", "HandSurface", "HiddenChart")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+script = ExtResource("1_demo")
+EventsChart = NodePath("Layout/Grid/Events/EventsChart")
+EventLog = NodePath("Layout/Grid/EventLog/EventLog")
+ButtonsChart = NodePath("Layout/Grid/ButtonChart/ButtonsChart")
+SelectButton = NodePath("Layout/Grid/ButtonPanel/Buttons/SelectButton")
+FocusNorthButton = NodePath("Layout/Grid/ButtonPanel/Buttons/FocusNorthButton")
+ClearFocusButton = NodePath("Layout/Grid/ButtonPanel/Buttons/ClearFocusButton")
+HideButton = NodePath("Layout/Grid/ButtonPanel/Buttons/HideButton")
+ShowButton = NodePath("Layout/Grid/ButtonPanel/Buttons/ShowButton")
+ToggleButton = NodePath("Layout/Grid/ButtonPanel/Buttons/ToggleButton")
+ShowAllButton = NodePath("Layout/Grid/ButtonPanel/Buttons/ShowAllButton")
+IsHiddenButton = NodePath("Layout/Grid/ButtonPanel/Buttons/IsHiddenButton")
+Status = NodePath("Layout/Controls/Status")
+LegendChart = NodePath("Layout/Grid/LegendChart/LegendChart")
+LegendList = NodePath("Layout/Grid/ExternalLegend/LegendList")
+HandSurface = NodePath("Layout/Grid/HandHover/HandSurface")
+HiddenChart = NodePath("Layout/Grid/HiddenSeries/HiddenChart")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="RichTextLabel" parent="Layout"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b][font_size=19]Events, hit testing and series visibility[/font_size][/b]\n[color=#93a1b5]Hover a chart, click an element, click a legend entry, then press the buttons - the counters and the newest payloads are printed live.[/color]"
+
+[node name="HeaderRule" type="HSeparator" parent="Layout"]
+layout_mode = 2
+
+[node name="Controls" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Status" type="Label" parent="Layout/Controls"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "ready"
+
+[node name="Grid" type="GridContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="Events" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Events"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Five events[/b] · OnHover / OnClick / OnSelectionChanged / OnFocusChanged / OnLegendClick (Handled)"
+
+[node name="EventsChart" type="Control" parent="Layout/Grid/Events"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 4
+Title = "Events (scatter, two series)"
+XField = "category"
+YField = "value"
+ColorField = "series"
+Legend = 1
+
+[node name="EventLog" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/EventLog"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Event log[/b] · counters per event, then the newest payload: RowIndex / MarkType / ScreenPosition"
+
+[node name="EventLog" type="Label" parent="Layout/Grid/EventLog"]
+custom_minimum_size = Vector2(360, 280)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+autowrap_mode = 3
+vertical_alignment = 0
+text = "counters  OnHover=0 | OnClick=0 | OnSelectionChanged=0 | OnFocusChanged=0 | OnLegendClick=0"
+
+[node name="ButtonChart" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/ButtonChart"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]The chart the buttons drive[/b] · Select / FocusSeries / HideSeries / ShowSeries"
+
+[node name="ButtonsChart" type="Control" parent="Layout/Grid/ButtonChart"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 4
+Title = "Select / FocusSeries / HideSeries"
+XField = "category"
+YField = "value"
+ColorField = "series"
+Legend = 1
+
+[node name="ButtonPanel" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/ButtonPanel"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]One button per verb[/b] · Select(2), FocusSeries, Hide / Show / Toggle, ShowAllSeries, IsSeriesHidden"
+
+[node name="Buttons" type="VBoxContainer" parent="Layout/Grid/ButtonPanel"]
+custom_minimum_size = Vector2(360, 280)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SelectButton" type="Button" parent="Layout/Grid/ButtonPanel/Buttons"]
+layout_mode = 2
+text = "Select(2)"
+
+[node name="FocusNorthButton" type="Button" parent="Layout/Grid/ButtonPanel/Buttons"]
+layout_mode = 2
+text = "FocusSeries(\"north\")"
+
+[node name="ClearFocusButton" type="Button" parent="Layout/Grid/ButtonPanel/Buttons"]
+layout_mode = 2
+text = "FocusSeries(null)"
+
+[node name="HideButton" type="Button" parent="Layout/Grid/ButtonPanel/Buttons"]
+layout_mode = 2
+text = "HideSeries(\"south\")"
+
+[node name="ShowButton" type="Button" parent="Layout/Grid/ButtonPanel/Buttons"]
+layout_mode = 2
+text = "ShowSeries(\"south\")"
+
+[node name="ToggleButton" type="Button" parent="Layout/Grid/ButtonPanel/Buttons"]
+layout_mode = 2
+text = "ToggleSeriesVisibility(\"south\")"
+
+[node name="ShowAllButton" type="Button" parent="Layout/Grid/ButtonPanel/Buttons"]
+layout_mode = 2
+text = "ShowAllSeries()"
+
+[node name="IsHiddenButton" type="Button" parent="Layout/Grid/ButtonPanel/Buttons"]
+layout_mode = 2
+text = "IsSeriesHidden(...) query"
+
+[node name="LegendChart" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/LegendChart"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]No legend drawn[/b] · LegendPosition.None: the colour scale still resolves the series"
+
+[node name="LegendChart" type="Control" parent="Layout/Grid/LegendChart"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 4
+Title = "LegendPosition.None"
+XField = "category"
+YField = "value"
+ColorField = "series"
+Legend = 4
+
+[node name="ExternalLegend" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/ExternalLegend"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]External legend[/b] · built from GetSeriesInfo(): swatch + FocusSeries button per series"
+
+[node name="LegendList" type="VBoxContainer" parent="Layout/Grid/ExternalLegend"]
+custom_minimum_size = Vector2(360, 280)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="HandHover" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/HandHover"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Hand-written hover[/b] · HitTest / Interaction / Hover / NotifyHoverChanged / Repaint"
+
+[node name="HandSurface" type="Control" parent="Layout/Grid/HandHover"]
+custom_minimum_size = Vector2(360, 280)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("3_canvas")
+BackgroundColor = Color(0.08, 0.08, 0.12, 1)
+
+[node name="HiddenSeries" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/HiddenSeries"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Hidden series[/b] · HideSeries(\"east\") + FocusSeries(\"north\") beside the focus fade"
+
+[node name="HiddenChart" type="Control" parent="Layout/Grid/HiddenSeries"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 2
+Title = "HideSeries + the focus fade"
+XField = "category"
+YField = "value"
+ColorField = "series"
+Legend = 1

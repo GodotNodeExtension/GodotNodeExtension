@@ -1,0 +1,10 @@
+{
+  "pages": [
+    "README.md",
+    "getting-started.md",
+    "chart-types.md",
+    "customization.md",
+    "advanced.md",
+    "api-reference.md"
+  ]
+}

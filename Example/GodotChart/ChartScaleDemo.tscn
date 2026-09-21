@@ -1,0 +1,185 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/GodotChart/ChartScaleDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/Canvas/Canvas2DControl.cs" id="2_canvas"]
+
+[node name="ChartScaleDemo" type="Control" node_paths=PackedStringArray("TimeView", "OrdinalView", "IdentityView", "DivergingView", "BandView", "RadialView", "NoCanvasNote")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_minimum_size = Vector2(760, 1200)
+script = ExtResource("1_demo")
+TimeView = NodePath("Layout/Column/Grid/Time/View")
+OrdinalView = NodePath("Layout/Column/Grid/Ordinal/View")
+IdentityView = NodePath("Layout/Column/Grid/Identity/View")
+DivergingView = NodePath("Layout/Column/Grid/Diverging/View")
+BandView = NodePath("Layout/Column/Grid/Band/View")
+RadialView = NodePath("Layout/Column/Grid/Radial/View")
+NoCanvasNote = NodePath("Layout/Column/NoCanvasNote")
+
+[node name="Layout" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="Column" type="VBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="RichTextLabel" parent="Layout/Column"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+text = "[b][font_size=19]Scale gallery[/font_size][/b]\n[color=#93a1b5]Every IScale on hand-built charts; BandScale and RadialScale have no built-in consumer, so the two custom marks here provide one. Marks: ChartCustomizationDemo; canvas: ChartCanvasDemo.[/color]"
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+
+[node name="HeaderRule" type="HSeparator" parent="Layout/Column"]
+layout_mode = 2
+
+[node name="Grid" type="GridContainer" parent="Layout/Column"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="Time" type="VBoxContainer" parent="Layout/Column/Grid"]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Column/Grid/Time"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+text = "[b]TimeScale + SequentialColorScale[/b] · X = DateTime, colour = load ramp"
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+
+[node name="View" type="Control" parent="Layout/Column/Grid/Time"]
+custom_minimum_size = Vector2(340, 220)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+script = ExtResource("2_canvas")
+
+[node name="Ordinal" type="VBoxContainer" parent="Layout/Column/Grid"]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Column/Grid/Ordinal"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+text = "[b]OrdinalScale + ColorScale + ShapeScale[/b] · stacked bars, shapes in the legend"
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+
+[node name="View" type="Control" parent="Layout/Column/Grid/Ordinal"]
+custom_minimum_size = Vector2(340, 220)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+script = ExtResource("2_canvas")
+
+[node name="Identity" type="VBoxContainer" parent="Layout/Column/Grid"]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Column/Grid/Identity"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+text = "[b]IdentityColorScale[/b] · the rows carry '#rrggbb' colours, so no legend"
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+
+[node name="View" type="Control" parent="Layout/Column/Grid/Identity"]
+custom_minimum_size = Vector2(340, 220)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+script = ExtResource("2_canvas")
+
+[node name="Diverging" type="VBoxContainer" parent="Layout/Column/Grid"]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Column/Grid/Diverging"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+text = "[b]DivergingColorScale[/b] · fixed -1..1 domain, neutral colour at 0"
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+
+[node name="View" type="Control" parent="Layout/Column/Grid/Diverging"]
+custom_minimum_size = Vector2(340, 220)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+script = ExtResource("2_canvas")
+
+[node name="Band" type="VBoxContainer" parent="Layout/Column/Grid"]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Column/Grid/Band"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+text = "[b]BandScale, custom mark[/b] · grouped bars, one sub-band per colour value"
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+
+[node name="View" type="Control" parent="Layout/Column/Grid/Band"]
+custom_minimum_size = Vector2(340, 220)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+script = ExtResource("2_canvas")
+
+[node name="Radial" type="VBoxContainer" parent="Layout/Column/Grid"]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Column/Grid/Radial"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+text = "[b]RadialScale, custom mark[/b] · angle per category, radius from the Y scale"
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+
+[node name="View" type="Control" parent="Layout/Column/Grid/Radial"]
+custom_minimum_size = Vector2(340, 220)
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+script = ExtResource("2_canvas")
+
+[node name="NoCanvasNote" type="Label" parent="Layout/Column"]
+visible = false
+layout_mode = 2
+text = "no canvas: this demo needs a rendering device"

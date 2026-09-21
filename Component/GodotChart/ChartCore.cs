@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 
 namespace GodotNodeExtension.Component.GodotChart;
 
@@ -46,12 +48,16 @@ public enum MarkCoordinate
 }
 
 // ── Data row (a single record) ────────────────────────────────────
+/// <summary>
+/// A single data record: a bag of named fields. Rows in one data set may have different fields;
+/// <see cref="Has"/> distinguishes "missing" from "present but null".
+/// </summary>
 public class DataRow
 {
     private readonly Dictionary<string, object> _fields;
 
     /// <summary>Create a new data row with default capacity.</summary>
-    public DataRow() { _fields = new(); }
+    public DataRow() { _fields = []; }
 
     /// <summary>Create a new data row with the given initial field capacity.</summary>
     public DataRow(int fieldCapacity) { _fields = new(fieldCapacity); }
@@ -70,15 +76,28 @@ public class DataRow
         if (!_fields.TryGetValue(field, out var value))
             throw new KeyNotFoundException($"DataRow does not contain field '{field}'.");
         if (value is T typed) return typed;
-        try { return (T)Convert.ChangeType(value, typeof(T)); }
+        try { return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture); }
         catch (Exception ex)
         {
+            // A named-but-null field cannot be converted to a value type; report that as a normal
+            // conversion failure instead of dereferencing null while building the message.
+            string text = value is { } present ? present.ToString() ?? "null" : "null";
+            string type = value is { } known ? known.GetType().Name : "null";
             throw new InvalidCastException(
-                $"Cannot convert field '{field}' value '{value}' ({value.GetType().Name}) to {typeof(T).Name}.", ex);
+                $"Cannot convert field '{field}' value '{text}' ({type}) to {typeof(T).Name}.", ex);
         }
     }
 
-    /// <summary>Get a field value as object. Throws if the field does not exist.</summary>
+    /// <summary>
+    /// Get a field value as object. Throws if the field does not exist.
+    /// <para>
+    /// The return type stays non-nullable for the common case (a row whose value is a number or a
+    /// string), but a row may also store an explicit null - <see cref="Set"/> accepts one - so the
+    /// return value carries a <c>[return: MaybeNull]</c> annotation: callers that need the value itself
+    /// check for it, and the ones that only pass it on keep their signatures.
+    /// </para>
+    /// </summary>
+    [return: MaybeNull]
     public object Get(string field)
     {
         if (!_fields.TryGetValue(field, out var value))
@@ -92,12 +111,18 @@ public class DataRow
         result = default!;
         if (!_fields.TryGetValue(field, out var value)) return false;
         if (value is T typed) { result = typed; return true; }
-        try { result = (T)Convert.ChangeType(value, typeof(T)); return true; }
+        try { result = (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture); return true; }
         catch { return false; }
     }
 
     /// <summary>Check whether this row contains a field with the given name.</summary>
     public bool Has(string field)  => _fields.ContainsKey(field);
+
+    /// <summary>
+    /// The fields of this row, keyed by field name. A read-only view of the stored values, for
+    /// serialisation and for inspecting what a row carries; values keep the type they were set with.
+    /// </summary>
+    public IReadOnlyDictionary<string, object> Fields => _fields;
 }
 
 // ── Encode spec: field name or constant value ────────────────────────────
@@ -113,9 +138,11 @@ public interface IEncodeValue;
 /// </summary>
 public class FieldEncode : IEncodeValue
 {
+    /// <summary>Create an encode that reads the channel value from the named data field.</summary>
+    public FieldEncode(string fieldName) => FieldName = fieldName;
+
     /// <summary>Name of the data field to read values from.</summary>
     public string FieldName { get; }
-    public FieldEncode(string fieldName) => FieldName = fieldName;
 }
 
 /// <summary>
@@ -125,6 +152,7 @@ public class ConstantEncode : IEncodeValue
 {
     /// <summary>The constant value for this channel.</summary>
     public object Value { get; }
+    /// <summary>Create an encode that always yields the same value for the channel.</summary>
     public ConstantEncode(object value) => Value = value;
 }
 
@@ -146,32 +174,34 @@ public interface IDataTransform
 public class BinTransform : IDataTransform
 {
     /// <summary>Field name containing the numeric values to bin.</summary>
-    public string Field { get; set; } = "value";
+    public string Field { get; init; } = "value";
 
     /// <summary>
     /// Number of bins. If null, uses Sturges' rule: ceil(1 + log2(n)).
-    /// Ignored if <see cref="BinWidth"/> is set.
+    /// Ignored when <see cref="BinWidth"/> is a positive value.
     /// </summary>
-    public int? BinCount { get; set; }
+    public int? BinCount { get; init; }
 
     /// <summary>
     /// Fixed bin width. Takes priority over <see cref="BinCount"/> if set.
     /// </summary>
-    public double? BinWidth { get; set; }
+    public double? BinWidth { get; init; }
 
     /// <inheritdoc />
     public List<DataRow> Apply(List<DataRow> data)
     {
-        if (data.Count == 0) return new List<DataRow>();
+        if (data.Count == 0) return [];
 
-        // Extract numeric values
+        // Extract numeric values. Non-finite entries (NaN / infinity, typically a failed parse or a
+        // missing measurement) are skipped: they cannot be compared or binned, and would otherwise
+        // poison the range and the bin index.
         var values = new List<double>(data.Count);
         foreach (var row in data)
         {
-            if (row.TryGet<double>(Field, out var v))
+            if (row.TryGet<double>(Field, out var v) && double.IsFinite(v))
                 values.Add(v);
         }
-        if (values.Count == 0) return new List<DataRow>();
+        if (values.Count == 0) return [];
 
         double min = double.MaxValue, max = double.MinValue;
         foreach (var v in values)
@@ -180,9 +210,10 @@ public class BinTransform : IDataTransform
             if (v > max) max = v;
         }
 
-        // Determine bin count and width
+        // Determine bin count and width. Relative degeneracy test: an absolute epsilon misses
+        // equal-value data in a huge range and misfires in a tiny one (see ScaleMath).
         double range = max - min;
-        if (range < 1e-10)
+        if (ScaleMath.IsDegenerate(min, max))
         {
             // All values are the same — return a single bin
             return

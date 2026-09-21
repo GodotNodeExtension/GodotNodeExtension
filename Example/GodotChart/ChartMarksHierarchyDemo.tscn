@@ -1,0 +1,163 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/GodotChart/ChartMarksHierarchyDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/ChartView.cs" id="2_chart"]
+
+[node name="ChartMarksHierarchyDemo" type="MarginContainer" node_paths=PackedStringArray("TreemapBinaryChart", "TreemapSquarifyChart", "SunburstChart", "SankeyChart", "ChordChart")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+script = ExtResource("1_demo")
+TreemapBinaryChart = NodePath("Layout/Grid/TreemapBinary/TreemapBinaryChart")
+TreemapSquarifyChart = NodePath("Layout/Grid/TreemapSquarify/TreemapSquarifyChart")
+SunburstChart = NodePath("Layout/Grid/Sunburst/SunburstChart")
+SankeyChart = NodePath("Layout/Grid/Sankey/SankeyChart")
+ChordChart = NodePath("Layout/Grid/Chord/ChordChart")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="RichTextLabel" parent="Layout"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b][font_size=19]Hierarchy and flow mark knobs[/font_size][/b]\n[color=#93a1b5]Treemap (both layout modes), sunburst, sankey and chord through view.ConfigureMark(...). Polar / Cartesian knobs: ChartMarksPolarDemo / ChartMarksCartesianDemo.[/color]"
+
+[node name="HeaderRule" type="HSeparator" parent="Layout"]
+layout_mode = 2
+
+[node name="Grid" type="GridContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="TreemapBinary" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/TreemapBinary"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Treemap · BinarySplit[/b] · CellGap 4 · CornerRadius 8 · GroupHeaderHeight 18 · SiblingShadeStep 0.12"
+
+[node name="TreemapBinaryChart" type="Control" parent="Layout/Grid/TreemapBinary"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 13
+Title = "Treemap: LayoutMode = BinarySplit"
+
+[node name="TreemapSquarify" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/TreemapSquarify"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Treemap · Squarify[/b] · CellGap 1.5 · CornerRadius 0 · GroupHeaderHeight 0 · SiblingShadeStep 0.3"
+
+[node name="TreemapSquarifyChart" type="Control" parent="Layout/Grid/TreemapSquarify"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 13
+Title = "Treemap: LayoutMode = Squarify"
+
+[node name="Sunburst" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Sunburst"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Sunburst[/b] · RadiusFactor 0.9 · InnerRadiusRatio 0.2 · RingGap 3 · DepthShadeStep 0.2"
+
+[node name="SunburstChart" type="Control" parent="Layout/Grid/Sunburst"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 14
+Title = "Sunburst: rings from ParentField"
+
+[node name="Sankey" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Sankey"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Sankey[/b] · SourceField from · TargetField to · ColumnGap 0.3 · NodeWidth 18 · FlowOpacity 0.3"
+
+[node name="SankeyChart" type="Control" parent="Layout/Grid/Sankey"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 15
+Title = "Sankey: SourceField / TargetField"
+
+[node name="Chord" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Chord"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Chord[/b] · SourceField src · TargetField dst · ArcWidthRatio 0.08 · ChordOpacity 0.45"
+
+[node name="ChordChart" type="Control" parent="Layout/Grid/Chord"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 16
+Title = "Chord: SourceField / TargetField"
+
+[node name="Notes" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Notes"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Where to go next[/b] · Cartesian knobs in [b]ChartMarksCartesianDemo[/b], polar in [b]ChartMarksPolarDemo[/b]. The field names used here (parent, source/target) are knobs too - see the class comment of ChartMarksHierarchyDemo.cs."

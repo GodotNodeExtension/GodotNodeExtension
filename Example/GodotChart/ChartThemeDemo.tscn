@@ -1,0 +1,278 @@
+[gd_scene format=3 uid="uid://dscwi44r1gkdp"]
+
+[ext_resource type="Script" uid="uid://fa0ug50jt8jf" path="res://Example/GodotChart/ChartThemeDemo.cs" id="1_demo"]
+[ext_resource type="Script" uid="uid://b0dp6p6n4upf0" path="res://Component/GodotChart/ChartView.cs" id="2_chart"]
+
+[node name="ChartThemeDemo" type="MarginContainer" unique_id=1298266612 node_paths=PackedStringArray("DarkChart", "LightChart", "CloneChart", "FrameChart", "TypographyChart", "MetricsChart", "HoverChart", "InteractionChart", "LiveThemeChart", "OverrideChart", "MutateButton", "ResetButton", "Status")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+script = ExtResource("1_demo")
+DarkChart = NodePath("Layout/Grid/Dark/DarkChart")
+LightChart = NodePath("Layout/Grid/Light/LightChart")
+CloneChart = NodePath("Layout/Grid/Clone/CloneChart")
+FrameChart = NodePath("Layout/Grid/Frame/FrameChart")
+TypographyChart = NodePath("Layout/Grid/Typography/TypographyChart")
+MetricsChart = NodePath("Layout/Grid/Metrics/MetricsChart")
+HoverChart = NodePath("Layout/Grid/Hover/HoverChart")
+InteractionChart = NodePath("Layout/Grid/Interaction/InteractionChart")
+LiveThemeChart = NodePath("Layout/Grid/LiveTheme/LiveThemeChart")
+OverrideChart = NodePath("Layout/Grid/Override/OverrideChart")
+MutateButton = NodePath("Layout/Controls/MutateButton")
+ResetButton = NodePath("Layout/Controls/ResetButton")
+Status = NodePath("Layout/Status")
+
+[node name="Layout" type="VBoxContainer" parent="." unique_id=1025375345]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="RichTextLabel" parent="Layout" unique_id=1318780055]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b][font_size=19]The ChartTheme surface[/font_size][/b]\n[color=#93a1b5]Group by group: palette and gradient, frame colours, typography, line widths and tooltip metrics, the Enable* toggles, Clone next to Dark / Light, a resource edited at runtime and Chart-level overrides - the act/plan rows are the same everywhere, and the explanations live in ChartThemeDemo.cs.[/color]"
+fit_content = true
+scroll_active = false
+
+[node name="HeaderRule" type="HSeparator" parent="Layout" unique_id=1200247350]
+layout_mode = 2
+
+[node name="Controls" type="HBoxContainer" parent="Layout" unique_id=62539515]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="MutateButton" type="Button" parent="Layout/Controls" unique_id=598113816]
+layout_mode = 2
+text = "Mutate Theme"
+
+[node name="ResetButton" type="Button" parent="Layout/Controls" unique_id=1082095577]
+layout_mode = 2
+text = "Reset Theme"
+
+[node name="Status" type="Label" parent="Layout" unique_id=1879656339]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+text = "ready"
+autowrap_mode = 3
+
+[node name="Grid" type="GridContainer" parent="Layout" unique_id=1609370681]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="Dark" type="VBoxContainer" parent="Layout/Grid" unique_id=728181890]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Dark" unique_id=87788237]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Dark[/b] · ThemeKind = Dark, no CustomTheme · 6-colour DefaultPalette, 1px grid, 2px axis"
+fit_content = true
+scroll_active = false
+
+[node name="DarkChart" type="Control" parent="Layout/Grid/Dark" unique_id=211499432]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("2_chart")
+Title = "ThemeKind = Dark (no CustomTheme)"
+
+[node name="Light" type="VBoxContainer" parent="Layout/Grid" unique_id=1975531670]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Light" unique_id=1659672032]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Light[/b] · one export swaps Palette, frame, grid, axis, label and mark colours"
+fit_content = true
+scroll_active = false
+
+[node name="LightChart" type="Control" parent="Layout/Grid/Light" unique_id=853259218]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("2_chart")
+Title = "ThemeKind = Light"
+ThemeKind = 1
+
+[node name="Clone" type="VBoxContainer" parent="Layout/Grid" unique_id=2032563030]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Clone" unique_id=309944446]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Clone[/b] · Dark().Clone(): Palette = 2 colours · SequentialGradient = 2 stops"
+fit_content = true
+scroll_active = false
+
+[node name="CloneChart" type="Control" parent="Layout/Grid/Clone" unique_id=1639808757]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("2_chart")
+Title = "Dark().Clone() + Palette (2 colours)"
+
+[node name="Frame" type="VBoxContainer" parent="Layout/Grid" unique_id=462978522]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Frame" unique_id=350868049]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Frame[/b] · BackgroundColor / GridColor / AxisColor + BackgroundCornerRadius 20"
+fit_content = true
+scroll_active = false
+
+[node name="FrameChart" type="Control" parent="Layout/Grid/Frame" unique_id=370791659]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("2_chart")
+Title = "Frame colours + BackgroundCornerRadius"
+
+[node name="Typography" type="VBoxContainer" parent="Layout/Grid" unique_id=1310914162]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Typography" unique_id=1673524185]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Typography[/b] · Font = ThemeDB.FallbackFont · TitleFontSize 17 · LabelFontSize 11"
+fit_content = true
+scroll_active = false
+
+[node name="TypographyChart" type="Control" parent="Layout/Grid/Typography" unique_id=923142941]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("2_chart")
+Title = "Typography"
+
+[node name="Metrics" type="VBoxContainer" parent="Layout/Grid" unique_id=582321348]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Metrics" unique_id=351722638]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Widths[/b] · GridLineWidth 2.5 · AxisLineWidth 4 · Crosshair 2.5 · Selection 4 · Tooltip"
+fit_content = true
+scroll_active = false
+
+[node name="MetricsChart" type="Control" parent="Layout/Grid/Metrics" unique_id=297714797]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("2_chart")
+Title = "Widths & tooltip"
+
+[node name="Hover" type="VBoxContainer" parent="Layout/Grid" unique_id=666421392]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Hover" unique_id=98439462]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Hover[/b] · EnableHoverExplode / EnableHoverHighlight = false · PieExplodeRatio 0.08"
+fit_content = true
+scroll_active = false
+
+[node name="HoverChart" type="Control" parent="Layout/Grid/Hover" unique_id=1961066198]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("2_chart")
+Kind = 6
+Title = "Feature toggles: hover"
+
+[node name="Interaction" type="VBoxContainer" parent="Layout/Grid" unique_id=1870136101]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Interaction" unique_id=1035346795]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Pointer[/b] · EnableSelection / EnableCrosshair = false · EnableTooltip / ShowTooltip = false"
+fit_content = true
+scroll_active = false
+
+[node name="InteractionChart" type="Control" parent="Layout/Grid/Interaction" unique_id=1894538226]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("2_chart")
+Title = "Feature toggles: pointer"
+
+[node name="LiveTheme" type="VBoxContainer" parent="Layout/Grid" unique_id=1688883164]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/LiveTheme" unique_id=134822245]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Live theme[/b] · Mutate edits BackgroundColor + Palette, then Resource.EmitChanged()"
+fit_content = true
+scroll_active = false
+
+[node name="LiveThemeChart" type="Control" parent="Layout/Grid/LiveTheme" unique_id=798648371]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("2_chart")
+Title = "Live theme resource (Mutate / Reset above)"
+
+[node name="Override" type="VBoxContainer" parent="Layout/Grid" unique_id=333410036]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Override" unique_id=1741446037]
+custom_minimum_size = Vector2(1, 0)
+layout_mode = 2
+bbcode_enabled = true
+text = "[b]Chart level[/b] · ConfigureChart: chart.BackgroundColor / GridColor / AxisColor win"
+fit_content = true
+scroll_active = false
+
+[node name="OverrideChart" type="Control" parent="Layout/Grid/Override" unique_id=1290068992]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("2_chart")
+Title = "Chart-level colours"

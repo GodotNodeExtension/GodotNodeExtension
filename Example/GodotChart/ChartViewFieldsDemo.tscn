@@ -1,0 +1,287 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/GodotChart/ChartViewFieldsDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/ChartView.cs" id="2_chart"]
+
+[node name="ChartViewFieldsDemo" type="MarginContainer" node_paths=PackedStringArray("ChannelsChart", "SequentialChart", "DivergingChart", "IdentityChart", "DomainsChart", "LightChart", "ResourceThemeChart", "AxesChart", "CsvChart", "SetValuesButton", "CsvButton", "AddRowButton", "ClearButton", "RefreshButton", "RepaintButton", "Status")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+script = ExtResource("1_demo")
+ChannelsChart = NodePath("Layout/Grid/Channels/ChannelsChart")
+SequentialChart = NodePath("Layout/Grid/Sequential/SequentialChart")
+DivergingChart = NodePath("Layout/Grid/Diverging/DivergingChart")
+IdentityChart = NodePath("Layout/Grid/Identity/IdentityChart")
+DomainsChart = NodePath("Layout/Grid/Domains/DomainsChart")
+LightChart = NodePath("Layout/Grid/Light/LightChart")
+ResourceThemeChart = NodePath("Layout/Grid/ResourceTheme/ResourceThemeChart")
+AxesChart = NodePath("Layout/Grid/Axes/AxesChart")
+CsvChart = NodePath("Layout/Grid/Csv/CsvChart")
+SetValuesButton = NodePath("Layout/Controls/SetValuesButton")
+CsvButton = NodePath("Layout/Controls/CsvButton")
+AddRowButton = NodePath("Layout/Controls/AddRowButton")
+ClearButton = NodePath("Layout/Controls/ClearButton")
+RefreshButton = NodePath("Layout/Controls/RefreshButton")
+RepaintButton = NodePath("Layout/Controls/RepaintButton")
+Status = NodePath("Layout/Status")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="RichTextLabel" parent="Layout"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b][font_size=19]ChartView fields, set from code[/font_size][/b]\n[color=#93a1b5]The scene only holds the layout; the script below sets every export. The buttons drive the data entry points and Refresh() / Repaint().[/color]"
+
+[node name="HeaderRule" type="HSeparator" parent="Layout"]
+layout_mode = 2
+
+[node name="Controls" type="HBoxContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SetValuesButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "SetValues"
+
+[node name="CsvButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "SetCsv"
+
+[node name="AddRowButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "AddRow"
+
+[node name="ClearButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "Clear"
+
+[node name="RefreshButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "Refresh"
+
+[node name="RepaintButton" type="Button" parent="Layout/Controls"]
+layout_mode = 2
+text = "Repaint"
+
+[node name="Status" type="Label" parent="Layout"]
+layout_mode = 2
+autowrap_mode = 3
+custom_minimum_size = Vector2(1, 0)
+text = "ready"
+
+[node name="Grid" type="GridContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="Channels" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Channels"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Six channels[/b] · X/Y · Color (legend) · Size + SizeRange · Opacity + OpacityRange · Shape + ShapeSymbols"
+
+[node name="ChannelsChart" type="Control" parent="Layout/Grid/Channels"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 4
+Title = "Channels: Color / Size / Opacity / Shape"
+
+[node name="Sequential" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Sequential"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]ColorMapping = Sequential[/b] · the value runs through theme.SequentialGradient (no legend)"
+
+[node name="SequentialChart" type="Control" parent="Layout/Grid/Sequential"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 4
+Title = "ColorMapping = Sequential"
+
+[node name="Diverging" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Diverging"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]ColorMapping = Diverging[/b] · signed values around a zero midpoint (Negative / Mid / Positive)"
+
+[node name="DivergingChart" type="Control" parent="Layout/Grid/Diverging"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 1
+Title = "ColorMapping = Diverging"
+
+[node name="Identity" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Identity"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]ColorMapping = Identity[/b] · the value IS the colour ('#rrggbb'), so no legend"
+
+[node name="IdentityChart" type="Control" parent="Layout/Grid/Identity"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 6
+Title = "ColorMapping = Identity (#rrggbb)"
+
+[node name="Domains" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Domains"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Pinned domains[/b] · XAxisRange (2, 10), YAxisRange (0, 100) - needs a numeric axis, so XField is a number"
+
+[node name="DomainsChart" type="Control" parent="Layout/Grid/Domains"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 2
+Title = "Pinned XAxisRange / YAxisRange"
+
+[node name="Light" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Light"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]ThemeKind = Light[/b] + ShowCrosshair = false (the two pointer switches are independent)"
+
+[node name="LightChart" type="Control" parent="Layout/Grid/Light"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 3
+Title = "ThemeKind = Light (crosshair off)"
+
+[node name="ResourceTheme" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/ResourceTheme"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]CustomTheme[/b] · a ChartTheme built in code (palette, frame, fonts, radii) beats ThemeKind"
+
+[node name="ResourceThemeChart" type="Control" parent="Layout/Grid/ResourceTheme"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 1
+Title = "CustomTheme resource (code)"
+
+[node name="Axes" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Axes"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Axes, units, legend[/b] · XAxisTitle + XAxisUnit, YAxisTitle + YAxisUnit, Legend = Right"
+
+[node name="AxesChart" type="Control" parent="Layout/Grid/Axes"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 1
+Title = "Axes, units and Legend = Right"
+
+[node name="Csv" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Csv"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]SetCsv + AddRow[/b] · ParseCsv feeds it, WindowSize = 6 streams it, EditorPreview = false"
+
+[node name="CsvChart" type="Control" parent="Layout/Grid/Csv"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 2
+Title = "SetCsv + AddRow + WindowSize = 6"
+EditorPreview = false
+
+[node name="Notes" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Notes"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Where to go next[/b] · the remaining ChartView hooks: [b]ChartViewHooksDemo[/b], the five Chart events: [b]ChartCallbacksDemo[/b]."

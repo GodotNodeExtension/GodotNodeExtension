@@ -1,0 +1,229 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/GodotChart/ChartMarksPolarDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/ChartView.cs" id="2_chart"]
+
+[node name="ChartMarksPolarDemo" type="MarginContainer" node_paths=PackedStringArray("PieChart", "DonutTextChart", "DonutRichChart", "GaugeChart", "GaugeRingChart", "RadarChart", "RadarGridlessChart", "FunnelChart")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+script = ExtResource("1_demo")
+PieChart = NodePath("Layout/Grid/Pie/PieChart")
+DonutTextChart = NodePath("Layout/Grid/DonutText/DonutTextChart")
+DonutRichChart = NodePath("Layout/Grid/DonutRich/DonutRichChart")
+GaugeChart = NodePath("Layout/Grid/Gauge/GaugeChart")
+GaugeRingChart = NodePath("Layout/Grid/GaugeRing/GaugeRingChart")
+RadarChart = NodePath("Layout/Grid/Radar/RadarChart")
+RadarGridlessChart = NodePath("Layout/Grid/RadarGridless/RadarGridlessChart")
+FunnelChart = NodePath("Layout/Grid/Funnel/FunnelChart")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="RichTextLabel" parent="Layout"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b][font_size=19]Polar mark knobs[/font_size][/b]\n[color=#93a1b5]Pie, donut, gauge, radar and funnel, each one ChartView configured through view.ConfigureMark(...). These marks draw from the plot's short edge, so the cell is what sizes them (every cell here asks for a square content box: ChartView reports it as PlotAspectRatio = 1) - and PlotAlignHorizontal decides whether that box sits left, centre or right in the cell (the Pie and Donut·rich center cells show left and right). Cartesian / hierarchy knobs: ChartMarksCartesianDemo / ChartMarksHierarchyDemo.[/color]"
+
+[node name="HeaderRule" type="HSeparator" parent="Layout"]
+layout_mode = 2
+
+[node name="Grid" type="GridContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="Pie" type="VBoxContainer" parent="Layout/Grid"]
+custom_minimum_size = Vector2(0, 340)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Pie"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Pie[/b] · InnerRadius 0 = pie · StartAngle π/2 · ExplodeRatio 0.08 · RadiusFactor 0.8 · PlotAlignHorizontal 0 (square box on the left) · SliceLabelBuilder"
+
+[node name="PieChart" type="Control" parent="Layout/Grid/Pie"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 6
+Title = "Pie: knobs + SliceLabelBuilder"
+PlotAlignHorizontal = 0
+
+[node name="DonutText" type="VBoxContainer" parent="Layout/Grid"]
+custom_minimum_size = Vector2(0, 340)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/DonutText"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Donut · center text[/b] · InnerRadius 0.62 (kind 0.55) · CenterText + CenterFontSize 20 · ShowLabel off"
+
+[node name="DonutTextChart" type="Control" parent="Layout/Grid/DonutText"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 7
+Title = "Donut: ring + center text"
+
+[node name="DonutRich" type="VBoxContainer" parent="Layout/Grid"]
+custom_minimum_size = Vector2(0, 340)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/DonutRich"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Donut · rich center[/b] · InnerRadius 0.58 · CenterContentBuilder · CenterFontSize 22 · RadiusFactor 0.9 · PlotAlignHorizontal 2 (square box on the right)"
+
+[node name="DonutRichChart" type="Control" parent="Layout/Grid/DonutRich"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 7
+Title = "Donut: CenterContentBuilder (rich center)"
+PlotAlignHorizontal = 2
+
+[node name="Gauge" type="VBoxContainer" parent="Layout/Grid"]
+custom_minimum_size = Vector2(0, 340)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Gauge"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Gauge · default sweep[/b] · Angles -210 / 30 · ArcWidth 0.14 · TrackColor + ValueColor · YAxisRange (0,100)"
+
+[node name="GaugeChart" type="Control" parent="Layout/Grid/Gauge"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 17
+Title = "Gauge: sweep + colours"
+
+[node name="GaugeRing" type="VBoxContainer" parent="Layout/Grid"]
+custom_minimum_size = Vector2(0, 340)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/GaugeRing"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Gauge · ring, labels off[/b] · Angles 120 / 60 · InnerRadiusRatio 0.72 · center + min/max labels off"
+
+[node name="GaugeRingChart" type="Control" parent="Layout/Grid/GaugeRing"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 17
+Title = "Gauge: ring + labels off"
+
+[node name="Radar" type="VBoxContainer" parent="Layout/Grid"]
+custom_minimum_size = Vector2(0, 340)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Radar"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Radar · two series[/b] · GridRings 4 · ShowGrid + ShowAxisLabels on · FillOpacity 0.25 · PointRadius 4"
+
+[node name="RadarChart" type="Control" parent="Layout/Grid/Radar"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 8
+Title = "Radar: two series, GridRings = 4"
+
+[node name="RadarGridless" type="VBoxContainer" parent="Layout/Grid"]
+custom_minimum_size = Vector2(0, 340)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/RadarGridless"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Radar · grid off[/b] · ShowAxisLabels on · FillOpacity 0.35 · StrokeWidth 3 · PointRadius 0"
+
+[node name="RadarGridlessChart" type="Control" parent="Layout/Grid/RadarGridless"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 8
+Title = "Radar: grid off, labels on"
+
+[node name="Funnel" type="VBoxContainer" parent="Layout/Grid"]
+custom_minimum_size = Vector2(0, 340)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Funnel"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+autowrap_mode = 3
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Funnel[/b] · StageGap 10 · MinWidthRatio 0.35 · CornerRadius 8 · ShowLabel on · ColorField category"
+
+[node name="FunnelChart" type="Control" parent="Layout/Grid/Funnel"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 18
+Title = "Funnel: stage knobs"

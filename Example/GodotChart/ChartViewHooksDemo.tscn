@@ -1,0 +1,184 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Example/GodotChart/ChartViewHooksDemo.cs" id="1_demo"]
+[ext_resource type="Script" path="res://Component/GodotChart/ChartView.cs" id="2_chart"]
+
+[node name="ChartViewHooksDemo" type="MarginContainer" node_paths=PackedStringArray("IntervalChart", "PlainTooltipChart", "RichTooltipChart", "SharedChartA", "SharedChartB", "SharedPreview", "PreviewLabel", "EditorChart")]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+script = ExtResource("1_demo")
+IntervalChart = NodePath("Layout/Grid/ConfigureMark/IntervalChart")
+PlainTooltipChart = NodePath("Layout/Grid/PlainTooltip/PlainTooltipChart")
+RichTooltipChart = NodePath("Layout/Grid/RichTooltip/RichTooltipChart")
+SharedChartA = NodePath("Layout/Grid/Shared/SharedChartA")
+SharedChartB = NodePath("Layout/Grid/Shared/SharedChartB")
+SharedPreview = NodePath("Layout/Grid/Shared/PreviewRow/SharedPreview")
+PreviewLabel = NodePath("Layout/Grid/Shared/PreviewRow/PreviewLabel")
+EditorChart = NodePath("Layout/Grid/EditorPreview/EditorChart")
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="RichTextLabel" parent="Layout"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b][font_size=19]ChartView escape hatches[/font_size][/b]\n[color=#93a1b5]ConfigureMark, the two tooltip content builders, one canvas shared by two views and the editor-only EditorPreview. Refresh vs Repaint runs on the ChartViewFieldsDemo page, the five events on ChartCallbacksDemo.[/color]"
+
+[node name="HeaderRule" type="HSeparator" parent="Layout"]
+layout_mode = 2
+
+[node name="Grid" type="GridContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 16
+columns = 2
+
+[node name="ConfigureMark" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/ConfigureMark"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]ConfigureMark[/b] · the hook re-runs on every rebuild: IntervalMark.BarPadding 0.45, CornerRadius 12"
+
+[node name="IntervalChart" type="Control" parent="Layout/Grid/ConfigureMark"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 1
+Title = "IntervalMark: BarPadding / CornerRadius"
+
+[node name="PlainTooltip" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/PlainTooltip"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Tooltip.Options.ContentBuilder[/b] · one returned string per line, built from the hit DataRow"
+
+[node name="PlainTooltipChart" type="Control" parent="Layout/Grid/PlainTooltip"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 2
+Title = "Tooltip: ContentBuilder (plain text)"
+
+[node name="RichTooltip" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/RichTooltip"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]RichContentBuilder[/b] · TooltipLine.Plain / WithIcon / TooltipSpan(Bold, Color) + bubble style"
+
+[node name="RichTooltipChart" type="Control" parent="Layout/Grid/RichTooltip"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 1
+Title = "Tooltip: RichContentBuilder (styled)"
+
+[node name="EditorPreview" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/EditorPreview"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]EditorPreview = false[/b] · editor-only: placeholder instead of a live surface, ignored at runtime"
+
+[node name="EditorChart" type="Control" parent="Layout/Grid/EditorPreview"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 3
+Title = "EditorPreview = false"
+EditorPreview = false
+
+[node name="Shared" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Shared"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]CanvasFactory[/b] · two views, ONE canvas (one size, one owner); TextureRect shows view.Texture"
+
+[node name="SharedChartA" type="Control" parent="Layout/Grid/Shared"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 2
+Title = "One canvas, two ChartViews"
+
+[node name="SharedChartB" type="Control" parent="Layout/Grid/Shared"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+layout_mode = 2
+script = ExtResource("2_chart")
+Kind = 2
+Title = "One canvas, two ChartViews"
+
+[node name="PreviewRow" type="HBoxContainer" parent="Layout/Grid/Shared"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="PreviewLabel" type="Label" parent="Layout/Grid/Shared/PreviewRow"]
+layout_mode = 2
+text = "Canvas ->"
+
+[node name="SharedPreview" type="TextureRect" parent="Layout/Grid/Shared/PreviewRow"]
+custom_minimum_size = Vector2(200, 130)
+layout_mode = 2
+size_flags_horizontal = 3
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Notes" type="VBoxContainer" parent="Layout/Grid"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 4
+
+[node name="Caption" type="RichTextLabel" parent="Layout/Grid/Notes"]
+layout_mode = 2
+custom_minimum_size = Vector2(1, 0)
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+text = "[b]Where to go next[/b] · Refresh() vs Repaint() and the whole export list are on [b]ChartViewFieldsDemo[/b], the five events on [b]ChartCallbacksDemo[/b], the mark knobs on the [b]ChartMarks*Demo[/b] pages."
