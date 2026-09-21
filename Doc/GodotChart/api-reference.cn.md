@@ -426,7 +426,177 @@ public enum MarkCoordinate
     Polar,          // 极坐标
     Hierarchical,   // 层级
     Flow,           // 流向
+    Geographic,     // 坐标参照系：地图、星球、游戏世界
 }
+```
+
+坐标系不同的 Mark 不能放在同一张图表里（见[坐标系兼容性](advanced.cn.md#坐标系兼容性)）。地理 mark 通过
+坐标参照系而不是标度来放置数据，并且不画 X/Y 轴。
+
+---
+
+## 地理坐标
+
+数据并不总是落在两个标度上：它也可以有一个地理上的位置 —— 经纬度、一个虚构行星的地图，或者以自身单位表示的
+游戏世界坐标。承载这件事的是两个对象：**参照系（frame）** 说明一个坐标的含义、以及它如何落到 mark 绘制所在的
+归一化世界；**视口（viewport）** 说明这个世界里的哪一部分被显示、以什么尺度显示。
+
+两者都是公开的，所以同一套投影你自己的代码也能用：把一个坐标换算成屏幕位置、或者把一次点击换算回坐标，各是
+一次调用。内置 mark 读的是标度；一个参照系加一个视口，就是"带地理位置的坐标"的放置方式，自定义 mark 或自定义
+绘制用的是完全相同的这两个对象。
+
+### IGeoFrame
+
+```csharp
+public interface IGeoFrame
+{
+    string  Name       { get; }   // 诊断用
+    double  Aspect     { get; }   // 等尺度下的世界宽 / 高
+    double  WorldWidth { get; }   // 水平范围，用参照系自己的单位
+    bool    WrapsX     { get; }   // 水平轴是否环绕（球面是 360°）
+    double? MaxAbsY    { get; }   // 纵向截断（Web Mercator 为 ±85.05112878°，平面参照系为 null）
+
+    (double U, double V) Normalize(double x, double y);    // 坐标 -> 归一化 [0, 1]²，北在上
+    (double X, double Y) Denormalize(double u, double v);  // 归一化 -> 坐标
+    double WrapX(double x);                                // 把坐标折回参照系自己的范围
+}
+```
+
+| 工厂方法 | 坐标 | 投影 | `WrapsX` |
+|----------|------|------|----------|
+| `GeoFrames.Wgs84()` | 经度、纬度 | Web Mercator | true |
+| `GeoFrames.Wgs84(GeoProjections.Equirectangular)` | 经度、纬度（含两极） | 等距圆柱（plate carrée） | true |
+| `GeoFrames.CustomSphere(minLng, maxLng, minLat, maxLat)` | 给定范围内的度数 | 该范围上的恒等投影 | true |
+| `GeoFrames.CustomPlane(minX, minY, maxX, maxY)` | 世界单位、像素、抽象布局坐标 | 无投影 | false |
+
+归一化坐标自下而上（北在上），参照系的 `Aspect` 保证它的世界不被拉变形：视口两个轴用同一个"每单位多少像素"
+的尺度，所以地图不会因为 plot 变宽或变高而失真。球面参照系的 `Normalize` 把两极交给投影处理（Web Mercator
+会截断），被环绕的经度可能落到 `[0, 1]` 之外 —— 这正是同一条经线可以在左边或右边一个世界宽的位置被画出来的
+原因。
+
+### IGeoProjection
+
+球面参照系通过投影做归一化：进来的是经纬度，出去的是归一化世界坐标。
+
+```csharp
+public interface IGeoProjection
+{
+    string Name        { get; }
+    double MaxLatitude { get; }   // Web Mercator 为 85.05112878，等距圆柱为 90
+    double Aspect      { get; }   // Web Mercator 为 1（正方形世界），等距圆柱为 2
+
+    (double U, double V) Forward(double longitude, double latitude);
+    (double Longitude, double Latitude) Inverse(double u, double v);
+}
+```
+
+| 投影 | 说明 |
+|------|------|
+| `GeoProjections.WebMercator` | 默认值，也是主流地图服务与瓦片切片方案使用的投影：保角，两极截断在 ±85.05112878° |
+| `GeoProjections.Equirectangular` | 把经纬度当作平面坐标（360° × 180° 的世界）：能看到两极，面积与度数网格可比 |
+| `GeoProjections.Identity(minLng, maxLng, minLat, maxLat)` | 给定的范围就是世界，按度等尺度铺开；`CustomSphere` 的默认投影 |
+
+投影是纯函数，因此一个实例可以共享，整套算术也能在图表之外复用。要接入别的方案就实现这个接口，再传给
+`GeoFrames.Wgs84(projection)` 或 `GeoFrames.CustomSphere(..., projection)`。
+
+### GeoViewport
+
+图表看它参照系的窗口：一个中心点（用参照系自己的坐标）加一个缩放级别。一个缩放级别就是两个轴的同一个分辨率，
+地图的形状正是靠这一点保持 —— 每轴一个窗口（`ZoomDomain` / `PanDomain`）做不到。
+
+```csharp
+public sealed class GeoViewport
+{
+    public GeoViewport(IGeoFrame frame);
+
+    public IGeoFrame  Frame     { get; }
+    public double     CenterX   { get; private set; }
+    public double     CenterY   { get; private set; }
+    public double     ZoomLevel { get; private set; }   // 每加一级，世界的像素尺寸翻倍
+    public bool       WrapsX    { get; private set; }
+    public GeoBounds? PanBounds { get; private set; }
+    public event Action? Changed;                       // 视口每次变化都会触发
+
+    public double WorldWidthPixels  { get; }
+    public double WorldHeightPixels { get; }
+    public double PixelsPerUnit     { get; }            // 参照系每个水平单位占多少像素
+}
+```
+
+| 成员 | 说明 |
+|------|------|
+| `Project(double x, double y, in PlotArea plot)` | 参照系坐标 → 屏幕像素 |
+| `Unproject(Vector2 screen, in PlotArea plot)` | 屏幕像素 → 参照系坐标 |
+| `VisibleBounds(in PlotArea plot)` | plot 矩形当前显示的那片参照系坐标 |
+| `SetView(double centerX, double centerY, double zoomLevel)` | 一步设定视口；中心会被 `PanBounds` 收拢、被环绕型参照系折叠 |
+| `SetCenter(double centerX, double centerY)` | 以某个坐标为中心，缩放不变 |
+| `SetZoom(double zoomLevel)` | 设定缩放，中心不变 |
+| `ZoomBy(double factor, Vector2 anchorPixels, in PlotArea plot)` | 以屏幕锚点缩放：锚点下的那个坐标不动 |
+| `PanBy(Vector2 deltaPixels)` | 按屏幕位移平移，画面跟着拖动走 |
+| `Fit(GeoBounds bounds, in PlotArea plot, float paddingRatio = 0.05f)` | 把一个坐标矩形装进 plot，并保持形状 |
+| `FitWorld(in PlotArea plot, float paddingRatio = 0.05f)` | 把参照系自己的整个世界装进 plot |
+| `SetWrapX(bool wrapsX)` | 关掉环绕，用来查看反子午线处的断开 |
+| `SetPanBounds(GeoBounds? bounds)` | 限制中心能移动的范围，或清除限制 |
+| `Changed` | 视口变化时触发；在这里丢掉所有基于投影缓存的东西 |
+
+缩放级别是连续的（`4.5` 是合法的一级），`256 * 2^zoom` 就是整个世界的像素尺寸（见下面的 `GeoMath`）。视口是
+"上报变化"而不是"被轮询"，正因为如此，宿主（或者图表自己）才能在地图移动时丢掉缓存的投影。
+
+### Chart 的地理方法
+
+| 方法 | 返回 | 说明 |
+|------|------|------|
+| `GeoFrame` | IGeoFrame | 地理图层所在的参照系：未修改前是 WGS84 + Web Mercator |
+| `GeoViewport` | GeoViewport? | 视口；在没有任何东西要用它之前是 null |
+| `SetGeoFrame(IGeoFrame frame)` | Chart | 换一个参照系；视口会一起被丢弃，因为它的坐标属于旧参照系 |
+| `SetGeoViewport(double centerX, double centerY, double zoomLevel)` | Chart | 设定视口中心与缩放，需要时会创建视口 |
+| `ZoomGeo(double factor, Vector2 anchorPixels, in PlotArea plot)` | Chart | 以屏幕锚点缩放 |
+| `PanGeo(Vector2 deltaPixels)` | Chart | 按屏幕位移平移 |
+| `FitGeoBounds(double minX, double minY, double maxX, double maxY, in PlotArea plot, float paddingRatio = 0.05f)` | Chart | 把一个坐标矩形装进 plot |
+| `FitGeoWorld(in PlotArea plot, float paddingRatio = 0.05f)` | Chart | 把参照系的世界装进 plot |
+| `SetGeoWrapX(bool wrapsX)` | Chart | 打开 / 关闭水平环绕 |
+| `SetGeoPanBounds(GeoBounds? bounds)` | Chart | 限制中心能移动的范围 |
+
+它们每一个都会让图表的布局失效，因此缓存的投影绝不会在视口变化后存活。
+
+### GeoBounds 与 GeoMath
+
+```csharp
+public readonly record struct GeoBounds(double MinX, double MinY, double MaxX, double MaxY)
+{
+    public double Width   { get; }
+    public double Height  { get; }
+    public bool   IsEmpty { get; }   // 没有可用来装视口的内部
+    public double CenterX { get; }
+    public double CenterY { get; }
+
+    public static GeoBounds FromCorners(double x0, double y0, double x1, double y1);
+}
+```
+
+`GeoBounds` 用参照系坐标（度，或世界单位）并且是 `double`，而不是 `Rect2` 的单精度：深度缩放下丢掉的精度
+就是一条经线的细节。`GeoMath` 是缩放级别连带的算术 —— `WorldSizeAtZoomZero`（256 px）、
+`MinZoomLevel` / `MaxZoomLevel`（视口收拢到的范围，保证投影始终有限）、`EarthCircumference`、
+`MercatorMetersPerDegree`，以及 `ZoomToResolution` / `ResolutionToZoom`（一个像素覆盖参照系多少单位）。
+
+### 示例
+
+```csharp compile
+// 自己持有一个视口：装进一个矩形、投影一个坐标、把屏幕位置读回坐标。
+var plot = new PlotArea(0, 0, 400, 300);
+var viewport = new GeoViewport(GeoFrames.Wgs84());
+viewport.Fit(new GeoBounds(-10, 35, 30, 60), plot);          // 欧洲的一块区域
+
+Vector2 london = viewport.Project(-0.12, 51.5, plot);        // 经纬度 -> 像素
+viewport.Unproject(london, plot);                            // 像素 -> 经纬度
+
+// 也可以交给图表持有，通过图表导航 —— 要操作的 plot 由调用方给出。
+chart.SetGeoViewport(-0.12, 51.5, 6.0)
+     .ZoomGeo(1.2, mousePos, plot)
+     .PanGeo(new Vector2(10, 0));
+
+chart.SetGeoFrame(GeoFrames.CustomPlane(0, 0, 1000, 500));   // 视口随参照系一起被丢弃
+chart.FitGeoWorld(plot);
 ```
 
 ---
@@ -457,7 +627,7 @@ public abstract class Mark
 | `InteractionStateInOverlay` | bool | 该 mark 把交互态视觉画在覆盖层而不是 `Render` 里时为 true（虚属性，默认 false）。回答 true 的有 `LineMark`、`PointMark`、`IntervalMark`（堆叠也算：覆盖层会走同一份累加）、`BoxMark`、`CandlestickMark`、`HeatmapMark`、`LollipopMark`、`MilestoneMark`、`TimelineMark`、`WaffleMark`、`FunnelMark`、`GaugeMark`、`TreemapMark` 与 `SectionMark`（注解 mark：它没有自己的交互态，覆盖层本就该为空）。刻意回答 false 的 —— `RangeAreaMark`、`ViolinMark`、`PieMark`、`RadarMark`、`SankeyMark`、`ChordMark`、`SunburstMark` —— 各自在声明处写明了原因：它们的 hover 视觉就是元素自身的半透明填充，或者是覆盖层无法在不擦掉缓存层内容的前提下复现的几何。图上每个 mark 都回答 true 时，图层缓存（`Chart.UseLayerCache`）才可能启用 |
 | `PreferredAspectRatio` | float? | 该 mark 的内容想要的形状（宽 / 高；虚属性，默认 null = 填满绘图区）。极坐标 mark（`PieMark`、`RadarMark`、`GaugeMark`、`ChordMark`、`SunburstMark`）要求方形，图表在图上 mark 意见一致时采纳 —— 见 `Chart.PlotAspectRatio` |
 | `RenderOverlay(MarkContext ctx)` | void | 在"数据层被缓存"的帧里绘制本 mark 的 hover/选中视觉（虚方法，默认什么都不画）。它紧挨着准星、在贴回图层之后、在与数据层相同的绘图区裁剪下运行；`MarkContext.StateInOverlay` 让这两半知道该由谁来画 |
-| `Render(MarkContext ctx)` | void | 唯一的抽象成员：mark 在这里绘制自己的元素。context 带着画布、绘图区、已解析的标度 / 编码 / 数据、逐帧 `Animation` 与交互状态（悬停 / 选中行、`StateInOverlay`） |
+| `Render(MarkContext ctx)` | void | 唯一的抽象成员：mark 在这里绘制自己的元素。context 带着画布、绘图区、把归一化坐标映射到该绘图区的投影（`Mapper`）、已解析的标度 / 编码 / 数据、逐帧 `Animation` 与交互状态（悬停 / 选中行、`StateInOverlay`） |
 
 自定义 mark 用 `CreatePath()` / `CreatePaint()` 以及基类在其之上的 `protected` 助手来绘制：`ShapePath(ctx)` /
 `ShapePaint(ctx)`（池化对象——见画布抽象）、`ShapeGeometry`（共享字形词汇）、`ToDouble` / `ToSingle` /

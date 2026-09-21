@@ -710,9 +710,13 @@ new Chart(canvas)
 | IntervalMark + LineMark | IntervalMark + PieMark |
 | LineMark + PointMark | LineMark + RadarMark |
 | 任意多个笛卡尔 Mark | 笛卡尔 + 极坐标 |
+| Geographic + Geographic | Geographic + 笛卡尔 |
 
 不兼容的 Mark 会在渲染时自动跳过并输出警告。
 **首个添加的 Mark** 决定了整张图表的坐标系：后续坐标系不同的 Mark 会被跳过，因此请先添加主要 Mark。
+
+声明 `MarkCoordinate.Geographic` 的 mark 通过坐标参照系放置数据（见[地理坐标](api-reference.cn.md#地理坐标)），
+而不是通过标度，因此当一张图表的 mark 全是地理坐标时，它不画网格、不画轴、不画十字线，也不为轴标签留出空间。
 
 ---
 

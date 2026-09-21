@@ -757,12 +757,17 @@ All Marks in a Chart must use compatible coordinate systems:
 | IntervalMark + LineMark | IntervalMark + PieMark |
 | LineMark + PointMark | LineMark + RadarMark |
 | Any multiple Cartesian Marks | Cartesian + Polar |
+| Geographic + Geographic | Geographic + Cartesian |
 
 Incompatible Marks are **skipped** and a warning is printed to the Godot console
 (`[GodotChart] Incompatible mark combination: ...`) - the coordinate check is internal
 (`Chart.ValidateMarkCompatibility()` is private, not an API to call).
 The **first added mark** defines the coordinate system of the chart: every later mark with a
 different one is the one that gets skipped, so add the primary mark first.
+
+A mark that declares `MarkCoordinate.Geographic` places its data through a coordinate frame (see
+[Geographic Coordinates](api-reference.md#geographic-coordinates)) rather than through the scales, so a chart
+whose marks are all geographic draws no grid, no axes and no crosshair, and reserves no label column for them.
 
 ---
 

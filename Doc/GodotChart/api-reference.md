@@ -441,7 +441,185 @@ public enum MarkCoordinate
     Polar,          // Radial
     Hierarchical,   // Tree layout
     Flow,           // Network flow
+    Geographic,     // A coordinate frame: a map, a globe, a game world
 }
+```
+
+Marks of different coordinate systems cannot be combined in one chart (see
+[Coordinate System Compatibility](advanced.md#coordinate-system-compatibility)). A geographic mark places its data
+through a coordinate frame instead of through the scales, and draws no X/Y axes.
+
+---
+
+## Geographic Coordinates
+
+Data does not always live on a pair of scales: it can have a position in a geography - a latitude and a
+longitude, the map of an invented planet, or a game world in its own units. Two objects carry that. A
+**frame** says what a coordinate means and how it lands in the normalized world marks are drawn in; a
+**viewport** says which part of that world is shown and at what scale.
+
+Both are public, so the projection is available to your own code as well: turning a coordinate into a
+screen position, or a click back into a coordinate, is a call each. The built-in marks read the scales; a
+frame with a viewport is how a position in a geography is placed, and a custom mark or a custom drawing
+uses exactly the same two objects.
+
+### IGeoFrame
+
+```csharp
+public interface IGeoFrame
+{
+    string  Name       { get; }   // for diagnostics
+    double  Aspect     { get; }   // world width / height at equal scale
+    double  WorldWidth { get; }   // horizontal extent, in the frame's own units
+    bool    WrapsX     { get; }   // the horizontal axis wraps (a sphere's 360°)
+    double? MaxAbsY    { get; }   // vertical truncation (±85.05112878° for Web Mercator, null on a plane)
+
+    (double U, double V) Normalize(double x, double y);    // coordinate -> normalized [0, 1]², north up
+    (double X, double Y) Denormalize(double u, double v);  // normalized -> coordinate
+    double WrapX(double x);                                // fold a coordinate into the frame's own range
+}
+```
+
+| Factory | Coordinates | Projection | `WrapsX` |
+|---------|-------------|------------|----------|
+| `GeoFrames.Wgs84()` | longitude, latitude | Web Mercator | true |
+| `GeoFrames.Wgs84(GeoProjections.Equirectangular)` | longitude, latitude, poles included | plate carrée | true |
+| `GeoFrames.CustomSphere(minLng, maxLng, minLat, maxLat)` | degrees over the ranges given | identity over those ranges | true |
+| `GeoFrames.CustomPlane(minX, minY, maxX, maxY)` | world units, pixels, an abstract layout | none | false |
+
+Normalized coordinates run bottom to top (north is up), and a frame's `Aspect` is what keeps its world
+from being stretched: a viewport scales both axes by the same number of pixels per unit, so a map is not
+distorted by a wide or a tall plot. A sphere frame's `Normalize` leaves the poles to the projection
+(Web Mercator truncates them) and a wrapped longitude may fall outside `[0, 1]`, which is what lets the
+same meridian be drawn one world to the left or right.
+
+### IGeoProjection
+
+A sphere frame normalizes through a projection: longitude and latitude in, normalized world out.
+
+```csharp
+public interface IGeoProjection
+{
+    string Name        { get; }
+    double MaxLatitude { get; }   // 85.05112878 for Web Mercator, 90 for plate carrée
+    double Aspect      { get; }   // 1 (a square world) for Web Mercator, 2 for plate carrée
+
+    (double U, double V) Forward(double longitude, double latitude);
+    (double Longitude, double Latitude) Inverse(double u, double v);
+}
+```
+
+| Projection | Description |
+|------------|-------------|
+| `GeoProjections.WebMercator` | The default, and the scheme mainstream map services and tile sets use: conformal, with the poles truncated at ±85.05112878° |
+| `GeoProjections.Equirectangular` | Longitude and latitude used as flat coordinates (a 360° x 180° world): shows the poles and keeps areas comparable to the degree grid |
+| `GeoProjections.Identity(minLng, maxLng, minLat, maxLat)` | The ranges given are the world, equally scaled in degrees; the default projection of `CustomSphere` |
+
+A projection is a pure function of its input, so one instance can be shared and the arithmetic can be
+reused outside a chart. Implement the interface for another scheme and pass it to
+`GeoFrames.Wgs84(projection)` or `GeoFrames.CustomSphere(..., projection)`.
+
+### GeoViewport
+
+The window a chart looks at its frame through: a centre, in the frame's own coordinates, and a zoom level.
+One zoom level is one resolution for both axes, which is what keeps a map's shape - a pair of per-axis
+windows (`ZoomDomain` / `PanDomain`) could not.
+
+```csharp
+public sealed class GeoViewport
+{
+    public GeoViewport(IGeoFrame frame);
+
+    public IGeoFrame  Frame     { get; }
+    public double     CenterX   { get; private set; }
+    public double     CenterY   { get; private set; }
+    public double     ZoomLevel { get; private set; }   // every step doubles the world's pixel size
+    public bool       WrapsX    { get; private set; }
+    public GeoBounds? PanBounds { get; private set; }
+    public event Action? Changed;                       // raised whenever the view moves
+
+    public double WorldWidthPixels  { get; }
+    public double WorldHeightPixels { get; }
+    public double PixelsPerUnit     { get; }            // pixels per horizontal unit of the frame
+}
+```
+
+| Member | Description |
+|--------|-------------|
+| `Project(double x, double y, in PlotArea plot)` | A frame coordinate to screen pixels |
+| `Unproject(Vector2 screen, in PlotArea plot)` | Screen pixels to a frame coordinate |
+| `VisibleBounds(in PlotArea plot)` | The frame coordinates the plot rectangle shows |
+| `SetView(double centerX, double centerY, double zoomLevel)` | Move the viewport in one step; the centre is clamped to `PanBounds` and folded by a wrapping frame |
+| `SetCenter(double centerX, double centerY)` | Centre on a coordinate, keeping the zoom |
+| `SetZoom(double zoomLevel)` | Set the zoom, keeping the centre |
+| `ZoomBy(double factor, Vector2 anchorPixels, in PlotArea plot)` | Zoom around a screen anchor: the coordinate under it stays under it |
+| `PanBy(Vector2 deltaPixels)` | Pan by a screen displacement, so the content follows a drag |
+| `Fit(GeoBounds bounds, in PlotArea plot, float paddingRatio = 0.05f)` | Fit a rectangle of coordinates, keeping its shape |
+| `FitWorld(in PlotArea plot, float paddingRatio = 0.05f)` | Fit the frame's own world |
+| `SetWrapX(bool wrapsX)` | Turn wrapping off to see the split at the antimeridian |
+| `SetPanBounds(GeoBounds? bounds)` | Limit where the centre can move, or clear the limit |
+| `Changed` | Raised whenever the view changes; drop whatever was cached from the projection here |
+
+A zoom level is continuous (`4.5` is a valid step), and `256 * 2^zoom` is the pixel size of the whole
+world (see `GeoMath` below). The viewport reports a change rather than being polled, which is what lets a
+host - or the chart itself - drop a cached projection when the map moves.
+
+### Chart Geo Methods
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `GeoFrame` | IGeoFrame | The frame geographic layers are placed in: WGS84 with Web Mercator until set otherwise |
+| `GeoViewport` | GeoViewport? | The viewport, or null while nothing has asked for one |
+| `SetGeoFrame(IGeoFrame frame)` | Chart | Use another frame; the viewport is dropped with it, since its coordinates belonged to the old frame |
+| `SetGeoViewport(double centerX, double centerY, double zoomLevel)` | Chart | Centre and zoom the viewport, creating it if needed |
+| `ZoomGeo(double factor, Vector2 anchorPixels, in PlotArea plot)` | Chart | Zoom around a screen anchor |
+| `PanGeo(Vector2 deltaPixels)` | Chart | Pan by a screen displacement |
+| `FitGeoBounds(double minX, double minY, double maxX, double maxY, in PlotArea plot, float paddingRatio = 0.05f)` | Chart | Fit a rectangle of coordinates |
+| `FitGeoWorld(in PlotArea plot, float paddingRatio = 0.05f)` | Chart | Fit the frame's world |
+| `SetGeoWrapX(bool wrapsX)` | Chart | Horizontal wrapping on or off |
+| `SetGeoPanBounds(GeoBounds? bounds)` | Chart | Limit where the centre can move |
+
+Each of them invalidates the chart's layout, so a cached projection never survives a view change.
+
+### GeoBounds and GeoMath
+
+```csharp
+public readonly record struct GeoBounds(double MinX, double MinY, double MaxX, double MaxY)
+{
+    public double Width   { get; }
+    public double Height  { get; }
+    public bool   IsEmpty { get; }   // no interior to fit a viewport to
+    public double CenterX { get; }
+    public double CenterY { get; }
+
+    public static GeoBounds FromCorners(double x0, double y0, double x1, double y1);
+}
+```
+
+`GeoBounds` is in frame coordinates (degrees, or world units) and holds `double`, not `Rect2`'s single
+precision: a meridian is a lot of detail to lose at a deep zoom. `GeoMath` is the arithmetic a zoom level
+comes with - `WorldSizeAtZoomZero` (256 px), `MinZoomLevel` / `MaxZoomLevel` (the range a viewport clamps
+to, so a projection stays finite), `EarthCircumference`, `MercatorMetersPerDegree`, and
+`ZoomToResolution` / `ResolutionToZoom`, which say how much of the frame one pixel covers.
+
+### Example
+
+```csharp compile
+// A viewport of its own: fit a rectangle, project a coordinate, read a screen position back.
+var plot = new PlotArea(0, 0, 400, 300);
+var viewport = new GeoViewport(GeoFrames.Wgs84());
+viewport.Fit(new GeoBounds(-10, 35, 30, 60), plot);          // a region of Europe
+
+Vector2 london = viewport.Project(-0.12, 51.5, plot);        // longitude, latitude -> pixels
+viewport.Unproject(london, plot);                            // pixels -> longitude, latitude
+
+// Or let the chart own it, and navigate through the chart - the plot to work in is the caller's.
+chart.SetGeoViewport(-0.12, 51.5, 6.0)
+     .ZoomGeo(1.2, mousePos, plot)
+     .PanGeo(new Vector2(10, 0));
+
+chart.SetGeoFrame(GeoFrames.CustomPlane(0, 0, 1000, 500));   // the viewport goes with the frame
+chart.FitGeoWorld(plot);
 ```
 
 ---
@@ -472,7 +650,7 @@ public abstract class Mark
 | `InteractionStateInOverlay` | bool | True when the mark paints its interaction-state visuals on the overlay pass instead of in `Render` (virtual, default false). The marks that answer true are `LineMark`, `PointMark`, `IntervalMark` (stacked included: the overlay walks the same accumulation), `BoxMark`, `CandlestickMark`, `HeatmapMark`, `LollipopMark`, `MilestoneMark`, `TimelineMark`, `WaffleMark`, `FunnelMark`, `GaugeMark`, `TreemapMark` and `SectionMark` (an annotation mark: it has no interaction state of its own, so its overlay is empty by design). The marks that answer false on purpose - `RangeAreaMark`, `ViolinMark`, `PieMark`, `RadarMark`, `SankeyMark`, `ChordMark` and `SunburstMark` - carry the reason on their own declaration: their hover look is the element's own translucent fill, or geometry the overlay cannot reproduce without erasing something the cached layer holds. A chart whose marks all answer true can keep its data layer in an image (`Chart.UseLayerCache`) |
 | `PreferredAspectRatio` | float? | Shape this mark's content wants, as width / height (virtual, default null = fill the plot area). The polar marks (`PieMark`, `RadarMark`, `GaugeMark`, `ChordMark`, `SunburstMark`) ask for a square, and the chart honours it while every mark agrees - see `Chart.PlotAspectRatio` |
 | `RenderOverlay(MarkContext ctx)` | void | Paint the mark's hover/selection visuals for a frame whose data layer is cached (virtual, default: nothing). Runs next to the crosshair, after the cached layer, under the plot clip; `MarkContext.StateInOverlay` tells the two halves of the split which one paints the state |
-| `Render(MarkContext ctx)` | void | The only abstract member: a mark paints its elements here. The context carries the canvas, the plot area, the resolved scales / encodes / data, the per-frame `Animation` and the interaction state (hovered / selected row, `StateInOverlay`) |
+| `Render(MarkContext ctx)` | void | The only abstract member: a mark paints its elements here. The context carries the canvas, the plot area, the projection that maps a normalized coordinate to that plot area (`Mapper`), the resolved scales / encodes / data, the per-frame `Animation` and the interaction state (hovered / selected row, `StateInOverlay`) |
 
 `CreatePath()` / `CreatePaint()` and the `protected` helpers on top of them are what a custom mark builds
 with: `ShapePath(ctx)` / `ShapePaint(ctx)` (the pooled ones - see the canvas abstraction), `ShapeGeometry`
