@@ -559,6 +559,135 @@ public sealed class GeoViewport
 
 它们每一个都会让图表的布局失效，因此缓存的投影绝不会在视口变化后存活。
 
+### GeoFeature 与 GeoJsonReader
+
+一个要素（feature）就是"一个被画出来的东西"：一份几何、它的名字，以及数据源关于它说的一切。
+
+```csharp
+public sealed class GeoFeature
+{
+    public string? Id { get; }                     // GeoJSON 的 "id"（字符串或数字）
+    public string? Name { get; }                   // "name" 属性，或你给的名字
+    public GeoGeometry Geometry { get; }
+    public IReadOnlyDictionary<string, object?> Properties { get; }
+}
+
+public sealed class GeoGeometry
+{
+    public GeoShapeKind Kind { get; }               // Point、LineString、Polygon、MultiPolygon
+    public IReadOnlyList<GeoRing> Parts { get; }    // 环 / 线 / 点，按源文件顺序
+    public bool IsEmpty { get; }
+    public GeoBounds? Bounds { get; }               // 用几何自己的坐标
+}
+
+public readonly record struct GeoRing(IReadOnlyList<GeoPoint> Points, bool IsHole);
+public readonly record struct GeoPoint(double X, double Y);
+```
+
+多边形的 parts 是"一个外环 + 它的洞"依次排列（源文件的顺序），由 `IsHole` 标记。
+`GeoJsonReader` 接受 `FeatureCollection`、单个 `Feature`，或一份裸几何：
+
+```csharp
+public static IReadOnlyList<GeoFeature> Parse(string json, ICollection<string>? issues = null);
+public static IReadOnlyList<GeoFeature> Parse(ReadOnlySpan<byte> utf8Json, ICollection<string>? issues = null);
+public static IReadOnlyList<GeoFeature> ParseFile(string path, ICollection<string>? issues = null);
+```
+
+点、线、带洞的多边形以及它们的 multi 形式都会读；`GeometryCollection` 不读。不太合规的数据会被跳过并记一笔
+（传了 `issues` 集合就写进集合，不管传没传都会有一条汇总 warning），而不是让整份文件失败 —— 真实地图数据很少
+完全规范。它不做的事：不知道你的坐标是度还是世界单位（那是参照系决定的）、不修正环的绕向（见
+`GeoMath.RingIsClockwise`）、不读 TopoJSON。`ParseFile` 走 Godot 的文件访问，所以导出后的游戏里
+`res://` 路径也能用。
+
+### GeoGeometryBuilder
+
+给不是从文件来的几何用：关卡、程序生成的地图、在代码里算出来的布局。
+
+```csharp
+var zone = new GeoGeometryBuilder()
+    .Polygon((0, 0), (40, 0), (40, 30), (0, 30))
+    .Hole((10, 10), (10, 20), (20, 20), (20, 10))    // 一个内院
+    .Feature("zone-1", "North zone");
+
+var route = new GeoGeometryBuilder().Line((0, 0), (20, 10), (40, 5)).Feature("route-1");
+
+// 格子地图就是一格一个方形要素，每格都带 id，方便和表格关联。
+IReadOnlyList<GeoFeature> cells = GeoGeometryBuilder.Grid(rows: 8, columns: 12,
+                                                          idOf: (row, column) => $"r{row}c{column}");
+```
+
+一份几何只能是多边形、线或点中的一种，不能混用；混用、在外环之前加洞、或者给的顶点太少都会抛异常，而不是产出
+没有任何 mark 读得懂的东西。
+
+### GeoGraph
+
+地铁示意图、星图、关系网：这里的几何是"连接"本身，而不是轮廓。
+
+```csharp
+public sealed class GeoGraph
+{
+    public IReadOnlyList<GeoNode> Nodes { get; }
+    public IReadOnlyList<GeoEdge> Edges { get; }    // 两端有一端不存在的边会被丢弃
+    public GeoBounds? Bounds { get; }
+    public bool TryGetNode(string id, out GeoNode? node);
+}
+
+public sealed record GeoNode(string Id, double X, double Y, string? Name = null, ...);
+public sealed record GeoEdge(string SourceId, string TargetId, double? Weight = null, bool Directed = false, ...);
+```
+
+`GeoGraphBuilder` 可以在代码里构建（`Node`、`Edge`、`Build`），也可以从图数据常见的两张表构建：
+
+```csharp
+var graph = GeoGraphBuilder.FromRows(nodeRows, edgeRows,
+                                     idField: "id", xField: "x", yField: "y",
+                                     sourceField: "source", targetField: "target");
+```
+
+引用到不存在节点的边会被丢弃并给一条 warning —— 示意图少一条线，比渲染到一半抛异常好得多。自环、重复边、孤立节点
+都会保留。
+
+### GeoDataJoiner
+
+关联（join）是图表必须回答、而地图库不回答的问题：这一行数据属于哪个区域。
+
+```csharp
+var joiner = new GeoDataJoiner(rowField: "province", featureKey: "name",
+                               missing: GeoJoinMissing.Report,
+                               keyComparer: GeoDataJoiner.LooseKeys);
+
+GeoJoinResult joined = joiner.Join(rows, features);
+// joined.RowOfElement[i]   -> 第 i 个要素对应的行，或 null（按"无数据"样式绘制）
+// joined.UnmatchedRows     -> 没有匹配到任何要素的行
+// joined.MatchedElementCount / MissingElementCount
+```
+
+`featureKey` 可以是 `name`（要素没有 name 时回退到 id，所以只带 id 的地图数据也能关联）、`id`，或数据源里任何
+属性的名字。另有按节点 id、按边两端的重载。两边都不会被静默丢掉：默认策略打一条带计数的 warning，`Silent` 什么
+都不说，`Strict` 直接抛异常。同一个要素出现第二行时，这一行会被报成未匹配，而不是覆盖第一行。
+
+### GeoMark
+
+自己写地理 mark 时的基类：坐标系、几何来源、投影缓存。图表通过 `MarkContext.GeoViewport` 把参照系交给它。
+
+```csharp
+public abstract class GeoMark : Mark
+{
+    public sealed override MarkCoordinate Coordinate => MarkCoordinate.Geographic;
+    public sealed override bool UsesAxes => false;
+    public abstract GeoGeometrySource Source { get; }              // Feature、Graph 或 Points
+    public virtual bool RequiresContinuousSpace => false;
+
+    protected readonly record struct ProjectionCache<T>(LayoutCacheKey Key, T? Value) where T : class;
+    protected static T GetProjection<T>(MarkContext ctx, ref ProjectionCache<T> cache,
+                                        Func<MarkContext, T> build) where T : class;
+}
+```
+
+`GetProjection` 就是投影需要的那个缓存：构建一次，布局不变就一直复用 —— 而视口一动就算布局变了，这正是"拖动
+地图时不会继续画过期投影"的原因。`Source` 与 `RequiresContinuousSpace` 是图表检查 mark 组合的依据：需要连续空间
+的 mark 和拓扑图放在一起会被报出来，因为在节点之间的连接上做标量场插值，画出来是"没有意义"而不是"画错了"。
+
 ### GeoBounds 与 GeoMath
 
 ```csharp
@@ -627,7 +756,7 @@ public abstract class Mark
 | `InteractionStateInOverlay` | bool | 该 mark 把交互态视觉画在覆盖层而不是 `Render` 里时为 true（虚属性，默认 false）。回答 true 的有 `LineMark`、`PointMark`、`IntervalMark`（堆叠也算：覆盖层会走同一份累加）、`BoxMark`、`CandlestickMark`、`HeatmapMark`、`LollipopMark`、`MilestoneMark`、`TimelineMark`、`WaffleMark`、`FunnelMark`、`GaugeMark`、`TreemapMark` 与 `SectionMark`（注解 mark：它没有自己的交互态，覆盖层本就该为空）。刻意回答 false 的 —— `RangeAreaMark`、`ViolinMark`、`PieMark`、`RadarMark`、`SankeyMark`、`ChordMark`、`SunburstMark` —— 各自在声明处写明了原因：它们的 hover 视觉就是元素自身的半透明填充，或者是覆盖层无法在不擦掉缓存层内容的前提下复现的几何。图上每个 mark 都回答 true 时，图层缓存（`Chart.UseLayerCache`）才可能启用 |
 | `PreferredAspectRatio` | float? | 该 mark 的内容想要的形状（宽 / 高；虚属性，默认 null = 填满绘图区）。极坐标 mark（`PieMark`、`RadarMark`、`GaugeMark`、`ChordMark`、`SunburstMark`）要求方形，图表在图上 mark 意见一致时采纳 —— 见 `Chart.PlotAspectRatio` |
 | `RenderOverlay(MarkContext ctx)` | void | 在"数据层被缓存"的帧里绘制本 mark 的 hover/选中视觉（虚方法，默认什么都不画）。它紧挨着准星、在贴回图层之后、在与数据层相同的绘图区裁剪下运行；`MarkContext.StateInOverlay` 让这两半知道该由谁来画 |
-| `Render(MarkContext ctx)` | void | 唯一的抽象成员：mark 在这里绘制自己的元素。context 带着画布、绘图区、把归一化坐标映射到该绘图区的投影（`Mapper`）、已解析的标度 / 编码 / 数据、逐帧 `Animation` 与交互状态（悬停 / 选中行、`StateInOverlay`） |
+| `Render(MarkContext ctx)` | void | 唯一的抽象成员：mark 在这里绘制自己的元素。context 带着画布、绘图区、把归一化坐标映射到该绘图区的投影（`Mapper`）、图表有地理图层时的地图视口（`GeoViewport`）、已解析的标度 / 编码 / 数据、逐帧 `Animation` 与交互状态（悬停 / 选中行、`StateInOverlay`） |
 
 自定义 mark 用 `CreatePath()` / `CreatePaint()` 以及基类在其之上的 `protected` 助手来绘制：`ShapePath(ctx)` /
 `ShapePaint(ctx)`（池化对象——见画布抽象）、`ShapeGeometry`（共享字形词汇）、`ToDouble` / `ToSingle` /

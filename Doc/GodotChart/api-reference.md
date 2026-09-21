@@ -581,6 +581,145 @@ host - or the chart itself - drop a cached projection when the map moves.
 
 Each of them invalidates the chart's layout, so a cached projection never survives a view change.
 
+### GeoFeature and GeoJsonReader
+
+A feature is one drawn thing: a geometry, what it is called, and whatever the source said about it.
+
+```csharp
+public sealed class GeoFeature
+{
+    public string? Id { get; }                     // GeoJSON's "id" (a string or a number)
+    public string? Name { get; }                   // the "name" property, or the name you gave
+    public GeoGeometry Geometry { get; }
+    public IReadOnlyDictionary<string, object?> Properties { get; }
+}
+
+public sealed class GeoGeometry
+{
+    public GeoShapeKind Kind { get; }               // Point, LineString, Polygon, MultiPolygon
+    public IReadOnlyList<GeoRing> Parts { get; }    // rings, lines or points, in source order
+    public bool IsEmpty { get; }
+    public GeoBounds? Bounds { get; }               // in the geometry's own coordinates
+}
+
+public readonly record struct GeoRing(IReadOnlyList<GeoPoint> Points, bool IsHole);
+public readonly record struct GeoPoint(double X, double Y);
+```
+
+For a polygon the parts are one outer ring followed by its holes (the order the file gave them), which
+`IsHole` marks. `GeoJsonReader` reads a `FeatureCollection`, a single `Feature`, or a bare geometry:
+
+```csharp
+public static IReadOnlyList<GeoFeature> Parse(string json, ICollection<string>? issues = null);
+public static IReadOnlyList<GeoFeature> Parse(ReadOnlySpan<byte> utf8Json, ICollection<string>? issues = null);
+public static IReadOnlyList<GeoFeature> ParseFile(string path, ICollection<string>? issues = null);
+```
+
+Points, lines and polygons (with holes) and their multi forms are read; a `GeometryCollection` is not.
+Data that is not quite valid is skipped with a note - in the `issues` collection if you passed one, and
+once as a warning either way - instead of taking a whole file down: field data is rarely perfect. What it
+does not do: it does not know whether your coordinates are degrees or world units (the frame decides), it
+does not repair ring winding (see `GeoMath.RingIsClockwise`), and it does not read TopoJSON.
+`ParseFile` goes through Godot's file access, so a `res://` path works in an exported game.
+
+### GeoGeometryBuilder
+
+For geometry that does not come from a file: a level, a procedurally generated map, a layout computed in
+code.
+
+```csharp
+var zone = new GeoGeometryBuilder()
+    .Polygon((0, 0), (40, 0), (40, 30), (0, 30))
+    .Hole((10, 10), (10, 20), (20, 20), (20, 10))    // a courtyard
+    .Feature("zone-1", "North zone");
+
+var route = new GeoGeometryBuilder().Line((0, 0), (20, 10), (40, 5)).Feature("route-1");
+
+// A tile map is a grid of square features, each identified for a join.
+IReadOnlyList<GeoFeature> cells = GeoGeometryBuilder.Grid(rows: 8, columns: 12,
+                                                          idOf: (row, column) => $"r{row}c{column}");
+```
+
+A geometry holds polygons, lines or points - not a mix of them - and mixing them, adding a hole before an
+outer ring, or giving a ring too few points throws instead of producing something no mark could read.
+
+### GeoGraph
+
+A metro diagram, a star chart, a relation graph: the geometry is the connection, not the outline.
+
+```csharp
+public sealed class GeoGraph
+{
+    public IReadOnlyList<GeoNode> Nodes { get; }
+    public IReadOnlyList<GeoEdge> Edges { get; }    // edges with a missing end are dropped
+    public GeoBounds? Bounds { get; }
+    public bool TryGetNode(string id, out GeoNode? node);
+}
+
+public sealed record GeoNode(string Id, double X, double Y, string? Name = null, ...);
+public sealed record GeoEdge(string SourceId, string TargetId, double? Weight = null, bool Directed = false, ...);
+```
+
+`GeoGraphBuilder` builds a graph in code (`Node`, `Edge`, `Build`) or from the two tables a graph usually
+arrives as:
+
+```csharp
+var graph = GeoGraphBuilder.FromRows(nodeRows, edgeRows,
+                                     idField: "id", xField: "x", yField: "y",
+                                     sourceField: "source", targetField: "target");
+```
+
+An edge that names a node the graph does not contain is dropped with one warning - a diagram that is
+missing a line is a smaller problem than a render that throws halfway through a frame. A self loop, a
+repeated edge and an isolated node are all kept.
+
+### GeoDataJoiner
+
+The join is the question a chart has to answer and a map library does not: which row belongs to this
+region.
+
+```csharp
+var joiner = new GeoDataJoiner(rowField: "province", featureKey: "name",
+                               missing: GeoJoinMissing.Report,
+                               keyComparer: GeoDataJoiner.LooseKeys);
+
+GeoJoinResult joined = joiner.Join(rows, features);
+// joined.RowOfElement[i]   -> the row of feature i, or null (drawn in the "no data" style)
+// joined.UnmatchedRows     -> the rows no element matched
+// joined.MatchedElementCount / MissingElementCount
+```
+
+`featureKey` is `name` (which falls back to the identifier, so map data carrying only an id still joins),
+`id`, or the name of any property the source has. Overloads join nodes (by id) and edges (by their two
+ends). Neither side is ever dropped silently: the default strategy prints one warning with the counts,
+`Silent` says nothing and `Strict` throws. A second row for an element that already has one is reported
+as unmatched instead of overwriting the first.
+
+### GeoMark
+
+The base class for a geographic mark of your own: the coordinate system, the geometry source, and the
+projection cache. The chart hands the mark its frame through `MarkContext.GeoViewport`.
+
+```csharp
+public abstract class GeoMark : Mark
+{
+    public sealed override MarkCoordinate Coordinate => MarkCoordinate.Geographic;
+    public sealed override bool UsesAxes => false;
+    public abstract GeoGeometrySource Source { get; }              // Feature, Graph or Points
+    public virtual bool RequiresContinuousSpace => false;
+
+    protected readonly record struct ProjectionCache<T>(LayoutCacheKey Key, T? Value) where T : class;
+    protected static T GetProjection<T>(MarkContext ctx, ref ProjectionCache<T> cache,
+                                        Func<MarkContext, T> build) where T : class;
+}
+```
+
+`GetProjection` is the cache a projection wants: the value is built once and reused until the layout
+changes - and a viewport move counts as one, which is what keeps a dragged map from painting a stale
+projection. `Source` and `RequiresContinuousSpace` are what the chart checks mark combinations with: a
+mark that needs a continuous space next to a graph is reported, because a field over the connections
+between nodes renders something meaningless rather than something wrong.
+
 ### GeoBounds and GeoMath
 
 ```csharp
@@ -650,7 +789,7 @@ public abstract class Mark
 | `InteractionStateInOverlay` | bool | True when the mark paints its interaction-state visuals on the overlay pass instead of in `Render` (virtual, default false). The marks that answer true are `LineMark`, `PointMark`, `IntervalMark` (stacked included: the overlay walks the same accumulation), `BoxMark`, `CandlestickMark`, `HeatmapMark`, `LollipopMark`, `MilestoneMark`, `TimelineMark`, `WaffleMark`, `FunnelMark`, `GaugeMark`, `TreemapMark` and `SectionMark` (an annotation mark: it has no interaction state of its own, so its overlay is empty by design). The marks that answer false on purpose - `RangeAreaMark`, `ViolinMark`, `PieMark`, `RadarMark`, `SankeyMark`, `ChordMark` and `SunburstMark` - carry the reason on their own declaration: their hover look is the element's own translucent fill, or geometry the overlay cannot reproduce without erasing something the cached layer holds. A chart whose marks all answer true can keep its data layer in an image (`Chart.UseLayerCache`) |
 | `PreferredAspectRatio` | float? | Shape this mark's content wants, as width / height (virtual, default null = fill the plot area). The polar marks (`PieMark`, `RadarMark`, `GaugeMark`, `ChordMark`, `SunburstMark`) ask for a square, and the chart honours it while every mark agrees - see `Chart.PlotAspectRatio` |
 | `RenderOverlay(MarkContext ctx)` | void | Paint the mark's hover/selection visuals for a frame whose data layer is cached (virtual, default: nothing). Runs next to the crosshair, after the cached layer, under the plot clip; `MarkContext.StateInOverlay` tells the two halves of the split which one paints the state |
-| `Render(MarkContext ctx)` | void | The only abstract member: a mark paints its elements here. The context carries the canvas, the plot area, the projection that maps a normalized coordinate to that plot area (`Mapper`), the resolved scales / encodes / data, the per-frame `Animation` and the interaction state (hovered / selected row, `StateInOverlay`) |
+| `Render(MarkContext ctx)` | void | The only abstract member: a mark paints its elements here. The context carries the canvas, the plot area, the projection that maps a normalized coordinate to that plot area (`Mapper`), the map viewport when the chart has a geographic layer (`GeoViewport`), the resolved scales / encodes / data, the per-frame `Animation` and the interaction state (hovered / selected row, `StateInOverlay`) |
 
 `CreatePath()` / `CreatePaint()` and the `protected` helpers on top of them are what a custom mark builds
 with: `ShapePath(ctx)` / `ShapePaint(ctx)` (the pooled ones - see the canvas abstraction), `ShapeGeometry`
