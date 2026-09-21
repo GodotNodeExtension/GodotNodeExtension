@@ -10,14 +10,23 @@ This file contains all available components in the GodotNodeExtension project.
 | [GodotChart](Doc/GodotChart/README.md) | 0.2.0 | shitake2333 | A declarative chart library for Godot with a SkiaSharp backend: 22 chart kinds (20 Mark classes, plus the SectionMark annotation mark) across Cartesian, polar, hierarchical and flow layouts with auto-inferred scales, theming, animation and hit testing. | ✅ Complete |
 | [GodotMapsui](Doc/GodotMapsui/README.md) | 0.1.0 | shitake2333 | Interactive map control for Godot using Mapsui and SkiaSharp, with Vulkan GPU accelerated rendering via GodotSkia. | ✅ Complete |
 | [GodotSkia](Doc/GodotSkia/README.md) | 0.9.0 | shitake2333 | A 2D rendering bridge between SkiaSharp and Godot. Shares the engine's Vulkan surface with Skia's GRContext (with a CPU fallback for every other renderer, including the OpenGL compatibility renderer), and provides bidirectional Godot/Skia type converters, an image interop layer and diagnostics for the shared GPU context. | ✅ Complete |
-| [MarkdownView](Doc/MarkdownView/README.md) | 0.1.0-alpha | shitake2333 | Markdown rendering component for Godot built on RichTextCanvas. Parses Markdown via Markdig with support for syntax highlighting, LaTeX math, mermaid diagrams, and images. | 🚧 In Progress |
-| [PaperDoll](Doc/PaperDoll/README.md) | 0.1.0-alpha | shitake2333 | A data-driven 2D character system: vector outlines bound to a 2D skeleton with linear blend skinning, body-shape parameters that drive bone transforms, and layered flat-colour rendering through a Skia surface on a Godot Control. Dolls, body parts and garments are one JSON asset format where every cross-reference is a name. The shipped base body was extracted from the original kisekae Flash part libraries by an importer that belongs to the repository's development tools, not to the component. | 🚧 In Progress |
-| [RichTextCanvas](Doc/RichTextCanvas/README.md) | 0.1.0-alpha | shitake2333 | Format-agnostic self-drawing rich text rendering engine with typewriter playback, text effects, block extensions, and syntax highlighting | 🚧 In Progress |
 | [Typography](Doc/Typography/README.md) | 0.4.1 | shitake2333 | Multi-language typography server: language profiles (clreq/jlreq/klreq parameters, prohibition class sets, right-to-left languages), Unicode line breaking and bidirectional text (UAX #9 through Unicode.Bidi, with P2/P3, L1, L2 and mirroring done here), a boundary model that carries break and spacing decisions, HarfBuzz shaping with language-aware glyph-level output, display-form substitution (quotation marks, ellipsis, sentence marks), automatic hyphenation from TeX patterns, ruby and emphasis marks, image-text mixed layout with polygon wrapping, and an async server architecture | ✅ Complete |
+
 
 ## Contributing
 
 To add a new component:
+
+```bash
+python Tools/components.py create
+```
+
+Run it without arguments and it asks for the name, the type, the description, the author and the version
+(Enter takes the value in brackets); a non-interactive run passes them as options, e.g.
+`python Tools/components.py create MyComponent --description "What it does"`.
+
+That writes the whole layout below (sources, example, English/Chinese documentation pair and a gdUnit4
+suite) and refreshes this file. Doing it by hand works too:
 
 1. Create a new directory under `Component/[ComponentName]/`
 2. Add your component files with `[Tool]` and `[GlobalClass]` attributes
@@ -47,12 +56,12 @@ To add a new component:
      }
    }
    ```
-4. Add a `README.md` file with usage documentation
+4. Add a `README.md` (plus the matching `README.cn.md`) under `Doc/[ComponentName]/` with usage documentation
 5. Create examples under `Example/[ComponentName]/`
-6. Submit a pull request
+6. Add a gdUnit4 suite under `Test/[ComponentName]/`
+7. Submit a pull request
 
 This file is automatically updated when component_info.json files are modified.
 
 ---
-
-*Last updated: 2026-09-21 12:46:20 UTC*
+*Last updated: 2026-09-21 12:47:05 UTC*
