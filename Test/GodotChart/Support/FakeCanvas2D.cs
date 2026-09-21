@@ -435,22 +435,6 @@ public sealed class FakeCanvas2D : ICanvas2D
     /// </summary>
     public void ClipRect(float x, float y, float w, float h) { }
 
-    /// <summary>Regions the drawing code reported; the fake uploads nothing, it only records that they came.</summary>
-    public int InvalidateRegionCount { get; private set; }
-
-    /// <summary>The union of the reported regions, for assertions about what one frame changed.</summary>
-    public Rect2 DirtyRegion { get; private set; }
-
-    /// <inheritdoc />
-    public void InvalidateRegion(float x, float y, float w, float h)
-    {
-        if (!(w > 0f) || !(h > 0f)) return;
-
-        var region = new Rect2(x, y, w, h);
-        DirtyRegion = InvalidateRegionCount == 0 ? region : DirtyRegion.Merge(region);
-        InvalidateRegionCount++;
-    }
-
     public TextMetrics MeasureText(string text, FontSettings font)
     {
         MeasureTextCallCount++;

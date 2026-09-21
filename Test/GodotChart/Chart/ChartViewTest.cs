@@ -26,13 +26,6 @@ using static GdUnit4.Assertions;
 [RequireGodotRuntime]
 public partial class ChartViewTest
 {
-    private static bool HasSceneTree()
-    {
-        if (Engine.GetMainLoop() is SceneTree) return true;
-        GD.Print("[skip] ChartView tests need a SceneTree; none in this run");
-        return false;
-    }
-
     /// <summary>Create a view with an injected canvas, sized and added to the tree.</summary>
     private static ChartView AddView(FakeCanvas2D fake, Vector2 size)
     {
@@ -104,7 +97,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ExportedRowsKeepTheirValueTypes()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(200, 150));
@@ -131,7 +124,7 @@ public partial class ChartViewTest
     [TestCase]
     public void SetDataReplacesTheRowsAndClearsTheExportedArray()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(200, 150));
@@ -153,7 +146,7 @@ public partial class ChartViewTest
     [TestCase]
     public void AddRowRoundTripsTheValuesIntoTypedVariants()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(200, 150));
@@ -185,7 +178,7 @@ public partial class ChartViewTest
     [TestCase]
     public void SetCsvFillsTheRows()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(200, 150));
@@ -202,26 +195,51 @@ public partial class ChartViewTest
 
     // ── Kind → mark ─────────────────────────────────────────────────────────
 
+    /// <summary>
+    /// The mark every <see cref="ChartKind"/> builds in the view. The test below compares this table with the
+    /// enum as a set, so a kind added to the library cannot stay untested - the list used to name 10 of the 22
+    /// kinds, and the other 12 were only exercised by the integration suites.
+    /// </summary>
+    private static readonly (ChartKind Kind, Type Mark)[] ExpectedMarks =
+    [
+        (ChartKind.Bar, typeof(IntervalMark)),
+        (ChartKind.Line, typeof(LineMark)),
+        (ChartKind.Area, typeof(LineMark)),
+        (ChartKind.Scatter, typeof(PointMark)),
+        (ChartKind.RangeArea, typeof(RangeAreaMark)),
+        (ChartKind.Pie, typeof(PieMark)),
+        (ChartKind.Donut, typeof(PieMark)),
+        (ChartKind.Radar, typeof(RadarMark)),
+        (ChartKind.Violin, typeof(ViolinMark)),
+        (ChartKind.Box, typeof(BoxMark)),
+        (ChartKind.Candlestick, typeof(CandlestickMark)),
+        (ChartKind.Heatmap, typeof(HeatmapMark)),
+        (ChartKind.Treemap, typeof(TreemapMark)),
+        (ChartKind.Sunburst, typeof(SunburstMark)),
+        (ChartKind.Sankey, typeof(SankeyMark)),
+        (ChartKind.Chord, typeof(ChordMark)),
+        (ChartKind.Gauge, typeof(GaugeMark)),
+        (ChartKind.Funnel, typeof(FunnelMark)),
+        (ChartKind.Waffle, typeof(WaffleMark)),
+        (ChartKind.Timeline, typeof(TimelineMark)),
+        (ChartKind.Lollipop, typeof(LollipopMark)),
+        (ChartKind.Milestone, typeof(MilestoneMark)),
+    ];
+
     [TestCase]
     public void KindBuildsTheMatchingMark()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
-        var cases = new (ChartKind Kind, Type Mark)[]
+        var kinds = Enum.GetValues<ChartKind>();
+        AssertThat(ExpectedMarks.Length).IsEqual(kinds.Length);
+        foreach (var kind in kinds)
         {
-            (ChartKind.Bar, typeof(IntervalMark)),
-            (ChartKind.Line, typeof(LineMark)),
-            (ChartKind.Area, typeof(LineMark)),
-            (ChartKind.Scatter, typeof(PointMark)),
-            (ChartKind.Pie, typeof(PieMark)),
-            (ChartKind.Donut, typeof(PieMark)),
-            (ChartKind.Candlestick, typeof(CandlestickMark)),
-            (ChartKind.Heatmap, typeof(HeatmapMark)),
-            (ChartKind.Sankey, typeof(SankeyMark)),
-            (ChartKind.Waffle, typeof(WaffleMark)),
-        };
+            AssertThat(ExpectedMarks.Any(c => c.Kind == kind)).IsTrue();
+            AssertThat(ExpectedMarks.Count(c => c.Kind == kind)).IsEqual(1);
+        }
 
-        foreach (var (kind, markType) in cases)
+        foreach (var (kind, markType) in ExpectedMarks)
         {
             var fake = new FakeCanvas2D();
             var view = AddView(fake, new Vector2(200, 150));
@@ -241,7 +259,7 @@ public partial class ChartViewTest
     [TestCase]
     public void KindStylingMatchesTheChartType()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(200, 150));
@@ -261,7 +279,7 @@ public partial class ChartViewTest
     [TestCase]
     public void KindDefaultsToBarAndIsNeverGuessed()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         // Rows that look like a candlestick must not change the kind: the node draws what it is told.
         var fake = new FakeCanvas2D();
@@ -282,7 +300,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ShapeFieldReachesTheShapeChannel()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         DataRow[] rows =
         {
@@ -318,7 +336,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ExplicitChannelFieldsReachTheEncodes()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         // Roomier than the chart's content minimum: the engine clamps a Control's size to the minimum the node
@@ -355,7 +373,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheColorChannelSplitsTheRowsIntoSeparateSeries()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 160));
@@ -372,7 +390,7 @@ public partial class ChartViewTest
     [TestCase]
     public void EveryPieSlicePicksItsOwnPaletteColor()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 200));
@@ -397,7 +415,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ThePieLegendListsTheCategories()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 200));
@@ -420,7 +438,7 @@ public partial class ChartViewTest
     [TestCase]
     public void AnExplicitColorFieldStillWinsOverTheCategory()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 200));
@@ -452,7 +470,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ColoursInTheDataPaintTheElements()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 200));
@@ -479,7 +497,7 @@ public partial class ChartViewTest
     [TestCase]
     public void AConstantColourFieldPaintsTheWholeView()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 200));
@@ -506,7 +524,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ColorMappingIdentityKeepsTheDataColoursOnAMixedColumn()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         // The column mixes colours and a plain category: with the automatic mapping it counts as
         // categorical (no value is a colour), with Identity the colours win and only the leftover value
@@ -545,7 +563,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ColorMappingCategoryForcesThePalette()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 180));
@@ -575,7 +593,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ColorMappingSequentialUsesTheThemeGradient()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 180));
@@ -598,7 +616,7 @@ public partial class ChartViewTest
     [TestCase]
     public void YAxisRangePinsTheValueAxis()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 200));
@@ -624,7 +642,7 @@ public partial class ChartViewTest
     [TestCase]
     public void AxisRangeLeavesACategoryAxisAlone()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         string Positions(Vector2 range)
         {
@@ -650,7 +668,7 @@ public partial class ChartViewTest
     [TestCase]
     public void SizeRangeSetsTheRadiusBounds()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 220));
@@ -676,7 +694,7 @@ public partial class ChartViewTest
     [TestCase]
     public void OpacityRangeKeepsTheFaintestElementVisible()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 220));
@@ -701,7 +719,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ShapeSymbolsReplacesTheDefaultVocabulary()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 220));
@@ -734,7 +752,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ConfigureChartSeesTheBuiltChartAndCanOverrideAScale()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 180));
@@ -767,7 +785,7 @@ public partial class ChartViewTest
     [TestCase]
     public void AColourValueInTheInspectorRowsKeepsItsType()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         // The scene path: a Color variant in Rows must not be flattened to text on the way in, or the
         // colour channel would read a category string and paint a palette colour instead.
@@ -791,7 +809,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheSizeChannelScalesTheDots()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 160));
@@ -818,7 +836,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheOpacityChannelReachesTheFill()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(220, 160));
@@ -840,7 +858,7 @@ public partial class ChartViewTest
     [TestCase]
     public void AxisTitlesAndUnitsReachTheCanvas()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(280, 180));
@@ -873,7 +891,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheLegendListsTheSeries()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(280, 180));
@@ -892,7 +910,7 @@ public partial class ChartViewTest
     [TestCase]
     public void LegendNoneDrawsNoLegend()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(280, 180));
@@ -912,7 +930,7 @@ public partial class ChartViewTest
     [TestCase]
     public void HoveringShowsTheTooltipAndTheCrosshair()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 200));
@@ -939,7 +957,7 @@ public partial class ChartViewTest
     [TestCase]
     public void LeavingTheNodeHidesTheTooltipAgain()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 200));
@@ -967,7 +985,7 @@ public partial class ChartViewTest
     [TestCase]
     public void AChartBackgroundOverrideReachesTheSurface()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 200));
@@ -994,7 +1012,7 @@ public partial class ChartViewTest
     [TestCase]
     public void AnInPlaceSymbolListEditIsNoticed()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 200));
@@ -1036,7 +1054,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheWheelBubblesFromTheChartToItsParent()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var tree = (SceneTree)Engine.GetMainLoop();
         var originalRootSize = tree.Root.Size;
@@ -1079,7 +1097,7 @@ public partial class ChartViewTest
     [TestCase]
     public void SetDataKeepsTheExportedArraySignatureInStep()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 200));
@@ -1136,7 +1154,7 @@ public partial class ChartViewTest
     [TestCase]
     public void LeavingTheTreeDropsTheChart()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 200));
@@ -1154,7 +1172,7 @@ public partial class ChartViewTest
     [TestCase]
     public void HoveringAChartRaisesTheOnHoverEvent()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 200));
@@ -1192,7 +1210,7 @@ public partial class ChartViewTest
     [TestCase]
     public void LeavingTheChartRaisesTheOnHoverEventWithNoRow()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 200));
@@ -1226,7 +1244,7 @@ public partial class ChartViewTest
     [TestCase]
     public void AThemePropertyAssignmentNotifiesTheChart()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 200));
@@ -1250,7 +1268,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheWheelScrollsPastTheChartInsteadOfSelecting()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 200));
@@ -1290,7 +1308,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheTooltipCanBeTurnedOff()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 200));
@@ -1317,7 +1335,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheThemeMasterSwitchTurnsTheTooltipOff()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 200));
@@ -1353,7 +1371,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheSurfaceCoversTheWholeNode()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(200, 150));
@@ -1371,7 +1389,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheSurfaceFollowsTheNodeSize()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         // Above the content minimum on purpose: the engine clamps a Control's size to what the node reports
@@ -1404,7 +1422,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ACustomThemeResourceReachesTheChart()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(160, 120));
@@ -1431,7 +1449,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ACustomThemeWinsOverTheThemeKind()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(160, 120));
@@ -1452,7 +1470,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheAssignedThemeResourceIsNotMutated()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(160, 120));
@@ -1477,7 +1495,7 @@ public partial class ChartViewTest
     [TestCase]
     public void EditingTheThemeResourceUpdatesTheChart()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(160, 120));
@@ -1514,7 +1532,7 @@ public partial class ChartViewTest
     [TestCase]
     public void AThemeResourceSurvivesASaveAndLoadRoundTrip()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         // The whole point of the feature is editing a .tres in the editor, so the resource has to
         // survive a real save/load cycle (scratch files live in this component's own tmp/ directory,
@@ -1547,7 +1565,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheBackgroundFollowsThePalette()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(120, 100));
@@ -1568,7 +1586,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ChangingASettingRedrawsExactlyOncePerFrame()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(200, 150));
@@ -1591,7 +1609,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ConfigureMarkReachesTheBuiltMark()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(220, 160));
@@ -1630,7 +1648,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheThemeMarkDefaultsReachTheMarkAKindBuilds()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var theme = ChartTheme.Dark().Clone();
         theme.CornerRadius = 7f;
@@ -1643,6 +1661,7 @@ public partial class ChartViewTest
         AssertThat(MarkBuiltFor(ChartKind.Heatmap, theme) is HeatmapMark { CornerRadius: 7f }).IsTrue();
         AssertThat(MarkBuiltFor(ChartKind.Timeline, theme) is TimelineMark { CornerRadius: 7f }).IsTrue();
         AssertThat(MarkBuiltFor(ChartKind.Treemap, theme) is TreemapMark { CornerRadius: 7f }).IsTrue();
+        AssertThat(MarkBuiltFor(ChartKind.Waffle, theme) is WaffleMark { CornerRadius: 7f }).IsTrue();
         AssertThat(MarkBuiltFor(ChartKind.Line, theme) is LineMark { StrokeWidth: 5f }).IsTrue();
         AssertThat(MarkBuiltFor(ChartKind.Radar, theme) is RadarMark { StrokeWidth: 5f }).IsTrue();
         AssertThat(MarkBuiltFor(ChartKind.Violin, theme) is ViolinMark { StrokeWidth: 5f }).IsTrue();
@@ -1658,7 +1677,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ConfigureMarkWinsOverTheThemeMarkDefaults()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 160));
@@ -1707,7 +1726,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ChangingTheKindRebuildsTheChart()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(200, 150));
@@ -1732,7 +1751,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ChangingAnAxisOrSectionKnobAfterTheDataRebuildsTheChart()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(400, 300));
@@ -1779,7 +1798,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheTitleAndDataArePushedToTheChart()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 160));
@@ -1797,7 +1816,7 @@ public partial class ChartViewTest
     [TestCase]
     public void HeaderOnlyCsvYieldsNoRowsAndStillRendersCleanly()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(120, 100));
@@ -1818,7 +1837,7 @@ public partial class ChartViewTest
     [TestCase]
     public void WindowSizeKeepsOnlyTheNewestRows()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 200));
@@ -1842,7 +1861,7 @@ public partial class ChartViewTest
     [TestCase]
     public void AppendingUpdatesTheDataWithoutRebuildingTheChart()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(300, 200));
@@ -1879,7 +1898,7 @@ public partial class ChartViewTest
     [TestCase]
     public void TheThemeFontReachesEveryPieceOfText()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(320, 220));
@@ -1925,7 +1944,7 @@ public partial class ChartViewTest
     [TestCase]
     public void AThemeFontFamilyCanBeSetWithoutAFontResource()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 160));
@@ -1956,7 +1975,7 @@ public partial class ChartViewTest
     [TestCase]
     public void EditorPreviewOnlySuppressesThePreviewInsideTheEditor()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         // The premise of the two assertions below, and what the editor builds the placeholder for instead.
         AssertThat(Engine.IsEditorHint()).IsFalse();
@@ -1991,7 +2010,7 @@ public partial class ChartViewTest
     [TestCase]
     public void XAxisUnitReachesTheAxisTooltip()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(280, 180));
@@ -2018,7 +2037,7 @@ public partial class ChartViewTest
     [TestCase]
     public void ClearEmptiesTheDataAndTheNextFrameIsOnlyBackground()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 180));
@@ -2058,7 +2077,7 @@ public partial class ChartViewTest
     [TestCase]
     public void GroupedBarsIsHandedToTheMark()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(240, 160));
@@ -2090,7 +2109,7 @@ public partial class ChartViewTest
             return;
         }
 
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var view = new ChartView { Size = new Vector2(256, 192), Kind = ChartKind.Bar };
         var tree = (SceneTree)Engine.GetMainLoop();

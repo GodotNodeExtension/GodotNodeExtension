@@ -23,9 +23,9 @@ using static GdUnit4.Assertions;
 /// </para>
 /// <para>
 /// <b>Optional artefact dump:</b> when the environment variable <c>CHART_INTEGRATION_OUT</c> points at a
-/// directory (created if missing), the first test case writes one PNG per chart kind into it
-/// (<c>&lt;Kind&gt;.png</c>, e.g. <c>Heatmap.png</c>) next to the measured numbers, for visual
-/// inspection. When the variable is unset nothing is written to disk.
+/// directory (created if missing), every case that renders a chart writes one PNG per chart kind into it
+/// (<c>&lt;Kind&gt;.png</c>, e.g. <c>Heatmap.png</c>) next to the measured numbers, for visual inspection -
+/// the dump is off by default, so a run that does not ask for it writes nothing to disk.
 /// </para>
 /// <para>
 /// "Background" always means the palette background the chart paints itself (<see

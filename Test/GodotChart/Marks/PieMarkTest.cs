@@ -6,6 +6,7 @@ using System.Linq;
 using GdUnit4;
 using Godot;
 using GodotNodeExtension.Component.GodotChart;
+using GodotNodeExtension.Component.GodotChart.Canvas;
 using GodotNodeExtension.Component.GodotChart.Marks;
 using Support;
 using static GdUnit4.Assertions;
@@ -78,6 +79,38 @@ public class PieMarkTest
 
         AssertThat(canvas.Texts.Contains("Total")).IsTrue();
         AssertThat(canvas.Texts.Contains("42")).IsTrue();
+    }
+
+    /// <summary>
+    /// A span of a rich centre line is drawn with everything it carries. The mark laid the centre's spans out
+    /// itself and built its own <see cref="FontSettings"/> from size/bold/italic alone, so the same
+    /// <see cref="TooltipLine"/> came out underlined under a legend and plain in the ring's centre.
+    /// </summary>
+    [TestCase]
+    public void PieCenterSpansKeepTheirOwnFontOverrides()
+    {
+        var canvas = new FakeCanvas2D();
+        var span = new TooltipSpan
+        {
+            Text = "Total",
+            Decoration = TextDecoration.Underline,
+            LetterSpacing = 2f,
+            Family = "Some Family",
+        };
+        var line = new TooltipLine { Spans = [span] };
+
+        new PieMark
+        {
+            InnerRadius = 0.5f,
+            ShowLabel = false,
+            CenterContentBuilder = _ => [line],
+        }.Render(TestContexts.Mark(canvas, TwoSlices(), TestContexts.XyEncodes("cat", "value"), new ScaleSet()));
+
+        var draw = canvas.TextDraws.FirstOrDefault(d => d.Text == "Total");
+        AssertThat(draw.Text).IsEqual("Total");
+        AssertThat(draw.Font.Decoration).IsEqual(TextDecoration.Underline);
+        AssertThat(draw.Font.LetterSpacing).IsEqual(2f);
+        AssertThat(draw.Font.Family).IsEqual("Some Family");
     }
 
     [TestCase]

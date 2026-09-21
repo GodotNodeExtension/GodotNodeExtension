@@ -46,6 +46,17 @@ public class MarkRenderSnapshotTest
     /// point, and the shared helper spells that move out (an explicit <c>MoveTo</c> before the outer arc). The
     /// pixels are identical - the recorded path just has the point the backend used to add implicitly.
     /// </para>
+    /// <para>
+    /// <c>SunburstMark</c> moved with <c>RadiusFactor</c> 0.9 -> 0.85: the ring is now as wide as the one a pie,
+    /// donut, gauge, radar or chord draws with the same setting, instead of 11% larger than its neighbours in a
+    /// grid of cells of one size.
+    /// </para>
+    /// <para>
+    /// <c>WaffleMark</c> moved with <c>CellRadius</c> 2 -> <c>CornerRadius</c> 3: the name and the default now
+    /// match the other square marks, and <c>ChartView</c> copies the theme's <c>CornerRadius</c> onto it like it
+    /// does for the interval, box, candlestick, funnel, heatmap, timeline and treemap marks (the theme reached
+    /// every square mark except this one). Same cells, only a rounder corner.
+    /// </para>
     /// </summary>
     private static readonly Dictionary<string, string> Expected = new()
 {
@@ -55,12 +66,12 @@ public class MarkRenderSnapshotTest
         ["PieMark"] = "2FB16388561A788E",
         ["RadarMark"] = "D8969055674A38F2",
         ["ViolinMark"] = "52F370BCF0109A2A",
-        ["WaffleMark"] = "FD7965AA14E94608",
+        ["WaffleMark"] = "4F482C423BC295A2",
         ["FunnelMark"] = "84AC3F8ECA3F0D42",
         ["GaugeMark"] = "CC90B69E23B6E0F0",
         ["SankeyMark"] = "AF95C547B7EFDE0C",
         ["ChordMark"] = "A7A77E6A5EB82FF2",
-        ["SunburstMark"] = "9439D5F4F183015B",
+        ["SunburstMark"] = "8CD462FD0B21F0C5",
         ["TreemapMark"] = "ACBEAD55F1CDC170",
         ["TimelineMark"] = "3273D2A642AC4F63",
         ["LollipopMark"] = "8CE87EF5AA764C7F",

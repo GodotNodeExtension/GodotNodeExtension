@@ -103,6 +103,29 @@ public class LollipopMarkTest
     /// probe takes its coordinates from the geometry <c>Render</c> just produced, so hit and draw cannot drift
     /// apart, and a row <c>Render</c> skips (a value that is not a number) is not hittable either.
     /// </summary>
+    /// <summary>
+    /// The label API the base class exposes works here too: <see cref="Mark.ShowLabel"/> is off by default, and
+    /// with it on every row contributes its value - the mark inherited the whole label surface (ShowLabel,
+    /// LabelFormat, LabelPosition, LabelContentBuilder) but drew nothing, so setting any of them did nothing.
+    /// </summary>
+    [TestCase]
+    public void LollipopLabelsFollowShowLabel()
+    {
+        var plain = new FakeCanvas2D();
+        new LollipopMark().Render(
+            TestContexts.Mark(plain, Simple(), TestContexts.XyEncodes("cat", "value"),
+                TestContexts.CategoryScales(ThreeCategories, 0, 25)));
+        AssertThat(plain.Texts).IsEmpty();
+
+        var labelled = new FakeCanvas2D();
+        new LollipopMark { ShowLabel = true }.Render(
+            TestContexts.Mark(labelled, Simple(), TestContexts.XyEncodes("cat", "value"),
+                TestContexts.CategoryScales(ThreeCategories, 0, 25)));
+        AssertThat(labelled.Texts).Contains("10");
+        AssertThat(labelled.Texts).Contains("20");
+        AssertThat(labelled.Texts).Contains("15");
+    }
+
     [TestCase]
     public void LollipopHitTestFindsTheDrawnDotOnly()
     {

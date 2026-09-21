@@ -239,6 +239,29 @@ public class WaffleMarkTest
         AssertThat(mark.LayoutBuildCount).IsEqual(2);
     }
 
+    /// <summary>
+    /// The layout cache is dropped on request: a host that rewrites the rows of the list it handed the mark
+    /// (same list, same version) cannot be seen by the cache key, so it needs the entry point the sankey and
+    /// treemap marks expose too.
+    /// </summary>
+    [TestCase]
+    public void WaffleInvalidateCacheRebuildsTheLayout()
+    {
+        var mark = new WaffleMark();
+        var data = Proportions();
+        var encodes = TestContexts.XyEncodes("cat", "value");
+        var canvas = new FakeCanvas2D();
+        var ctx = TestContexts.Mark(canvas, data, encodes, new ScaleSet());
+
+        mark.Render(ctx);
+        mark.Render(ctx);
+        AssertThat(mark.LayoutBuildCount).IsEqual(1);     // the layout is cached between frames
+
+        mark.InvalidateCache();
+        mark.Render(ctx);
+        AssertThat(mark.LayoutBuildCount).IsEqual(2);
+    }
+
     [TestCase]
     public void WaffleDoesNotAllocatePerCell()
     {

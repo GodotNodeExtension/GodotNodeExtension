@@ -116,10 +116,11 @@ public class ScaleDefaultsTest
     [TestCase]
     public void TinyDomainsAreTreatedAsDegenerate()
     {
-        // A 1e-15 range: an absolute epsilon missed this and produced infinities.
+        // A 1e-15 range: an absolute epsilon missed this and produced infinities. Degenerate now means "the
+        // middle of the axis", the one convention of the family.
         var scale = new LinearScale(0, 1e-15);
 
-        Approx(scale.Map(5e-16), 0.0);
+        Approx(scale.Map(5e-16), 0.5);
     }
 
     // ── Ordinal / categorical defaults ─────────────────────────────────────

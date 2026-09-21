@@ -149,11 +149,7 @@ public class AnimationTest
     [TestCase]
     public void StartEntryHonoursTheConfiguredElementCount()
     {
-        if (Engine.GetMainLoop() is not SceneTree tree)
-        {
-            GD.Print("[skip] StartEntryHonoursTheConfiguredElementCount: no SceneTree in this run");
-            return;
-        }
+        SceneTree tree = Asserts.RequireSceneTree();
 
         var node = AutoFree(new Node2D());
         tree.Root.AddChild(node);
@@ -259,11 +255,7 @@ public class AnimationTest
     [TestCase]
     public void SupersededExitDoesNotSwallowItsCallback()
     {
-        if (Engine.GetMainLoop() is not SceneTree tree)
-        {
-            GD.Print("[skip] SupersededExitDoesNotSwallowItsCallback: no SceneTree in this run");
-            return;
-        }
+        SceneTree tree = Asserts.RequireSceneTree();
 
         var node = AutoFree(new Node2D());
         tree.Root.AddChild(node);
@@ -318,11 +310,7 @@ public class AnimationTest
     [TestCase]
     public async Task EntryTweenAdvancesAndSettlesOnTheEndState()
     {
-        if (Engine.GetMainLoop() is not SceneTree tree)
-        {
-            GD.Print("[skip] EntryTweenAdvancesAndSettlesOnTheEndState: no SceneTree in this run");
-            return;
-        }
+        SceneTree tree = Asserts.RequireSceneTree();
 
         var node = AutoFree(new Node2D());
         tree.Root.AddChild(node);
@@ -371,11 +359,7 @@ public class AnimationTest
     [TestCase]
     public async Task HoverTweenMovesTheScaleTowardTheTarget()
     {
-        if (Engine.GetMainLoop() is not SceneTree tree)
-        {
-            GD.Print("[skip] HoverTweenMovesTheScaleTowardTheTarget: no SceneTree in this run");
-            return;
-        }
+        SceneTree tree = Asserts.RequireSceneTree();
 
         var node = AutoFree(new Node2D());
         tree.Root.AddChild(node);
@@ -408,11 +392,7 @@ public class AnimationTest
     [TestCase]
     public async Task ExitTweenCallsTheCallbackExactlyOnce()
     {
-        if (Engine.GetMainLoop() is not SceneTree tree)
-        {
-            GD.Print("[skip] ExitTweenCallsTheCallbackExactlyOnce: no SceneTree in this run");
-            return;
-        }
+        SceneTree tree = Asserts.RequireSceneTree();
 
         var node = AutoFree(new Node2D());
         tree.Root.AddChild(node);

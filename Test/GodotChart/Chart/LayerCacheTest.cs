@@ -402,11 +402,7 @@ public class LayerCacheTest
     [TestCase]
     public void TheViewHandsItsSwitchToTheChart()
     {
-        if (Engine.GetMainLoop() is not SceneTree tree)
-        {
-            GD.Print("[skip] TheViewHandsItsSwitchToTheChart: no SceneTree in this run");
-            return;
-        }
+        SceneTree tree = Asserts.RequireSceneTree();
 
         var canvas = new FakeCanvas2D();
         var view = new ChartView { Size = new Vector2(320f, 200f), CanvasFactory = (_, _) => canvas };

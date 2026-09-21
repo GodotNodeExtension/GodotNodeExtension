@@ -5,6 +5,7 @@ using System.IO;
 using Godot;
 using GodotNodeExtension.Component.GodotChart;
 using GodotNodeExtension.Component.GodotChart.Canvas;
+using static GdUnit4.Assertions;
 
 /// <summary>
 /// The shared plumbing of the chart integration suites: build a <see cref="ChartView"/> on the engine's real
@@ -217,6 +218,103 @@ internal static class ChartRenderHarness
     /// <summary>The directory <c>CHART_INTEGRATION_OUT</c> names, or an empty string when it is unset.</summary>
     public static string DumpDirectory()
         => System.Environment.GetEnvironmentVariable("CHART_INTEGRATION_OUT")?.Trim() ?? "";
+
+    // ── Golden baselines ────────────────────────────────────────────────────
+
+    /// <summary>Where the version-controlled baselines live (see <see cref="AssertMatchesGolden"/>).</summary>
+    public const string GoldenDirectory = "res://Test/GodotChart/Integration/baseline";
+
+    /// <summary>
+    /// How far one channel may differ before a pixel counts as different. Antialiasing is not bit-exact across
+    /// drivers, so a couple of channel values of difference is noise; a real regression (a missing element, a
+    /// shifted axis, a colour that stopped following the theme) moves far more than that.
+    /// </summary>
+    public const float GoldenChannelTolerance = 4f / 255f;
+
+    /// <summary>Share of the pixels that may differ beyond <see cref="GoldenChannelTolerance"/>.</summary>
+    public const float GoldenMaxDifferingRatio = 0.01f;
+
+    /// <summary>
+    /// Compare a captured frame with its recorded baseline, or record the baseline when there is none yet.
+    /// <para>
+    /// Recording passes and says so in the log: a fresh checkout has no image yet, and the file the run writes is
+    /// what has to be looked at before it is committed. Re-recording is "delete the file and run the case again",
+    /// the same workflow the typography baselines use (see
+    /// <c>Test/RichTextCanvas/Integration/TypographyRenderIntegrationTest</c>) - a picture that legitimately
+    /// changed is reviewed, not silently accepted.
+    /// </para>
+    /// </summary>
+    /// <param name="name">Baseline name without extension, e.g. <c>cartesian-decorated</c>.</param>
+    /// <param name="rendered">The frame the case just captured.</param>
+    public static void AssertMatchesGolden(string name, Image rendered)
+    {
+        string path = ProjectSettings.GlobalizePath($"{GoldenDirectory}/{name}.png");
+
+        if (!File.Exists(path))
+        {
+            string? directory = Path.GetDirectoryName(path);
+            if (!string.IsNullOrEmpty(directory))
+                Directory.CreateDirectory(directory);
+
+            rendered.SavePng(path.Replace('\\', '/'));
+            GD.Print($"[render-baseline] recorded {name}.png — re-run to compare against it");
+            return;
+        }
+
+        Image baseline = Image.LoadFromFile(path);
+        AssertThat(baseline.GetWidth() == rendered.GetWidth() && baseline.GetHeight() == rendered.GetHeight())
+            .OverrideFailureMessage(
+                $"{name}.png is {baseline.GetWidth()}x{baseline.GetHeight()} while this frame is "
+                + $"{rendered.GetWidth()}x{rendered.GetHeight()}: the fixture or the view size changed, so the "
+                + $"baseline has to be re-recorded (delete {path})")
+            .IsTrue();
+
+        (float ratio, float maxDelta) = CompareGolden(baseline, rendered);
+
+        AssertThat(ratio <= GoldenMaxDifferingRatio && maxDelta <= GoldenChannelTolerance)
+            .OverrideFailureMessage(
+                $"{name} differs from its baseline: {ratio:P2} of the pixels differ beyond "
+                + $"{GoldenChannelTolerance * 255f:F0}/255 (limit {GoldenMaxDifferingRatio:P2}), largest channel "
+                + $"difference {maxDelta * 255f:F0}/255. Compare the frame with {path}; delete that file and "
+                + "re-run the case to re-record it, then review the new image.")
+            .IsTrue();
+    }
+
+    /// <summary>
+    /// Share of the pixels that differ beyond <see cref="GoldenChannelTolerance"/>, and the largest channel
+    /// difference seen - the two numbers the failure message reports, so a red case says how far off it is.
+    /// </summary>
+    /// <param name="baseline">The recorded image.</param>
+    /// <param name="rendered">The freshly rendered image.</param>
+    /// <returns>The differing pixel ratio and the largest channel delta.</returns>
+    public static (float Ratio, float MaxDelta) CompareGolden(Image baseline, Image rendered)
+    {
+        int width = Math.Min(baseline.GetWidth(), rendered.GetWidth());
+        int height = Math.Min(baseline.GetHeight(), rendered.GetHeight());
+        int differing = 0;
+        float maxDelta = 0f;
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                Color a = baseline.GetPixel(x, y);
+                Color b = rendered.GetPixel(x, y);
+
+                float delta = MathF.Max(
+                    MathF.Max(MathF.Abs(a.R - b.R), MathF.Abs(a.G - b.G)),
+                    MathF.Max(MathF.Abs(a.B - b.B), MathF.Abs(a.A - b.A)));
+
+                if (delta > maxDelta)
+                    maxDelta = delta;
+
+                if (delta > GoldenChannelTolerance)
+                    differing++;
+            }
+        }
+
+        return ((float)differing / (width * height), maxDelta);
+    }
 
     /// <summary>Write one PNG per kind when the dump switch is on; returns the problem text, if any.</summary>
     public static string DumpPng(string directory, string label, Image image)

@@ -40,13 +40,6 @@ public class Canvas2DControlTest
         return control;
     }
 
-    private static bool HasSceneTree()
-    {
-        if (Engine.GetMainLoop() is SceneTree) return true;
-        GD.Print("[skip] Canvas2DControl tests need a SceneTree; none in this run");
-        return false;
-    }
-
     private static Canvas2DControl ControlWithFake(
         FakeCanvas2D fake, Vector2 size, out List<Vector2I> createdSizes)
     {
@@ -67,7 +60,7 @@ public class Canvas2DControlTest
     [TestCase]
     public void TheFirstCanvasIsBuiltAtTheNodeSizeForBothResizeModes()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         // Default (AutoResize on): the surface is the node size.
         var autoFake = new FakeCanvas2D();
@@ -95,7 +88,7 @@ public class Canvas2DControlTest
     [TestCase]
     public void RedrawClearsAndRunsOneFrameAroundTheDrawCallback()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var control = ControlWithFake(fake, new Vector2(64, 64), out _);
@@ -131,7 +124,7 @@ public class Canvas2DControlTest
     [TestCase]
     public void AnIdleFrameTicksButDoesNotRedraw()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var control = ControlWithFake(fake, new Vector2(32, 32), out _);
@@ -152,7 +145,7 @@ public class Canvas2DControlTest
     [TestCase]
     public void ClearingCanBeTurnedOffForAccumulatingContent()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var control = ControlWithFake(fake, new Vector2(32, 32), out _);
@@ -170,7 +163,7 @@ public class Canvas2DControlTest
     [TestCase]
     public void ResizingTheNodeResizesTheSurface()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var control = ControlWithFake(fake, new Vector2(50, 40), out _);
@@ -186,7 +179,7 @@ public class Canvas2DControlTest
     [TestCase]
     public void AutoResizeOffLeavesTheSurfaceSizeToTheHost()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var control = ControlWithFake(fake, new Vector2(50, 40), out _);
@@ -208,7 +201,7 @@ public class Canvas2DControlTest
     [TestCase]
     public void LeavingTheTreeDisposesTheCanvas()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var control = ControlWithFake(fake, new Vector2(32, 32), out _);
@@ -226,7 +219,7 @@ public class Canvas2DControlTest
     [TestCase]
     public void ASharedCanvasSurvivesWhenTheNodeDoesNotOwnIt()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var control = ControlWithFake(fake, new Vector2(32, 32), out _);
@@ -244,7 +237,7 @@ public class Canvas2DControlTest
     [TestCase]
     public void ReEnteringTheTreeBuildsAFreshCanvasAndKeepsTrackingTheSize()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var control = ControlWithFake(fake, new Vector2(40, 30), out var createdSizes);
@@ -272,7 +265,7 @@ public class Canvas2DControlTest
     [TestCase]
     public void ExitingTwiceAndExitingWithoutEnteringAreSafe()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         // A node that never entered the tree has no connection to drop: releasing it must be a no-op
         // rather than a "disconnect a nonexistent connection" error.
@@ -303,7 +296,7 @@ public class Canvas2DControlTest
     [TestCase]
     public void AFailingCanvasFactoryWarnsAndKeepsTheNodeUsable()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var log = EngineMessageLog.Attach();
         try
@@ -341,7 +334,7 @@ public class Canvas2DControlTest
     [TestCase]
     public void AThrowingDrawCallbackIsReportedCommittedAndRetried()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var log = EngineMessageLog.Attach();
         try
@@ -394,7 +387,7 @@ public class Canvas2DControlTest
             return;
         }
 
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var control = new Canvas2DControl { Size = new Vector2(64, 64), BackgroundColor = Colors.Black };
         int draws = 0;

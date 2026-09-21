@@ -180,36 +180,37 @@ public class LinearScaleTest
     }
 
     [TestCase]
-    public void LinearScaleDefaultConstructorMapsEveryValueToZero()
+    public void LinearScaleDefaultConstructorMapsEveryValueToTheMiddle()
     {
-        // Min == Max == 0 is degenerate, so every finite value lands on 0 (never on NaN or +-inf).
+        // Min == Max == 0 is degenerate, so every finite value lands in the middle of the axis (never on NaN or
+        // +-inf) - the same convention the ordinal, colour and time scales use.
         var scale = new LinearScale();
 
-        Approx(scale.Map(5.0), 0.0);
-        Approx(scale.Map(-5.0), 0.0);
-        Approx(scale.Map(0.0), 0.0);
+        Approx(scale.Map(5.0), 0.5);
+        Approx(scale.Map(-5.0), 0.5);
+        Approx(scale.Map(0.0), 0.5);
         // ... while a value without a number has no position at all, degenerate domain or not.
         AssertThat(double.IsNaN(scale.Map(null!))).IsTrue();
     }
 
     [TestCase]
-    public void LinearScaleDegenerateDomainReturnsZero()
+    public void LinearScaleDegenerateDomainCentresEveryValue()
     {
         var scale = new LinearScale(5, 5);
 
-        Approx(scale.Map(5.0), 0.0);
-        Approx(scale.Map(100.0), 0.0); // out-of-domain values collapse as well
+        Approx(scale.Map(5.0), 0.5);
+        Approx(scale.Map(100.0), 0.5); // out-of-domain values collapse as well
     }
 
     [TestCase]
     public void LinearScaleRelativeToleranceDecidesWhatCountsAsDegenerate()
     {
-        // ScaleMath.IsDegenerate compares |max-min| against magnitude*1e-12. At magnitude 1e12 the
-        // tolerance is exactly 1, so a one-unit range counts as degenerate and every position
-        // collapses onto 0.
+        // ScaleMath.IsDegenerate compares |max-min| against magnitude*1e-12. At magnitude 1e12 the tolerance is
+        // exactly 1, so a one-unit range counts as degenerate and every position collapses onto the middle of
+        // the axis (see LinearScale.Map).
         var oneApart = new LinearScale(1e12, 1e12 + 1);
-        Approx(oneApart.Map(1e12), 0.0);
-        Approx(oneApart.Map(1e12 + 1), 0.0);
+        Approx(oneApart.Map(1e12), 0.5);
+        Approx(oneApart.Map(1e12 + 1), 0.5);
 
         // Two units apart crosses the threshold: the domain is live again.
         var twoApart = new LinearScale(1e12, 1e12 + 2);

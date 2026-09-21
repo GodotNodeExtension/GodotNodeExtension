@@ -161,7 +161,7 @@ public class MinimumSizeTest
     [TestCase]
     public void TheViewReportsTheContentMinimumToTheEngine()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var view = AddView(new FakeCanvas2D(), new Vector2(360f, 260f));
         try
@@ -204,7 +204,7 @@ public class MinimumSizeTest
     [TestCase]
     public void AViewWithoutAChartStillReportsAMinimum()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var view = AddView(new FakeCanvas2D(), new Vector2(320f, 240f));
         try
@@ -239,7 +239,7 @@ public class MinimumSizeTest
     [TestCase]
     public void TheMeasuredMinimumReplacesTheEstimate()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var view = AddView(new FakeCanvas2D(), new Vector2(320f, 240f));
         try
@@ -274,7 +274,7 @@ public class MinimumSizeTest
     [TestCase]
     public async Task AContainerDoesNotCollapseAViewWithoutACustomMinimum()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var box = new VBoxContainer { Size = new Vector2(400f, 320f) };
@@ -367,13 +367,6 @@ public class MinimumSizeTest
     }
 
     // ── Plumbing ────────────────────────────────────────────────────────────
-
-    private static bool HasSceneTree()
-    {
-        if (Engine.GetMainLoop() is SceneTree) return true;
-        GD.Print("[skip] MinimumSize tests need a SceneTree; none in this run");
-        return false;
-    }
 
     /// <summary>Create a view with an injected canvas, sized and added to the tree.</summary>
     private static ChartView AddView(FakeCanvas2D fake, Vector2 size)

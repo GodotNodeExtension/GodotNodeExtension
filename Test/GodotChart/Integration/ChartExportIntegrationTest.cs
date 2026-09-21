@@ -21,7 +21,7 @@ public class ChartExportIntegrationTest
     [TestCase]
     public void TheViewsSurfaceIsWrittenToAPng()
     {
-        if (ChartRenderHarness.NoRenderingDevice(Suite)) return;
+        if (ChartRenderHarness.NoRenderingDevice(nameof(TheViewsSurfaceIsWrittenToAPng))) return;
 
         var view = ChartRenderHarness.AddView(ChartKind.Line, ChartRenderHarness.ViewSize);
         try

@@ -460,7 +460,7 @@ public class PlotAlignmentTest
     [TestCase]
     public void TheContentBoxIsStableAcrossRedraws()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var fake = new FakeCanvas2D();
         var view = AddView(fake, new Vector2(320f, 200f));
@@ -515,7 +515,7 @@ public class PlotAlignmentTest
     [TestCase]
     public void TheViewExportsReachTheChart()
     {
-        if (!HasSceneTree()) return;
+        Asserts.RequireSceneTree();
 
         var view = AddView(new FakeCanvas2D(), new Vector2(400f, 300f));
         try
@@ -550,13 +550,6 @@ public class PlotAlignmentTest
     }
 
     // ── Plumbing ────────────────────────────────────────────────────────────
-
-    private static bool HasSceneTree()
-    {
-        if (Engine.GetMainLoop() is SceneTree) return true;
-        GD.Print("[skip] PlotAlignment tests need a SceneTree; none in this run");
-        return false;
-    }
 
     private static ChartView AddView(FakeCanvas2D fake, Vector2 size)
     {

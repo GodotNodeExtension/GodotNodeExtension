@@ -2,6 +2,7 @@ namespace GodotNodeExtension.Tests.GodotChart;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using GdUnit4;
 using Godot;
@@ -40,6 +41,54 @@ public class ExampleScenesIntegrationTest
         }
         files.Sort(StringComparer.Ordinal);
         return files;
+    }
+
+    /// <summary>The scenes <c>demos.json</c> lists, or an empty list when the manifest cannot be read.</summary>
+    private static List<string> ManifestScenes()
+    {
+        var listed = new List<string>();
+        using var file = FileAccess.Open($"{Directory}/demos.json", FileAccess.ModeFlags.Read);
+        if (file is null) return listed;
+
+        var parsed = Json.ParseString(file.GetAsText());
+        if (parsed.VariantType != Variant.Type.Dictionary) return listed;
+        if (parsed.AsGodotDictionary()["demos"].AsGodotArray() is not { } entries) return listed;
+
+        foreach (Variant entry in entries)
+        {
+            if (entry.VariantType != Variant.Type.Dictionary) continue;
+            var scene = entry.AsGodotDictionary()["scene"];
+            if (scene.VariantType == Variant.Type.String) listed.Add(scene.AsString());
+        }
+
+        return listed;
+    }
+
+    /// <summary>
+    /// <c>demos.json</c> lists exactly the scenes of the directory - no page without an entry, no entry whose
+    /// scene is gone. The manifest is what the example browser shows (its order and its descriptions), and it was
+    /// the one thing about the example set that nothing compared with the files: a page added without its entry
+    /// simply did not appear in the browser, and a renamed scene left an entry pointing at nothing.
+    /// </summary>
+    [TestCase]
+    public void TheManifestListsExactlyTheScenesOfTheDirectory()
+    {
+        var scenes = SceneFiles();
+        var listed = ManifestScenes();
+
+        // Guard against a vacuous pass: an unreadable manifest would otherwise look like "nothing missing".
+        AssertThat(scenes.Count).IsGreater(0);
+        AssertThat(listed.Count).IsGreater(0);
+
+        var unlisted = scenes.Where(scene => !listed.Contains(scene)).ToArray();
+        var dangling = listed.Where(scene => !scenes.Contains(scene)).ToArray();
+
+        AssertThat(unlisted.Length == 0 ? "" : "no demos.json entry for: " + string.Join(", ", unlisted))
+            .IsEqual("");
+        AssertThat(dangling.Length == 0
+                ? ""
+                : "demos.json lists a scene that is not there: " + string.Join(", ", dangling))
+            .IsEqual("");
     }
 
     /// <summary>Every descendant of <paramref name="node"/>, including internal children, depth first.</summary>
